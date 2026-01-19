@@ -18,9 +18,9 @@ A free, open-source, client-side web application for adding GPS coordinates (geo
 - Mobile responsive design
 
 ## Application Modes
-1. **Landing Mode**: Hero section with upload dropzone, Features, How It Works, GPS Finder, and FAQ sections
+1. **Landing Mode**: Hero section with upload dropzone, Features, How It Works, and FAQ sections
 2. **Geotagger Mode**: After upload - interactive map on left, image thumbnails and options on right
-3. **Finder Mode**: Extract and display GPS coordinates from existing photos
+3. **GPS Finder Page** (/gps-finder): Separate dedicated page to extract and display GPS coordinates from existing photos with description and interactive map
 
 ## Tech Stack
 - **Frontend**: React + TypeScript + Vite

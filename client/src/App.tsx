@@ -9,6 +9,7 @@ import Home from "@/pages/home";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import Cookies from "@/pages/cookies";
+import GpsFinder from "@/pages/gps-finder";
 
 function Router() {
   return (
@@ -17,6 +18,7 @@ function Router() {
       <Route path="/privacy" component={Privacy} />
       <Route path="/terms" component={Terms} />
       <Route path="/cookies" component={Cookies} />
+      <Route path="/gps-finder" component={GpsFinder} />
       <Route component={NotFound} />
     </Switch>
   );
