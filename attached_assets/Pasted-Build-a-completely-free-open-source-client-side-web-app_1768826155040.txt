@@ -1,0 +1,38 @@
+Build a completely free, open-source, client-side web application called "FreeGeoTagger" — an online tool for adding geotags (GPS coordinates) to photos, similar to geoimgr.com but 100% free with no subscriptions or payments.
+
+Core requirements:
+- Users can upload one or multiple images at once (JPG, PNG, WebP, HEIC supported)
+- Show thumbnails of uploaded images
+- Display an interactive map (use Leaflet.js + OpenStreetMap tiles — free)
+- Users can drag a marker on the map to set latitude/longitude or enter them manually (validate: lat -90 to 90, lng -180 to 180)
+- Optional fields: keywords (comma-separated tags) and description (text)
+- Button to apply the same geotag + metadata to all uploaded images (batch support)
+- Button to download each modified image with the new EXIF GPS data embedded (keep original filename + "_geotagged" suffix)
+- Show simple success/error messages
+- Everything must run 100% in the browser — NO server/backend processing, no file upload to any server (maximum privacy)
+
+Important technical choices:
+- Use modern JavaScript (Vite + React is preferred, or plain HTML/JS if simpler)
+- For EXIF manipulation use piexifjs[](https://github.com/hMatoba/piexifjs) for JPG
+- For HEIC support: use heic2any library to convert to JPEG temporarily if needed for processing
+- For file saving: use FileSaver.js or native download attribute
+- Make it mobile responsive and clean/minimalist design (use Tailwind CSS if possible)
+- Add a small "Donate" link (Buy Me a Coffee or GitHub Sponsors) in footer — but no paywall
+- Include basic instructions/tooltips explaining that some viewers might not show GPS for PNG/HEIC
+
+Nice-to-have features (add only if it doesn't complicate the first version too much):
+- Reverse geocoding search: simple input field to search place name → set coordinates (use free Nominatim API: https://nominatim.openstreetmap.org)
+- Button to use user's current location (browser geolocation API)
+- Basic EXIF viewer: show existing GPS/metadata after upload
+
+Project structure guidelines:
+- Keep code clean and well-commented
+- Use components if React
+- Create README.md with description, how to run locally, and that it's MIT licensed
+- Make sure it deploys instantly as a static site on Replit
+
+Start by planning the architecture, then create the project structure, install necessary libraries via npm, and build the upload + map interface first.
+
+After you finish the first working version, I'll give more detailed feedback and ask for improvements step by step.
+
+Let's begin!

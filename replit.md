@@ -1,46 +1,58 @@
-# GeoFinder - Free Image Location Finder
+# FreeGeoTagger - Free Photo Geotagging Tool
 
 ## Overview
-A free, privacy-focused web tool that extracts EXIF metadata from uploaded images and displays GPS location on an interactive map. All processing happens client-side - no images are ever stored or sent to a server.
+A free, open-source, client-side web application for adding GPS coordinates (geotags) to photos. Similar to geoimgr.com but 100% free with no subscriptions or payments. All processing happens in the browser - no images are ever uploaded to any server.
 
 ## Features
-- Drag & drop image upload (JPG, PNG, TIFF, HEIC, WebP)
-- Client-side EXIF metadata extraction
-- GPS location display on interactive Leaflet map
-- Copy coordinates to clipboard
-- Export metadata as JSON
+- Upload one or multiple images (JPG, PNG, WebP, HEIC supported)
+- Interactive Leaflet map with draggable marker
+- Search for places using Nominatim reverse geocoding
+- Use current browser location
+- Manual coordinate input with validation
+- Optional keywords and description metadata
+- Batch processing - apply same geotag to all images
+- Download geotagged images with "_geotagged" suffix
 - Dark/light theme toggle
 - Mobile responsive design
-- SEO optimized
 
 ## Tech Stack
 - **Frontend**: React + TypeScript + Vite
 - **Styling**: Tailwind CSS + shadcn/ui components
-- **EXIF Parsing**: ExifReader.js
-- **Map**: Leaflet with OpenStreetMap tiles
+- **EXIF Manipulation**: piexifjs for reading/writing GPS data
+- **HEIC Support**: heic2any for converting HEIC to JPEG
+- **Map**: Leaflet with OpenStreetMap tiles (free, no API key)
+- **File Download**: file-saver library
+- **Geocoding**: Nominatim API (free)
 
 ## File Structure
 ```
 client/
 ├── src/
 │   ├── components/
-│   │   ├── image-uploader.tsx    # Drag & drop upload component
-│   │   ├── metadata-panel.tsx    # EXIF data display
-│   │   ├── location-map.tsx      # Leaflet map integration
-│   │   ├── theme-provider.tsx    # Dark/light mode context
-│   │   └── theme-toggle.tsx      # Theme switch button
+│   │   ├── multi-image-uploader.tsx  # Multi-file drag & drop upload with thumbnails
+│   │   ├── geotag-map.tsx            # Leaflet map with draggable marker
+│   │   ├── metadata-form.tsx         # Keywords and description inputs
+│   │   ├── theme-provider.tsx        # Dark/light mode context
+│   │   └── theme-toggle.tsx          # Theme switch button
 │   ├── lib/
-│   │   └── exif-utils.ts         # EXIF extraction utilities
+│   │   └── geotag-utils.ts           # EXIF writing, geocoding, file utilities
+│   ├── types/
+│   │   └── piexifjs.d.ts             # TypeScript declarations for piexifjs
 │   ├── pages/
-│   │   └── home.tsx              # Main landing page
-│   └── App.tsx                   # Root component with routing
+│   │   └── home.tsx                  # Main landing page
+│   └── App.tsx                       # Root component with routing
 ```
 
 ## Key Design Decisions
-- Client-side only processing for privacy
+- Client-side only processing for maximum privacy
 - No database needed - purely frontend tool
+- Uses piexifjs for robust EXIF GPS embedding
+- HEIC files automatically converted to JPEG for processing
 - Uses Leaflet with OpenStreetMap (free, no API key required)
-- ExifReader library for robust EXIF parsing across image formats
+- Nominatim API for free reverse geocoding search
 
 ## Running the Project
 The app runs with `npm run dev` which starts both the Express backend and Vite frontend on port 5000.
+
+## License
+MIT License - Free and open source
