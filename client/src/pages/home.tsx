@@ -1,10 +1,11 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { 
-  MapPin, Download, Loader2, Upload, X, Search, Locate, 
+  Download, Loader2, Upload, X, Search, Locate, 
   CheckCircle, AlertCircle, Camera, Shield, Zap, Globe, 
   HelpCircle, ChevronDown, FileImage, Eye, Copy, Check,
   ArrowRight, Sparkles
 } from "lucide-react";
+import logoImage from "@assets/Geo_Tagger_Logo_1768827793765.webp";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -298,9 +299,8 @@ export default function Home() {
       <div className="min-h-screen bg-background flex flex-col">
         <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-50">
           <div className="container mx-auto px-4 flex items-center justify-between h-14">
-            <button onClick={() => { setMode("landing"); setImages([]); }} className="flex items-center gap-2 hover:opacity-80" data-testid="button-home">
-              <MapPin className="h-5 w-5 text-primary" />
-              <span className="font-bold" data-testid="text-logo-title">FreeGeoTagger</span>
+            <button onClick={() => { setMode("landing"); setImages([]); }} className="hover:opacity-80" data-testid="button-home">
+              <img src={logoImage} alt="GeoTagger" className="h-8" />
             </button>
             <ThemeToggle data-testid="button-theme-toggle" />
           </div>
@@ -430,9 +430,8 @@ export default function Home() {
       <div className="min-h-screen bg-background flex flex-col">
         <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-50">
           <div className="container mx-auto px-4 flex items-center justify-between h-14">
-            <button onClick={() => { setMode("landing"); setExtractedGps(null); }} className="flex items-center gap-2 hover:opacity-80" data-testid="button-home-finder">
-              <MapPin className="h-5 w-5 text-primary" />
-              <span className="font-bold" data-testid="text-logo-finder">FreeGeoTagger</span>
+            <button onClick={() => { setMode("landing"); setExtractedGps(null); }} className="hover:opacity-80" data-testid="button-home-finder">
+              <img src={logoImage} alt="GeoTagger" className="h-8" />
             </button>
             <ThemeToggle data-testid="button-theme-finder" />
           </div>
@@ -486,10 +485,9 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-50">
         <div className="container mx-auto px-4 flex items-center justify-between h-14">
-          <div className="flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-primary" />
-            <span className="font-bold" data-testid="text-logo-title">FreeGeoTagger</span>
-          </div>
+          <a href="/" className="hover:opacity-80" data-testid="link-logo">
+            <img src={logoImage} alt="GeoTagger" className="h-8" />
+          </a>
           <nav className="hidden md:flex flex-wrap items-center gap-6 text-sm">
             <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-features">Features</a>
             <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-how-it-works">How it Works</a>
@@ -638,9 +636,10 @@ export default function Home() {
       </section>
 
       <footer className="border-t border-border py-8">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p className="mb-2">FreeGeoTagger — 100% free, open source, and private</p>
-          <p>Your photos never leave your browser. No data is collected.</p>
+        <div className="container mx-auto px-4 text-center">
+          <img src={logoImage} alt="GeoTagger" className="h-10 mx-auto mb-4" />
+          <p className="text-sm text-muted-foreground mb-2">100% free, open source, and private</p>
+          <p className="text-sm text-muted-foreground">Your photos never leave your browser. No data is collected.</p>
         </div>
       </footer>
     </div>
