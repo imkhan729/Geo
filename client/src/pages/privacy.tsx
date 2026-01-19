@@ -1,7 +1,7 @@
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
-import logoImage from "@assets/Geo_Tagger_Logo_2.webp_1768827957680.jpg";
+import logoImage from "@assets/Geo_Tagger_Logo_2.webp-removebg-preview_1768829275162.png";
 
 export default function Privacy() {
   return (

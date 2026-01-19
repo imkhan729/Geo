@@ -4,7 +4,7 @@ import {
   CheckCircle, AlertCircle, Camera, Shield, Zap,
   ChevronDown, Sparkles, PenLine, Trash2, HelpCircle
 } from "lucide-react";
-import logoImage from "@assets/Geo_Tagger_Logo_2.webp_1768827957680.jpg";
+import logoImage from "@assets/Geo_Tagger_Logo_2.webp-removebg-preview_1768829275162.png";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

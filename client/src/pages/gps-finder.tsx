@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 import L from "leaflet";
-import logoImage from "@assets/Geo_Tagger_Logo_2.webp_1768827957680.jpg";
+import logoImage from "@assets/Geo_Tagger_Logo_2.webp-removebg-preview_1768829275162.png";
 import { 
   readFileAsDataUrl,
   extractExistingGps,
