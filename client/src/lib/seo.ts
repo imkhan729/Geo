@@ -7,9 +7,9 @@ export interface SEOConfig {
 
 export function updatePageSEO(config: SEOConfig) {
   const baseUrl = "https://freegeotagger.com";
-  const fullTitle = config.title.includes("FreeGeoTagger") 
+  const fullTitle = config.title.includes("GeoTagger") 
     ? config.title 
-    : `${config.title} | FreeGeoTagger`;
+    : `${config.title} | GeoTagger`;
   
   document.title = fullTitle;
   
@@ -56,8 +56,8 @@ export function updatePageSEO(config: SEOConfig) {
 
 export const SEO_CONFIG = {
   home: {
-    title: "FreeGeoTagger - Free Online Photo Geotagging Tool | Add GPS to Photos",
-    description: "Free online tool to add GPS coordinates and geotags to your photos. Batch process multiple images. Supports JPG, PNG, WebP, HEIC. 100% private - all processing happens in your browser.",
+    title: "GeoTagger – Free Image Geotagging Tool | Add GPS to Photos Online",
+    description: "GeoTagger is a free online tool to add GPS location data to photos. Geotag images locally in your browser with no uploads, no accounts, and full privacy.",
     canonical: "/",
     ogType: "website"
   },

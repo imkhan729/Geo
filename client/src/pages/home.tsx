@@ -2,7 +2,8 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { 
   Download, Loader2, Upload, X, Search, Locate, 
   CheckCircle, AlertCircle, Camera, Shield, Zap,
-  ChevronDown, Sparkles, PenLine, Trash2, HelpCircle
+  ChevronDown, Sparkles, PenLine, Trash2, HelpCircle,
+  Globe, MapPin, Lock, Users, Check
 } from "lucide-react";
 import logoImage from "@assets/Geo_Tagger_Logo_2.webp-removebg-preview_1768829275162.png";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -281,11 +282,12 @@ export default function Home() {
   }, [images, latitude, longitude, keywords, description, toast, processedBlobs]);
 
   const faqs = [
-    { q: "Is this tool really free?", a: "Yes! FreeGeoTagger is 100% free with no hidden costs, subscriptions, or watermarks." },
-    { q: "Are my photos uploaded to any server?", a: "No. All processing happens directly in your browser. Your photos never leave your device." },
-    { q: "What file formats are supported?", a: "We support JPG, JPEG, PNG, WebP, and HEIC files up to 20MB each." },
-    { q: "Will GPS work with PNG files?", a: "PNG has limited EXIF support. GPS coordinates may not display in all viewers. JPG works best." },
-    { q: "Can I geotag multiple photos at once?", a: "Yes! Upload multiple photos and they'll all get the same GPS coordinates you select." },
+    { q: "Is GeoTagger really free?", a: "Yes. GeoTagger is completely free with no hidden fees, subscriptions, or watermarks." },
+    { q: "Are my photos uploaded to any server?", a: "No. All processing happens locally in your browser. Your photos never leave your device." },
+    { q: "Can I geotag multiple photos at once?", a: "Yes. Batch geotagging is fully supported — upload multiple photos and apply the same location to all." },
+    { q: "What file formats are supported?", a: "JPG, PNG, WebP, and HEIC are all supported. HEIC files are auto-converted to JPG for processing." },
+    { q: "Will geotagging affect image quality?", a: "No. Only metadata is modified — image quality remains completely unchanged." },
+    { q: "Does this work on mobile devices?", a: "Yes. GeoTagger works on modern mobile browsers including Chrome, Safari, and Firefox." },
   ];
 
   const currentImage = images[selectedImageIndex] || images[0];
@@ -496,12 +498,20 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <Badge className="mb-4" variant="secondary"><Sparkles className="h-3 w-3 mr-1" /> 100% Free & Private</Badge>
           <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-            Add GPS to Your Photos
+            Add GPS Location to Your Photos Instantly
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Free online geotagging tool. Add location data to multiple photos at once. 
-            No uploads, no accounts — everything happens in your browser.
+          <h2 className="text-xl md:text-2xl text-muted-foreground font-medium mb-4">
+            Free Online Image Geotagging Tool — No Uploads, No Accounts
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-6">
+            GeoTagger is a free, privacy-first online tool that lets you add GPS coordinates to your photos directly in your browser. Geotag multiple images at once, embed accurate location metadata, and download your photos instantly — without uploading them to any server.
           </p>
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-8 text-sm text-muted-foreground">
+            <span className="flex items-center gap-1"><Check className="h-4 w-4 text-green-500" /> Works entirely in your browser</span>
+            <span className="flex items-center gap-1"><Check className="h-4 w-4 text-green-500" /> No sign-up, no fees, no limits</span>
+            <span className="flex items-center gap-1"><Check className="h-4 w-4 text-green-500" /> Fast batch geotagging</span>
+            <span className="flex items-center gap-1"><Check className="h-4 w-4 text-green-500" /> Supports JPG, PNG, WebP & HEIC</span>
+          </div>
 
           <Card
             className={`max-w-2xl mx-auto cursor-pointer transition-all border-2 border-dashed ${isDragging ? "border-primary bg-primary/5" : "border-primary/30 hover:border-primary/50"}`}
@@ -515,12 +525,13 @@ export default function Home() {
               <Upload className="h-12 w-12 mx-auto mb-4 text-primary" />
               <h3 className="text-xl font-semibold mb-2">Drop photos here to geotag</h3>
               <p className="text-muted-foreground mb-4">or click to browse</p>
-              <div className="flex flex-wrap justify-center gap-2">
+              <div className="flex flex-wrap justify-center gap-2 mb-4">
                 <Badge variant="outline">JPG</Badge>
                 <Badge variant="outline">PNG</Badge>
                 <Badge variant="outline">WebP</Badge>
                 <Badge variant="outline">HEIC</Badge>
               </div>
+              <p className="text-xs text-muted-foreground">All files are processed locally on your device for maximum privacy and security.</p>
               <input id="hero-upload" type="file" accept={ACCEPTED_EXTENSIONS.join(",")} multiple onChange={(e) => e.target.files && processFiles(e.target.files)} className="hidden" />
             </CardContent>
           </Card>
@@ -530,18 +541,89 @@ export default function Home() {
       <section id="what-is-geotagger" className="py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold mb-6 text-center">What is GeoTagger?</h2>
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <Globe className="h-8 w-8 text-primary" />
+              <h2 className="text-3xl font-bold">What Is GeoTagger?</h2>
+            </div>
             <div className="space-y-4 text-muted-foreground">
               <p className="text-lg leading-relaxed">
-                GeoTagger is a professional-grade, browser-based tool designed to embed GPS coordinates directly into your digital photographs. This process, known as geotagging, adds precise location metadata to your images, enabling them to be organized, searched, and displayed on maps based on where they were captured.
+                GeoTagger is a professional-grade, browser-based image geotagging tool designed to embed precise GPS coordinates directly into your digital photographs.
               </p>
               <p className="leading-relaxed">
-                Whether you're a professional photographer cataloging shoots across multiple locations, a real estate agent documenting property listings, a researcher conducting field studies, or simply someone who wants to remember exactly where a special moment was captured — GeoTagger provides the solution you need.
+                Geotagging adds latitude and longitude information to a photo's EXIF metadata, allowing images to be organized, searched, verified, and displayed on maps based on where they were taken.
               </p>
               <p className="leading-relaxed">
-                Unlike traditional photo management software, GeoTagger operates entirely within your web browser. Your images are never uploaded to external servers, ensuring complete privacy and data security. The embedded GPS coordinates become part of the image's EXIF metadata, making them universally compatible with photo viewers, social media platforms, and mapping applications.
+                Whether you're a professional photographer cataloging shoots, a real estate agent documenting properties, a researcher collecting field data, or a traveler preserving memories — GeoTagger provides a fast, accurate, and secure solution.
+              </p>
+              <p className="leading-relaxed">
+                Unlike traditional photo software, GeoTagger does not upload your images. Everything happens locally in your browser, ensuring full privacy and compatibility across platforms like Google Photos, Apple Photos, Adobe Lightroom, and mapping tools.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="what-is-geotagging" className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <MapPin className="h-8 w-8 text-primary" />
+              <h2 className="text-3xl font-bold">What Is Image Geotagging?</h2>
+            </div>
+            <p className="text-lg text-muted-foreground text-center mb-8">
+              Image geotagging is the process of embedding GPS location data into a photo's metadata. This includes:
+            </p>
+            <div className="grid md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+              <Card className="text-center p-4">
+                <h4 className="font-semibold">Latitude & Longitude</h4>
+              </Card>
+              <Card className="text-center p-4">
+                <h4 className="font-semibold">Timestamp</h4>
+              </Card>
+              <Card className="text-center p-4">
+                <h4 className="font-semibold">Altitude</h4>
+                <p className="text-xs text-muted-foreground">(when available)</p>
+              </Card>
+              <Card className="text-center p-4">
+                <h4 className="font-semibold">Camera Direction</h4>
+              </Card>
+            </div>
+            <p className="text-muted-foreground text-center mt-6">
+              Geotagged images can be displayed on maps, sorted by location, and used in location-based platforms, GIS systems, and photo management software.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="privacy" className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <Lock className="h-8 w-8 text-green-500" />
+              <h2 className="text-3xl font-bold">Privacy-First by Design</h2>
+            </div>
+            <p className="text-xl text-muted-foreground mb-8">Your privacy matters.</p>
+            <div className="grid md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+              <Card className="p-4">
+                <Shield className="h-6 w-6 mx-auto mb-2 text-green-500" />
+                <p className="font-medium">No image uploads</p>
+              </Card>
+              <Card className="p-4">
+                <Shield className="h-6 w-6 mx-auto mb-2 text-green-500" />
+                <p className="font-medium">No cloud storage</p>
+              </Card>
+              <Card className="p-4">
+                <Shield className="h-6 w-6 mx-auto mb-2 text-green-500" />
+                <p className="font-medium">No tracking</p>
+              </Card>
+              <Card className="p-4">
+                <Shield className="h-6 w-6 mx-auto mb-2 text-green-500" />
+                <p className="font-medium">No accounts required</p>
+              </Card>
+            </div>
+            <p className="text-muted-foreground mt-6">
+              GeoTagger processes all images locally in your browser. Once you close the page, nothing is stored or retained.
+            </p>
           </div>
         </div>
       </section>
@@ -549,30 +631,79 @@ export default function Home() {
       <section id="features" className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Why FreeGeoTagger?</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">Everything you need to add GPS coordinates to your photos</p>
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Zap className="h-8 w-8 text-primary" />
+              <h2 className="text-3xl font-bold">Why Choose GeoTagger?</h2>
+            </div>
+            <p className="text-muted-foreground max-w-xl mx-auto">Everything you need to add GPS coordinates to photos — completely free</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-4 gap-6 max-w-5xl mx-auto">
             <Card className="text-center p-6">
               <Shield className="h-10 w-10 mx-auto mb-4 text-green-500" />
               <h3 className="font-semibold mb-2">100% Private</h3>
-              <p className="text-sm text-muted-foreground">Your photos never leave your device. All processing happens locally in your browser.</p>
+              <p className="text-sm text-muted-foreground">Your photos never leave your device.</p>
             </Card>
             <Card className="text-center p-6">
               <Zap className="h-10 w-10 mx-auto mb-4 text-yellow-500" />
               <h3 className="font-semibold mb-2">Lightning Fast</h3>
-              <p className="text-sm text-muted-foreground">No waiting for uploads. Geotag multiple photos in seconds with batch processing.</p>
+              <p className="text-sm text-muted-foreground">No uploads. Batch geotag multiple photos in seconds.</p>
             </Card>
             <Card className="text-center p-6">
-              <Camera className="h-10 w-10 mx-auto mb-4 text-blue-500" />
-              <h3 className="font-semibold mb-2">All Formats</h3>
-              <p className="text-sm text-muted-foreground">Support for JPG, PNG, WebP, and HEIC. HEIC files are auto-converted to JPG.</p>
+              <Globe className="h-10 w-10 mx-auto mb-4 text-blue-500" />
+              <h3 className="font-semibold mb-2">Universal Compatibility</h3>
+              <p className="text-sm text-muted-foreground">Embedded GPS metadata works across all major platforms.</p>
+            </Card>
+            <Card className="text-center p-6">
+              <Camera className="h-10 w-10 mx-auto mb-4 text-purple-500" />
+              <h3 className="font-semibold mb-2">All Major Formats</h3>
+              <p className="text-sm text-muted-foreground">JPG, PNG, WebP, and HEIC (auto-converted).</p>
             </Card>
           </div>
         </div>
       </section>
 
-      <section id="how-it-works" className="py-16">
+      <section id="who-should-use" className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <Users className="h-8 w-8 text-primary" />
+              <h2 className="text-3xl font-bold">Who Should Use GeoTagger?</h2>
+            </div>
+            <p className="text-center text-muted-foreground mb-8">GeoTagger is ideal for:</p>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+              <Card className="p-4 flex items-center gap-3">
+                <Camera className="h-5 w-5 text-primary flex-shrink-0" />
+                <span className="text-sm">Photographers organizing location-based shoots</span>
+              </Card>
+              <Card className="p-4 flex items-center gap-3">
+                <MapPin className="h-5 w-5 text-primary flex-shrink-0" />
+                <span className="text-sm">Real estate agents tagging property photos</span>
+              </Card>
+              <Card className="p-4 flex items-center gap-3">
+                <Globe className="h-5 w-5 text-primary flex-shrink-0" />
+                <span className="text-sm">Surveyors & researchers collecting field data</span>
+              </Card>
+              <Card className="p-4 flex items-center gap-3">
+                <Sparkles className="h-5 w-5 text-primary flex-shrink-0" />
+                <span className="text-sm">Travelers & bloggers preserving memories</span>
+              </Card>
+              <Card className="p-4 flex items-center gap-3">
+                <Check className="h-5 w-5 text-primary flex-shrink-0" />
+                <span className="text-sm">Journalists verifying photo locations</span>
+              </Card>
+              <Card className="p-4 flex items-center gap-3">
+                <Shield className="h-5 w-5 text-primary flex-shrink-0" />
+                <span className="text-sm">Businesses managing location-aware media</span>
+              </Card>
+            </div>
+            <p className="text-center text-muted-foreground mt-6">
+              If your images need accurate location data, GeoTagger saves time while maintaining privacy.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="how-it-works" className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">How It Works</h2>
@@ -582,23 +713,57 @@ export default function Home() {
             <div className="text-center">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 text-primary font-bold">1</div>
               <h3 className="font-semibold mb-2">Upload Photos</h3>
-              <p className="text-sm text-muted-foreground">Drag and drop or click to upload one or more photos</p>
+              <p className="text-sm text-muted-foreground">Drag and drop or select one or multiple images</p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 text-primary font-bold">2</div>
               <h3 className="font-semibold mb-2">Set Location</h3>
-              <p className="text-sm text-muted-foreground">Click on the map, search for a place, or use your GPS</p>
+              <p className="text-sm text-muted-foreground">Click on the map, search an address, or use GPS</p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 text-primary font-bold">3</div>
               <h3 className="font-semibold mb-2">Download</h3>
-              <p className="text-sm text-muted-foreground">Get your photos with embedded GPS coordinates</p>
+              <p className="text-sm text-muted-foreground">Get photos with embedded GPS metadata instantly</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="faq" className="py-16">
+      <section id="vs-others" className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl font-bold mb-4">GeoTagger vs Other Geotagging Tools</h2>
+            <p className="text-muted-foreground mb-8">Unlike traditional software or paid tools:</p>
+            <div className="grid md:grid-cols-5 gap-4 max-w-3xl mx-auto mb-6">
+              <Card className="p-4">
+                <Check className="h-6 w-6 mx-auto mb-2 text-green-500" />
+                <p className="text-sm font-medium">No subscriptions</p>
+              </Card>
+              <Card className="p-4">
+                <Check className="h-6 w-6 mx-auto mb-2 text-green-500" />
+                <p className="text-sm font-medium">No file limits</p>
+              </Card>
+              <Card className="p-4">
+                <Check className="h-6 w-6 mx-auto mb-2 text-green-500" />
+                <p className="text-sm font-medium">No uploads</p>
+              </Card>
+              <Card className="p-4">
+                <Check className="h-6 w-6 mx-auto mb-2 text-green-500" />
+                <p className="text-sm font-medium">No installation</p>
+              </Card>
+              <Card className="p-4">
+                <Check className="h-6 w-6 mx-auto mb-2 text-green-500" />
+                <p className="text-sm font-medium">Works in browser</p>
+              </Card>
+            </div>
+            <p className="text-muted-foreground">
+              Most alternatives require accounts, paid plans, or cloud uploads — GeoTagger does not.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
@@ -626,10 +791,11 @@ export default function Home() {
       <footer className="border-t border-border py-10">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
-            <div className="md:max-w-sm">
+            <div className="md:max-w-md">
               <img src={logoImage} alt="GeoTagger" className="h-[59px] mb-4" />
-              <p className="text-sm text-muted-foreground mb-2">100% free, open source, and private.</p>
-              <p className="text-sm text-muted-foreground">Your photos never leave your browser. No data is collected.</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                GeoTagger is a free online image geotagging tool that allows users to add GPS location data to photos directly in their browser. It supports JPG, PNG, WebP, and HEIC files and works without uploads, accounts, or subscriptions.
+              </p>
             </div>
             <div className="flex flex-wrap gap-8">
               <div>
