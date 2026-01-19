@@ -1,8 +1,13 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { MapPin, Download, Loader2, Tags, Coffee, Github, RefreshCw, CheckCircle, Upload, X, Search, Navigation, Locate, ImageIcon, AlertCircle } from "lucide-react";
+import { 
+  MapPin, Download, Loader2, Upload, X, Search, Locate, 
+  CheckCircle, AlertCircle, Camera, Shield, Zap, Globe, 
+  HelpCircle, ChevronDown, FileImage, Eye, Copy, Check,
+  ArrowRight, Sparkles
+} from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,7 +28,14 @@ import { useToast } from "@/hooks/use-toast";
 
 const ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".heic"];
 
+interface ExtractedGps {
+  lat: number;
+  lng: number;
+  fileName: string;
+}
+
 export default function Home() {
+  const [mode, setMode] = useState<"landing" | "geotagger" | "finder">("landing");
   const [images, setImages] = useState<ImageFile[]>([]);
   const [latitude, setLatitude] = useState(40.7128);
   const [longitude, setLongitude] = useState(-74.0060);
@@ -35,14 +47,19 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
+  const [extractedGps, setExtractedGps] = useState<ExtractedGps | null>(null);
+  const [copiedCoords, setCopiedCoords] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const { toast } = useToast();
   
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
+  const finderMapRef = useRef<HTMLDivElement>(null);
+  const finderMapInstanceRef = useRef<L.Map | null>(null);
 
   useEffect(() => {
-    if (!mapRef.current) return;
+    if (mode !== "geotagger" || !mapRef.current) return;
 
     if (mapInstanceRef.current) {
       mapInstanceRef.current.remove();
@@ -52,31 +69,18 @@ export default function Home() {
     mapInstanceRef.current = map;
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      attribution: '&copy; OpenStreetMap',
       maxZoom: 19,
     }).addTo(map);
 
     const customIcon = L.divIcon({
-      html: `
-        <div style="
-          background-color: #e74c3c;
-          width: 24px;
-          height: 24px;
-          border-radius: 50% 50% 50% 0;
-          transform: rotate(-45deg);
-          border: 2px solid white;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-        "></div>
-      `,
+      html: `<div style="background:#3b82f6;width:24px;height:24px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>`,
       className: "custom-marker",
       iconSize: [24, 24],
       iconAnchor: [12, 24],
     });
 
-    const marker = L.marker([latitude, longitude], { 
-      icon: customIcon,
-      draggable: true 
-    }).addTo(map);
+    const marker = L.marker([latitude, longitude], { icon: customIcon, draggable: true }).addTo(map);
     markerRef.current = marker;
 
     marker.on("dragend", () => {
@@ -86,10 +90,9 @@ export default function Home() {
     });
 
     map.on("click", (e: L.LeafletMouseEvent) => {
-      const { lat, lng } = e.latlng;
-      marker.setLatLng([lat, lng]);
-      setLatitude(lat);
-      setLongitude(lng);
+      marker.setLatLng([e.latlng.lat, e.latlng.lng]);
+      setLatitude(e.latlng.lat);
+      setLongitude(e.latlng.lng);
     });
 
     return () => {
@@ -98,7 +101,7 @@ export default function Home() {
         mapInstanceRef.current = null;
       }
     };
-  }, []);
+  }, [mode]);
 
   useEffect(() => {
     if (markerRef.current && mapInstanceRef.current) {
@@ -106,35 +109,51 @@ export default function Home() {
     }
   }, [latitude, longitude]);
 
+  useEffect(() => {
+    if (mode !== "finder" || !finderMapRef.current || !extractedGps) return;
+
+    if (finderMapInstanceRef.current) {
+      finderMapInstanceRef.current.remove();
+    }
+
+    const map = L.map(finderMapRef.current).setView([extractedGps.lat, extractedGps.lng], 15);
+    finderMapInstanceRef.current = map;
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; OpenStreetMap',
+      maxZoom: 19,
+    }).addTo(map);
+
+    const customIcon = L.divIcon({
+      html: `<div style="background:#22c55e;width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4);"></div>`,
+      className: "custom-marker",
+      iconSize: [28, 28],
+      iconAnchor: [14, 28],
+    });
+
+    L.marker([extractedGps.lat, extractedGps.lng], { icon: customIcon }).addTo(map);
+
+    return () => {
+      if (finderMapInstanceRef.current) {
+        finderMapInstanceRef.current.remove();
+        finderMapInstanceRef.current = null;
+      }
+    };
+  }, [mode, extractedGps]);
+
   const handleSearch = useCallback(async () => {
     if (!searchQuery.trim()) return;
-    
     setIsSearching(true);
     try {
       const result = await reverseGeocode(searchQuery);
       if (result) {
         setLatitude(result.lat);
         setLongitude(result.lng);
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.setView([result.lat, result.lng], 15);
-        }
-        toast({
-          title: "Location found",
-          description: result.displayName.substring(0, 80),
-        });
+        mapInstanceRef.current?.setView([result.lat, result.lng], 15);
+        toast({ title: "Location found", description: result.displayName.substring(0, 60) });
       } else {
-        toast({
-          title: "Location not found",
-          description: "Try a different search term",
-          variant: "destructive",
-        });
+        toast({ title: "Not found", description: "Try a different search", variant: "destructive" });
       }
-    } catch {
-      toast({
-        title: "Search failed",
-        description: "Please try again",
-        variant: "destructive",
-      });
     } finally {
       setIsSearching(false);
     }
@@ -142,67 +161,50 @@ export default function Home() {
 
   const handleUseMyLocation = useCallback(() => {
     if (!navigator.geolocation) {
-      toast({
-        title: "Geolocation not supported",
-        description: "Your browser doesn't support location services",
-        variant: "destructive",
-      });
+      toast({ title: "Not supported", variant: "destructive" });
       return;
     }
-
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude: lat, longitude: lng } = position.coords;
-        setLatitude(lat);
-        setLongitude(lng);
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.setView([lat, lng], 15);
-        }
-        toast({
-          title: "Location found",
-          description: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
-        });
+      (pos) => {
+        setLatitude(pos.coords.latitude);
+        setLongitude(pos.coords.longitude);
+        mapInstanceRef.current?.setView([pos.coords.latitude, pos.coords.longitude], 15);
         setIsLocating(false);
       },
-      (error) => {
-        toast({
-          title: "Location error",
-          description: error.message,
-          variant: "destructive",
-        });
-        setIsLocating(false);
-      },
+      () => setIsLocating(false),
       { enableHighAccuracy: true, timeout: 10000 }
     );
   }, [toast]);
 
-  const processFiles = useCallback(async (files: FileList | File[]) => {
+  const processFiles = useCallback(async (files: FileList | File[], forFinder = false) => {
     const fileArray = Array.from(files);
-    const newImages: ImageFile[] = [];
-
+    
     for (const file of fileArray) {
-      const isAccepted = ACCEPTED_EXTENSIONS.some(ext => 
-        file.name.toLowerCase().endsWith(ext)
-      );
-      
-      if (!isAccepted) continue;
-      if (file.size > 20 * 1024 * 1024) continue;
+      const isAccepted = ACCEPTED_EXTENSIONS.some(ext => file.name.toLowerCase().endsWith(ext));
+      if (!isAccepted || file.size > 20 * 1024 * 1024) continue;
 
       try {
         let previewFile = file;
-        
-        if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
+        if (file.name.toLowerCase().endsWith(".heic")) {
           const jpegBlob = await convertHeicToJpeg(file);
           previewFile = new File([jpegBlob], file.name, { type: "image/jpeg" });
         }
 
         const dataUrl = await readFileAsDataUrl(previewFile);
-        const existingGps = file.type === "image/jpeg" || file.type === "image/jpg" 
-          ? extractExistingGps(dataUrl) 
-          : null;
+        const existingGps = extractExistingGps(dataUrl);
 
-        newImages.push({
+        if (forFinder) {
+          if (existingGps) {
+            setExtractedGps({ lat: existingGps.lat, lng: existingGps.lng, fileName: file.name });
+            setMode("finder");
+          } else {
+            toast({ title: "No GPS data", description: "This image has no location information", variant: "destructive" });
+          }
+          return;
+        }
+
+        setImages(prev => [...prev, {
           id: generateId(),
           file,
           preview: dataUrl,
@@ -211,72 +213,38 @@ export default function Home() {
           size: file.size,
           existingGps,
           status: "pending"
-        });
+        }]);
       } catch (err) {
-        console.error("Error processing file:", err);
+        console.error(err);
       }
     }
-
-    if (newImages.length > 0) {
-      setImages(prev => [...prev, ...newImages]);
+    
+    if (!forFinder && fileArray.length > 0) {
+      setMode("geotagger");
     }
-  }, []);
+  }, [toast]);
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
+  const handleDrop = useCallback((e: React.DragEvent, forFinder = false) => {
     e.preventDefault();
     setIsDragging(false);
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    processFiles(e.dataTransfer.files);
-  }, [processFiles]);
-
-  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      processFiles(e.target.files);
-    }
+    processFiles(e.dataTransfer.files, forFinder);
   }, [processFiles]);
 
   const removeImage = useCallback((id: string) => {
-    setImages(prev => prev.filter(img => img.id !== id));
-  }, []);
-
-  const handleReset = useCallback(() => {
-    setImages([]);
-    setKeywords("");
-    setDescription("");
-    setProcessedCount(0);
+    setImages(prev => {
+      const newImages = prev.filter(img => img.id !== id);
+      if (newImages.length === 0) setMode("landing");
+      return newImages;
+    });
   }, []);
 
   const processAndDownloadAll = useCallback(async () => {
-    if (images.length === 0) {
-      toast({
-        title: "No images",
-        description: "Please upload at least one image",
-        variant: "destructive",
-      });
-      return;
-    }
-
+    if (images.length === 0) return;
     setIsProcessing(true);
     setProcessedCount(0);
 
-    const geotag: GeotagData = {
-      latitude,
-      longitude,
-      keywords: keywords || undefined,
-      description: description || undefined,
-    };
-
+    const geotag: GeotagData = { latitude, longitude, keywords: keywords || undefined, description: description || undefined };
     const updatedImages = [...images];
-    let successCount = 0;
 
     for (let i = 0; i < updatedImages.length; i++) {
       const img = updatedImages[i];
@@ -287,331 +255,378 @@ export default function Home() {
         const blob = await addGeotagToImage(img.file, geotag);
         downloadGeotaggedImage(blob, img.name);
         updatedImages[i] = { ...img, status: "success" };
-        successCount++;
-      } catch (error) {
-        console.error("Error processing image:", error);
-        updatedImages[i] = { 
-          ...img, 
-          status: "error", 
-          error: error instanceof Error ? error.message : "Failed to process" 
-        };
+      } catch {
+        updatedImages[i] = { ...img, status: "error" };
       }
-
       setImages([...updatedImages]);
       setProcessedCount(i + 1);
     }
 
     setIsProcessing(false);
-
-    if (successCount > 0) {
-      toast({
-        title: "Done!",
-        description: `${successCount} image${successCount !== 1 ? "s" : ""} geotagged`,
-      });
-    }
+    toast({ title: "Complete!", description: `${updatedImages.filter(i => i.status === "success").length} images geotagged` });
   }, [images, latitude, longitude, keywords, description, toast]);
 
-  const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
+  const copyCoordinates = useCallback(async () => {
+    if (!extractedGps) return;
+    await navigator.clipboard.writeText(`${extractedGps.lat.toFixed(6)}, ${extractedGps.lng.toFixed(6)}`);
+    setCopiedCoords(true);
+    setTimeout(() => setCopiedCoords(false), 2000);
+  }, [extractedGps]);
 
-  return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <header className="border-b border-border bg-background">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-14 gap-4">
-            <div className="flex items-center gap-2">
+  const faqs = [
+    { q: "Is this tool really free?", a: "Yes! FreeGeoTagger is 100% free with no hidden costs, subscriptions, or watermarks." },
+    { q: "Are my photos uploaded to any server?", a: "No. All processing happens directly in your browser. Your photos never leave your device." },
+    { q: "What file formats are supported?", a: "We support JPG, JPEG, PNG, WebP, and HEIC files up to 20MB each." },
+    { q: "Will GPS work with PNG files?", a: "PNG has limited EXIF support. GPS coordinates may not display in all viewers. JPG works best." },
+    { q: "Can I geotag multiple photos at once?", a: "Yes! Upload multiple photos and they'll all get the same GPS coordinates you select." },
+  ];
+
+  if (mode === "geotagger") {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-50">
+          <div className="container mx-auto px-4 flex items-center justify-between h-14">
+            <button onClick={() => { setMode("landing"); setImages([]); }} className="flex items-center gap-2 hover:opacity-80">
               <MapPin className="h-5 w-5 text-primary" />
-              <h1 className="text-base font-bold" data-testid="text-logo-title">FreeGeoTagger</h1>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              {images.length > 0 && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={handleReset}
-                  data-testid="button-reset"
-                >
-                  <RefreshCw className="h-4 w-4 mr-1" />
-                  Reset
-                </Button>
-              )}
-              <ThemeToggle />
-            </div>
+              <span className="font-bold" data-testid="text-logo-title">FreeGeoTagger</span>
+            </button>
+            <ThemeToggle />
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="flex-1 p-4">
-        <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-4" style={{ minHeight: "calc(100vh - 120px)" }}>
-          <div className="flex flex-col gap-3">
-            <div className="flex gap-2">
-              <div className="flex-1 relative">
-                <Input
-                  placeholder="Search for a place or address"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  className="pr-10"
-                  data-testid="input-search-location"
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full"
-                  onClick={handleSearch}
-                  disabled={isSearching}
-                  data-testid="button-search-location"
-                >
-                  {isSearching ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Search className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleUseMyLocation}
-                disabled={isLocating}
-                title="Use my location"
-                data-testid="button-use-my-location"
-              >
-                {isLocating ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Locate className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-
-            <div 
-              ref={mapRef} 
-              className="flex-1 min-h-[300px] rounded-md overflow-hidden border border-border"
-              data-testid="map-container"
-            />
-            
-            <div className="grid grid-cols-2 gap-2">
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground w-8">Lat</span>
-                <Input
-                  type="number"
-                  step="any"
-                  min="-90"
-                  max="90"
-                  value={latitude.toFixed(6)}
-                  onChange={(e) => {
-                    const val = parseFloat(e.target.value);
-                    if (!isNaN(val) && validateCoordinates(val, longitude)) {
-                      setLatitude(val);
-                    }
-                  }}
-                  className="h-8 text-sm"
-                  data-testid="input-latitude"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground w-8">Lon</span>
-                <Input
-                  type="number"
-                  step="any"
-                  min="-180"
-                  max="180"
-                  value={longitude.toFixed(6)}
-                  onChange={(e) => {
-                    const val = parseFloat(e.target.value);
-                    if (!isNaN(val) && validateCoordinates(latitude, val)) {
-                      setLongitude(val);
-                    }
-                  }}
-                  className="h-8 text-sm"
-                  data-testid="input-longitude"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <div
-              className={`flex-1 min-h-[200px] rounded-md border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center ${
-                isDragging 
-                  ? "border-primary bg-primary/10" 
-                  : "border-sky-400 bg-sky-500/10 hover:bg-sky-500/20"
-              }`}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              onClick={() => document.getElementById("file-input")?.click()}
-              data-testid="dropzone"
-            >
-              <input
-                id="file-input"
-                type="file"
-                accept={ACCEPTED_EXTENSIONS.join(",")}
-                multiple
-                onChange={handleFileInput}
-                className="hidden"
-                data-testid="input-files"
-              />
-              
-              {images.length === 0 ? (
-                <div className="text-center p-6">
-                  <Upload className="h-12 w-12 mx-auto mb-4 text-sky-500" />
-                  <p className="text-lg font-medium text-sky-600 dark:text-sky-400 mb-1" data-testid="text-upload-title">
-                    Drop
-                  </p>
-                  <p className="text-sky-600 dark:text-sky-400 font-medium">
-                    JPG / HEIC / PNG / WebP
-                  </p>
-                  <p className="text-sky-600 dark:text-sky-400 mb-1">
-                    photos here
-                  </p>
-                  <p className="text-sky-500 text-sm">or</p>
-                  <p className="text-sky-600 dark:text-sky-400 font-medium">
-                    click to upload
-                  </p>
+        <main className="flex-1 p-4">
+          <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-4" style={{ minHeight: "calc(100vh - 130px)" }}>
+            <div className="flex flex-col gap-3">
+              <div className="flex gap-2">
+                <div className="flex-1 relative">
+                  <Input
+                    placeholder="Search for a place..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    data-testid="input-search"
+                  />
+                  <Button variant="ghost" size="icon" className="absolute right-0 top-0 h-full" onClick={handleSearch} disabled={isSearching}>
+                    {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                  </Button>
                 </div>
-              ) : (
-                <div className="w-full h-full p-3 overflow-auto">
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                <Button variant="outline" size="icon" onClick={handleUseMyLocation} disabled={isLocating} title="My location">
+                  {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Locate className="h-4 w-4" />}
+                </Button>
+              </div>
+
+              <div ref={mapRef} className="flex-1 min-h-[350px] rounded-lg overflow-hidden border border-border" data-testid="map-container" />
+              
+              <div className="grid grid-cols-2 gap-2">
+                <div className="flex items-center gap-2 bg-muted/50 rounded-md px-3 py-2">
+                  <span className="text-xs font-medium text-muted-foreground">Lat</span>
+                  <Input
+                    type="number"
+                    step="any"
+                    value={latitude.toFixed(6)}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value);
+                      if (!isNaN(val) && validateCoordinates(val, longitude)) setLatitude(val);
+                    }}
+                    className="h-7 text-sm border-0 bg-transparent p-0"
+                    data-testid="input-latitude"
+                  />
+                </div>
+                <div className="flex items-center gap-2 bg-muted/50 rounded-md px-3 py-2">
+                  <span className="text-xs font-medium text-muted-foreground">Lon</span>
+                  <Input
+                    type="number"
+                    step="any"
+                    value={longitude.toFixed(6)}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value);
+                      if (!isNaN(val) && validateCoordinates(latitude, val)) setLongitude(val);
+                    }}
+                    className="h-7 text-sm border-0 bg-transparent p-0"
+                    data-testid="input-longitude"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <Card className="flex-1 overflow-hidden">
+                <CardHeader className="py-3 px-4 border-b border-border">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-sm font-medium">{images.length} image{images.length !== 1 ? "s" : ""} selected</CardTitle>
+                    <Button variant="ghost" size="sm" onClick={() => document.getElementById("add-more")?.click()}>
+                      <Upload className="h-4 w-4 mr-1" /> Add more
+                    </Button>
+                    <input id="add-more" type="file" accept={ACCEPTED_EXTENSIONS.join(",")} multiple onChange={(e) => e.target.files && processFiles(e.target.files)} className="hidden" />
+                  </div>
+                </CardHeader>
+                <CardContent className="p-3 overflow-auto" style={{ maxHeight: "280px" }}>
+                  <div className="grid grid-cols-4 gap-2">
                     {images.map((img) => (
-                      <div key={img.id} className="relative group aspect-square" data-testid={`card-image-${img.id}`}>
-                        <img
-                          src={img.preview}
-                          alt={img.name}
-                          className="w-full h-full object-cover rounded-md"
-                          data-testid={`img-thumbnail-${img.id}`}
-                        />
-                        
+                      <div key={img.id} className="relative group aspect-square rounded-md overflow-hidden">
+                        <img src={img.preview} alt={img.name} className="w-full h-full object-cover" />
                         <Button
                           variant="destructive"
                           size="icon"
                           className="absolute top-1 right-1 h-5 w-5 invisible group-hover:visible"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeImage(img.id);
-                          }}
-                          data-testid={`button-remove-${img.id}`}
+                          onClick={() => removeImage(img.id)}
                         >
                           <X className="h-3 w-3" />
                         </Button>
-
+                        {img.status === "success" && <CheckCircle className="absolute bottom-1 left-1 h-4 w-4 text-green-500" />}
+                        {img.status === "error" && <AlertCircle className="absolute bottom-1 left-1 h-4 w-4 text-destructive" />}
                         {img.status === "processing" && (
-                          <div className="absolute inset-0 bg-background/80 flex items-center justify-center rounded-md">
-                            <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                          </div>
-                        )}
-                        
-                        {img.status === "success" && (
-                          <div className="absolute bottom-1 left-1">
-                            <CheckCircle className="h-4 w-4 text-green-500" />
-                          </div>
-                        )}
-                        
-                        {img.status === "error" && (
-                          <div className="absolute bottom-1 left-1">
-                            <AlertCircle className="h-4 w-4 text-destructive" />
+                          <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                            <Loader2 className="h-5 w-5 animate-spin" />
                           </div>
                         )}
                       </div>
                     ))}
-                    
-                    <div 
-                      className="aspect-square border-2 border-dashed border-sky-400 rounded-md flex items-center justify-center cursor-pointer hover:bg-sky-500/10"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        document.getElementById("file-input")?.click();
-                      }}
-                    >
-                      <Upload className="h-6 w-6 text-sky-400" />
-                    </div>
                   </div>
-                </div>
-              )}
-            </div>
+                </CardContent>
+              </Card>
 
-            {images.length > 0 && (
-              <Card className="p-4" data-testid="card-options">
-                <div className="space-y-3">
+              <Card>
+                <CardContent className="p-4 space-y-3">
                   <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">Keywords (optional)</label>
-                    <Input
-                      placeholder="travel, nature, sunset"
-                      value={keywords}
-                      onChange={(e) => setKeywords(e.target.value)}
-                      className="h-8 text-sm"
-                      data-testid="input-keywords"
-                    />
+                    <label className="text-xs text-muted-foreground">Keywords (optional)</label>
+                    <Input placeholder="travel, nature, sunset" value={keywords} onChange={(e) => setKeywords(e.target.value)} className="mt-1" />
                   </div>
-                  
                   <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">Description (optional)</label>
-                    <Textarea
-                      placeholder="Enter a description..."
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      rows={2}
-                      className="text-sm resize-none"
-                      data-testid="input-description"
-                    />
+                    <label className="text-xs text-muted-foreground">Description (optional)</label>
+                    <Textarea placeholder="Add a description..." value={description} onChange={(e) => setDescription(e.target.value)} rows={2} className="mt-1 resize-none" />
                   </div>
-                  
-                  <Button
-                    onClick={processAndDownloadAll}
-                    disabled={isProcessing || images.length === 0}
-                    className="w-full"
-                    data-testid="button-process-all"
-                  >
+                  <Button onClick={processAndDownloadAll} disabled={isProcessing} className="w-full" size="lg" data-testid="button-download">
                     {isProcessing ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Processing {processedCount}/{images.length}...
-                      </>
+                      <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processing {processedCount}/{images.length}</>
                     ) : (
-                      <>
-                        <Download className="h-4 w-4 mr-2" />
-                        Geotag & Download ({images.length})
-                      </>
+                      <><Download className="h-4 w-4 mr-2" /> Geotag & Download All</>
                     )}
                   </Button>
-                </div>
+                </CardContent>
               </Card>
-            )}
-          </div>
-        </div>
-      </main>
-
-      <footer className="border-t border-border py-3" data-testid="footer">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
-            <span data-testid="text-privacy-notice">100% private - all processing in your browser</span>
-            <div className="flex items-center gap-4">
-              <a 
-                href="https://github.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 hover:text-foreground transition-colors"
-                data-testid="link-github"
-              >
-                <Github className="h-3 w-3" />
-                GitHub
-              </a>
-              <a 
-                href="https://buymeacoffee.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 hover:text-foreground transition-colors"
-                data-testid="link-donate"
-              >
-                <Coffee className="h-3 w-3" />
-                Donate
-              </a>
             </div>
           </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (mode === "finder" && extractedGps) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-50">
+          <div className="container mx-auto px-4 flex items-center justify-between h-14">
+            <button onClick={() => { setMode("landing"); setExtractedGps(null); }} className="flex items-center gap-2 hover:opacity-80">
+              <MapPin className="h-5 w-5 text-primary" />
+              <span className="font-bold">FreeGeoTagger</span>
+            </button>
+            <ThemeToggle />
+          </div>
+        </header>
+
+        <main className="flex-1 container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-8">
+              <Badge className="mb-4 bg-green-500/10 text-green-600 border-green-500/20">Location Found</Badge>
+              <h1 className="text-3xl font-bold mb-2">GPS Coordinates Extracted</h1>
+              <p className="text-muted-foreground">{extractedGps.fileName}</p>
+            </div>
+
+            <Card className="mb-6">
+              <CardContent className="p-0">
+                <div ref={finderMapRef} className="h-[400px] rounded-t-lg" />
+                <div className="p-4 flex items-center justify-between gap-4 flex-wrap">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Coordinates</p>
+                    <p className="text-xl font-mono font-bold">{extractedGps.lat.toFixed(6)}, {extractedGps.lng.toFixed(6)}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" onClick={copyCoordinates}>
+                      {copiedCoords ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+                      {copiedCoords ? "Copied!" : "Copy"}
+                    </Button>
+                    <Button onClick={() => window.open(`https://www.google.com/maps?q=${extractedGps.lat},${extractedGps.lng}`, "_blank")}>
+                      <Globe className="h-4 w-4 mr-2" /> Open in Maps
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="flex justify-center gap-4">
+              <Button variant="outline" onClick={() => { setMode("landing"); setExtractedGps(null); }}>
+                <ArrowRight className="h-4 w-4 mr-2 rotate-180" /> Back to Home
+              </Button>
+              <Button onClick={() => document.getElementById("finder-upload")?.click()}>
+                <Eye className="h-4 w-4 mr-2" /> Check Another Image
+              </Button>
+              <input id="finder-upload" type="file" accept={ACCEPTED_EXTENSIONS.join(",")} onChange={(e) => e.target.files && processFiles(e.target.files, true)} className="hidden" />
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-50">
+        <div className="container mx-auto px-4 flex items-center justify-between h-14">
+          <div className="flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-primary" />
+            <span className="font-bold" data-testid="text-logo-title">FreeGeoTagger</span>
+          </div>
+          <nav className="hidden md:flex items-center gap-6 text-sm">
+            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
+            <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">How it Works</a>
+            <a href="#finder" className="text-muted-foreground hover:text-foreground transition-colors">GPS Finder</a>
+            <a href="#faq" className="text-muted-foreground hover:text-foreground transition-colors">FAQ</a>
+          </nav>
+          <ThemeToggle />
+        </div>
+      </header>
+
+      <section className="py-16 md:py-24">
+        <div className="container mx-auto px-4 text-center">
+          <Badge className="mb-4" variant="secondary"><Sparkles className="h-3 w-3 mr-1" /> 100% Free & Private</Badge>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+            Add GPS to Your Photos
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+            Free online geotagging tool. Add location data to multiple photos at once. 
+            No uploads, no accounts — everything happens in your browser.
+          </p>
+
+          <Card
+            className={`max-w-2xl mx-auto cursor-pointer transition-all border-2 border-dashed ${isDragging ? "border-primary bg-primary/5" : "border-primary/30 hover:border-primary/50"}`}
+            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+            onDragLeave={(e) => { e.preventDefault(); setIsDragging(false); }}
+            onDrop={(e) => handleDrop(e)}
+            onClick={() => document.getElementById("hero-upload")?.click()}
+            data-testid="dropzone"
+          >
+            <CardContent className="py-12">
+              <Upload className="h-12 w-12 mx-auto mb-4 text-primary" />
+              <h3 className="text-xl font-semibold mb-2">Drop photos here to geotag</h3>
+              <p className="text-muted-foreground mb-4">or click to browse</p>
+              <div className="flex justify-center gap-2 flex-wrap">
+                <Badge variant="outline">JPG</Badge>
+                <Badge variant="outline">PNG</Badge>
+                <Badge variant="outline">WebP</Badge>
+                <Badge variant="outline">HEIC</Badge>
+              </div>
+              <input id="hero-upload" type="file" accept={ACCEPTED_EXTENSIONS.join(",")} multiple onChange={(e) => e.target.files && processFiles(e.target.files)} className="hidden" />
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      <section id="features" className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Why FreeGeoTagger?</h2>
+            <p className="text-muted-foreground max-w-xl mx-auto">Everything you need to add GPS coordinates to your photos</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <Card className="text-center p-6">
+              <Shield className="h-10 w-10 mx-auto mb-4 text-green-500" />
+              <h3 className="font-semibold mb-2">100% Private</h3>
+              <p className="text-sm text-muted-foreground">Your photos never leave your device. All processing happens locally in your browser.</p>
+            </Card>
+            <Card className="text-center p-6">
+              <Zap className="h-10 w-10 mx-auto mb-4 text-yellow-500" />
+              <h3 className="font-semibold mb-2">Lightning Fast</h3>
+              <p className="text-sm text-muted-foreground">No waiting for uploads. Geotag multiple photos in seconds with batch processing.</p>
+            </Card>
+            <Card className="text-center p-6">
+              <Camera className="h-10 w-10 mx-auto mb-4 text-blue-500" />
+              <h3 className="font-semibold mb-2">All Formats</h3>
+              <p className="text-sm text-muted-foreground">Support for JPG, PNG, WebP, and HEIC. HEIC files are auto-converted to JPG.</p>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      <section id="how-it-works" className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">How It Works</h2>
+            <p className="text-muted-foreground">Three simple steps to geotag your photos</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 text-primary font-bold">1</div>
+              <h3 className="font-semibold mb-2">Upload Photos</h3>
+              <p className="text-sm text-muted-foreground">Drag and drop or click to upload one or more photos</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 text-primary font-bold">2</div>
+              <h3 className="font-semibold mb-2">Set Location</h3>
+              <p className="text-sm text-muted-foreground">Click on the map, search for a place, or use your GPS</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 text-primary font-bold">3</div>
+              <h3 className="font-semibold mb-2">Download</h3>
+              <p className="text-sm text-muted-foreground">Get your photos with embedded GPS coordinates</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="finder" className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <Eye className="h-12 w-12 mx-auto mb-4 text-primary" />
+            <h2 className="text-3xl font-bold mb-4">GPS Finder</h2>
+            <p className="text-muted-foreground mb-8">Already have a geotagged photo? Upload it to extract and view the location on a map.</p>
+            <Card
+              className={`cursor-pointer transition-all border-2 border-dashed ${isDragging ? "border-green-500 bg-green-500/5" : "border-green-500/30 hover:border-green-500/50"}`}
+              onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+              onDragLeave={(e) => { e.preventDefault(); setIsDragging(false); }}
+              onDrop={(e) => handleDrop(e, true)}
+              onClick={() => document.getElementById("finder-input")?.click()}
+              data-testid="dropzone-finder"
+            >
+              <CardContent className="py-8">
+                <FileImage className="h-10 w-10 mx-auto mb-3 text-green-500" />
+                <h3 className="font-semibold mb-1">Drop an image to find its location</h3>
+                <p className="text-sm text-muted-foreground">or click to browse</p>
+                <input id="finder-input" type="file" accept={ACCEPTED_EXTENSIONS.join(",")} onChange={(e) => e.target.files && processFiles(e.target.files, true)} className="hidden" />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
+          </div>
+          <div className="max-w-2xl mx-auto space-y-3">
+            {faqs.map((faq, i) => (
+              <Card key={i} className="overflow-hidden">
+                <button
+                  className="w-full p-4 text-left flex items-center justify-between gap-4"
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                >
+                  <span className="font-medium">{faq.q}</span>
+                  <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${openFaq === i ? "rotate-180" : ""}`} />
+                </button>
+                {openFaq === i && (
+                  <div className="px-4 pb-4 text-muted-foreground text-sm">{faq.a}</div>
+                )}
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-border py-8">
+        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
+          <p className="mb-2">FreeGeoTagger — 100% free, open source, and private</p>
+          <p>Your photos never leave your browser. No data is collected.</p>
         </div>
       </footer>
     </div>
