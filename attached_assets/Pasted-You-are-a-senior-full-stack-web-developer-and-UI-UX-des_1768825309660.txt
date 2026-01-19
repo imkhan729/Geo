@@ -1,0 +1,76 @@
+You are a senior full-stack web developer and UI/UX designer.
+
+Your task is to build a FREE web-based image geolocation and metadata extraction tool similar to https://tool.geoimgr.com, but completely free with no login, no subscription, and no ads.
+
+### GOAL
+Create a fast, privacy-focused, SEO-friendly web tool that extracts EXIF metadata from uploaded images and displays GPS location on an interactive map.
+
+### CORE FEATURES
+1. Image upload (JPG, PNG)
+   - Drag & drop
+   - File size limit: 20MB
+2. Extract EXIF metadata:
+   - GPS Latitude
+   - GPS Longitude
+   - Date & Time
+   - Camera Make & Model
+   - Orientation
+   - Software used
+3. If GPS data exists:
+   - Display location on interactive map
+   - Place a pin marker
+   - Allow zoom in/out
+4. If GPS data does NOT exist:
+   - Show clear message: "No location data found in this image"
+5. Client-side processing preferred (privacy-first)
+6. No image storage on server
+7. Mobile responsive
+8. Fast load time
+9. SEO optimized
+
+### TECH STACK
+- Frontend: React / Next.js
+- Styling: Tailwind CSS (minimal, clean)
+- EXIF Parsing: ExifReader.js or equivalent
+- Map: Leaflet.js with OpenStreetMap (free)
+- Hosting-ready for Vercel or Netlify
+
+### UI / UX DESIGN
+- Clean, modern, minimal interface
+- White background with soft shadows
+- Large upload box in center
+- Clear headings and icons
+- Professional tool look
+- Dark mode optional
+
+### PAGES
+1. Home Page:
+   - Title: "Free Image Location Finder"
+   - Subtitle: "Upload an image to find where it was taken"
+   - Upload section
+   - Metadata result panel
+   - Map section
+2. Footer:
+   - Privacy note: "Images are processed locally. We never store your files."
+   - Simple copyright text
+
+### SEO REQUIREMENTS
+- Meta title: "Free Image Location Finder – Extract GPS from Photos"
+- Meta description: "Upload any image to find its location using EXIF GPS metadata. Free, fast, and private."
+- Structured headings (H1, H2)
+- Fast performance score
+
+### EXTRA FEATURES (OPTIONAL)
+- Copy coordinates button
+- Download metadata as JSON
+- Reset / Upload another image
+- Language ready (i18n)
+
+### OUTPUT REQUIRED
+1. Complete frontend code
+2. Clear file structure
+3. Setup & deployment instructions
+4. Explanation of how EXIF extraction works
+5. Instructions to deploy on Vercel or Netlify
+
+Build it as a production-ready project.
