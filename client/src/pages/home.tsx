@@ -45,6 +45,8 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [showExistingGeotags, setShowExistingGeotags] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isWritingExif, setIsWritingExif] = useState(false);
+  const [processedBlobs, setProcessedBlobs] = useState<Map<string, Blob>>(new Map());
   const { toast } = useToast();
   
   const mapRef = useRef<HTMLDivElement>(null);
@@ -189,6 +191,48 @@ export default function Home() {
     });
   }, []);
 
+  const writeExifOnly = useCallback(async () => {
+    if (images.length === 0) return;
+    setIsWritingExif(true);
+    setProcessedCount(0);
+
+    const geotag: GeotagData = { latitude, longitude, keywords: keywords || undefined, description: description || undefined };
+    const updatedImages = [...images];
+    const newBlobs = new Map<string, Blob>();
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (let i = 0; i < updatedImages.length; i++) {
+      const img = updatedImages[i];
+      updatedImages[i] = { ...img, status: "processing" };
+      setImages([...updatedImages]);
+
+      try {
+        const blob = await addGeotagToImage(img.file, geotag);
+        newBlobs.set(img.id, blob);
+        updatedImages[i] = { ...img, status: "success" };
+        successCount++;
+      } catch (err) {
+        updatedImages[i] = { ...img, status: "error" };
+        errorCount++;
+        console.error(`Failed to process ${img.name}:`, err);
+      }
+      setImages([...updatedImages]);
+      setProcessedCount(i + 1);
+    }
+
+    setProcessedBlobs(newBlobs);
+    setIsWritingExif(false);
+    
+    if (errorCount === 0) {
+      toast({ title: "EXIF Tags Written!", description: `${successCount} image${successCount !== 1 ? "s" : ""} geotagged successfully. Click Download to save.` });
+    } else if (successCount > 0) {
+      toast({ title: "Partially Complete", description: `${successCount} succeeded, ${errorCount} failed.`, variant: "destructive" });
+    } else {
+      toast({ title: "Failed", description: "Could not process any images. Please try again.", variant: "destructive" });
+    }
+  }, [images, latitude, longitude, keywords, description, toast]);
+
   const processAndDownloadAll = useCallback(async () => {
     if (images.length === 0) return;
     setIsProcessing(true);
@@ -205,7 +249,8 @@ export default function Home() {
       setImages([...updatedImages]);
 
       try {
-        const blob = await addGeotagToImage(img.file, geotag);
+        const existingBlob = processedBlobs.get(img.id);
+        const blob = existingBlob || await addGeotagToImage(img.file, geotag);
         downloadGeotaggedImage(blob, img.name);
         updatedImages[i] = { ...img, status: "success" };
         successCount++;
@@ -219,6 +264,7 @@ export default function Home() {
     }
 
     setIsProcessing(false);
+    setProcessedBlobs(new Map());
     
     if (errorCount === 0) {
       toast({ title: "Download Complete!", description: `${successCount} image${successCount !== 1 ? "s" : ""} geotagged and downloaded successfully` });
@@ -227,7 +273,7 @@ export default function Home() {
     } else {
       toast({ title: "Download Failed", description: "Could not process any images. Please try again.", variant: "destructive" });
     }
-  }, [images, latitude, longitude, keywords, description, toast]);
+  }, [images, latitude, longitude, keywords, description, toast, processedBlobs]);
 
   const faqs = [
     { q: "Is this tool really free?", a: "Yes! FreeGeoTagger is 100% free with no hidden costs, subscriptions, or watermarks." },
@@ -398,15 +444,19 @@ export default function Home() {
                 </div>
 
                 <div className="flex flex-wrap gap-3 justify-center">
-                  <Button onClick={processAndDownloadAll} disabled={isProcessing} className="bg-blue-600 hover:bg-blue-700" data-testid="button-write-exif">
-                    {isProcessing ? (
-                      <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processing {processedCount}/{images.length}</>
+                  <Button onClick={writeExifOnly} disabled={isWritingExif || isProcessing} className="bg-blue-600 hover:bg-blue-700" data-testid="button-write-exif">
+                    {isWritingExif ? (
+                      <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Writing {processedCount}/{images.length}</>
                     ) : (
                       <><PenLine className="h-4 w-4 mr-2" /> Write EXIF Tags</>
                     )}
                   </Button>
-                  <Button onClick={processAndDownloadAll} disabled={isProcessing} variant="outline" className="bg-green-600 hover:bg-green-700 text-white border-green-600" data-testid="button-download">
-                    <Download className="h-4 w-4 mr-2" /> Download
+                  <Button onClick={processAndDownloadAll} disabled={isProcessing || isWritingExif} variant="outline" className="bg-green-600 hover:bg-green-700 text-white border-green-600" data-testid="button-download">
+                    {isProcessing ? (
+                      <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Downloading {processedCount}/{images.length}</>
+                    ) : (
+                      <><Download className="h-4 w-4 mr-2" /> Download</>
+                    )}
                   </Button>
                   <Button onClick={clearAll} variant="outline" data-testid="button-clear">
                     <Trash2 className="h-4 w-4 mr-2" /> Clear
