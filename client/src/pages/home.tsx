@@ -418,6 +418,25 @@ export default function Home() {
         </div>
       </section>
 
+      <section id="what-is-geotagger" className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold mb-6 text-center">What is GeoTagger?</h2>
+            <div className="space-y-4 text-muted-foreground">
+              <p className="text-lg leading-relaxed">
+                GeoTagger is a professional-grade, browser-based tool designed to embed GPS coordinates directly into your digital photographs. This process, known as geotagging, adds precise location metadata to your images, enabling them to be organized, searched, and displayed on maps based on where they were captured.
+              </p>
+              <p className="leading-relaxed">
+                Whether you're a professional photographer cataloging shoots across multiple locations, a real estate agent documenting property listings, a researcher conducting field studies, or simply someone who wants to remember exactly where a special moment was captured — GeoTagger provides the solution you need.
+              </p>
+              <p className="leading-relaxed">
+                Unlike traditional photo management software, GeoTagger operates entirely within your web browser. Your images are never uploaded to external servers, ensuring complete privacy and data security. The embedded GPS coordinates become part of the image's EXIF metadata, making them universally compatible with photo viewers, social media platforms, and mapping applications.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="features" className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
