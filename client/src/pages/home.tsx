@@ -635,11 +635,37 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="border-t border-border py-8">
-        <div className="container mx-auto px-4 text-center">
-          <img src={logoImage} alt="GeoTagger" className="h-[59px] mx-auto mb-4" />
-          <p className="text-sm text-muted-foreground mb-2">100% free, open source, and private</p>
-          <p className="text-sm text-muted-foreground">Your photos never leave your browser. No data is collected.</p>
+      <footer className="border-t border-border py-10">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
+            <div className="md:max-w-sm">
+              <img src={logoImage} alt="GeoTagger" className="h-[59px] mb-4" />
+              <p className="text-sm text-muted-foreground mb-2">100% free, open source, and private.</p>
+              <p className="text-sm text-muted-foreground">Your photos never leave your browser. No data is collected.</p>
+            </div>
+            <div className="flex flex-wrap gap-8">
+              <div>
+                <h4 className="font-semibold mb-3">Product</h4>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li><a href="#features" className="hover:text-foreground transition-colors" data-testid="link-footer-features">Features</a></li>
+                  <li><a href="#how-it-works" className="hover:text-foreground transition-colors" data-testid="link-footer-how">How it Works</a></li>
+                  <li><a href="#finder" className="hover:text-foreground transition-colors" data-testid="link-footer-finder">GPS Finder</a></li>
+                  <li><a href="#faq" className="hover:text-foreground transition-colors" data-testid="link-footer-faq">FAQ</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-3">Legal</h4>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li><a href="/privacy" className="hover:text-foreground transition-colors" data-testid="link-footer-privacy">Privacy Policy</a></li>
+                  <li><a href="/terms" className="hover:text-foreground transition-colors" data-testid="link-footer-terms">Terms of Service</a></li>
+                  <li><a href="/cookies" className="hover:text-foreground transition-colors" data-testid="link-footer-cookies">Cookie Policy</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-border mt-8 pt-6 text-center text-sm text-muted-foreground">
+            <p>&copy; {new Date().getFullYear()} GeoTagger. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>

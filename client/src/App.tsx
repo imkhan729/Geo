@@ -6,11 +6,17 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
+import Privacy from "@/pages/privacy";
+import Terms from "@/pages/terms";
+import Cookies from "@/pages/cookies";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/privacy" component={Privacy} />
+      <Route path="/terms" component={Terms} />
+      <Route path="/cookies" component={Cookies} />
       <Route component={NotFound} />
     </Switch>
   );
