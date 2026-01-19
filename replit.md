@@ -58,8 +58,22 @@ client/
 
 ## SEO Implementation
 Domain: freegeotagger.com
+Branding: "GeoTagger" (user-facing) vs "freegeotagger.com" (domain)
+
+### Homepage Sections (SEO-optimized content)
+1. Hero: H1 "Add GPS Location to Your Photos Instantly" + H2 subtitle
+2. What Is GeoTagger? - Introduction section
+3. What Is Image Geotagging? - 4 educational cards
+4. Privacy-First by Design - 4 privacy feature cards
+5. Why Choose GeoTagger? - 4 feature cards
+6. Who Should Use GeoTagger? - 6 use case cards
+7. How It Works - 3 step guide
+8. GeoTagger vs Other Tools - 5 comparison cards
+9. FAQ - 6 questions with accordion
+10. Footer with SEO description
 
 ### On-Page SEO
+- Page title: "GeoTagger – Free Image Geotagging Tool | Add GPS to Photos Online"
 - Comprehensive meta tags (title, description, keywords, author, robots)
 - Open Graph tags for social sharing (Facebook, LinkedIn)
 - Twitter Card tags for Twitter sharing
@@ -69,15 +83,15 @@ Domain: freegeotagger.com
 ### Technical SEO
 - robots.txt allowing all major search engines
 - XML sitemap with all pages and priorities
-- JSON-LD structured data (WebApplication, Organization, FAQPage, BreadcrumbList)
+- JSON-LD structured data (SoftwareApplication, Organization, FAQPage with 6 questions, BreadcrumbList)
 - Preconnect hints for performance
 - Mobile-friendly responsive design
 - Semantic HTML structure
 
 ### Structured Data
-- WebApplication schema with features and rating
+- SoftwareApplication schema
 - Organization schema
-- FAQ schema for homepage FAQs
+- FAQ schema matching all 6 on-page questions
 - Breadcrumb schema for navigation
 
 ## Key Design Decisions
