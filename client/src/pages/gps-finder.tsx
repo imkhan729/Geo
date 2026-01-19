@@ -13,6 +13,7 @@ import {
   convertHeicToJpeg
 } from "@/lib/geotag-utils";
 import { useToast } from "@/hooks/use-toast";
+import { updatePageSEO, SEO_CONFIG } from "@/lib/seo";
 
 const ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".heic"];
 
@@ -24,6 +25,10 @@ interface ExtractedGps {
 
 export default function GpsFinder() {
   const [extractedGps, setExtractedGps] = useState<ExtractedGps | null>(null);
+
+  useEffect(() => {
+    updatePageSEO(SEO_CONFIG.gpsFinder);
+  }, []);
   const [isDragging, setIsDragging] = useState(false);
   const [copiedCoords, setCopiedCoords] = useState(false);
   const { toast } = useToast();

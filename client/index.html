@@ -2,17 +2,163 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>FreeGeoTagger – Add GPS Coordinates to Photos Free</title>
-    <meta name="description" content="Free online tool to add GPS coordinates and geotags to your photos. Supports JPG, PNG, WebP, HEIC. 100% private - all processing happens in your browser." />
-    <meta property="og:title" content="FreeGeoTagger – Add GPS Coordinates to Photos Free" />
-    <meta property="og:description" content="Free online geotagging tool. Add GPS coordinates to multiple photos at once. No signup, no uploads - fully private." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5" />
+    
+    <title>FreeGeoTagger - Free Online Photo Geotagging Tool | Add GPS to Photos</title>
+    <meta name="description" content="Free online tool to add GPS coordinates and geotags to your photos. Batch process multiple images. Supports JPG, PNG, WebP, HEIC. 100% private - all processing happens in your browser. No uploads required." />
+    <meta name="keywords" content="geotag photos, add GPS to photos, photo geotagging, EXIF editor, GPS coordinates, location metadata, batch geotagging, free geotagger, image location, photo location tool" />
+    <meta name="author" content="FreeGeoTagger" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    
+    <link rel="canonical" href="https://freegeotagger.com/" />
+    
+    <meta property="og:locale" content="en_US" />
     <meta property="og:type" content="website" />
+    <meta property="og:title" content="FreeGeoTagger - Free Online Photo Geotagging Tool" />
+    <meta property="og:description" content="Add GPS coordinates to your photos for free. Batch process multiple images with our privacy-first geotagging tool. No uploads, no accounts required." />
+    <meta property="og:url" content="https://freegeotagger.com/" />
+    <meta property="og:site_name" content="FreeGeoTagger" />
+    <meta property="og:image" content="https://freegeotagger.com/favicon.png" />
+    <meta property="og:image:alt" content="FreeGeoTagger - Add GPS coordinates to your photos" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="FreeGeoTagger - Free Online Photo Geotagging Tool" />
+    <meta name="twitter:description" content="Add GPS coordinates to your photos for free. Batch process multiple images. 100% private - all processing in your browser." />
+    <meta name="twitter:image" content="https://freegeotagger.com/favicon.png" />
+    <meta name="twitter:image:alt" content="FreeGeoTagger - Add GPS coordinates to your photos" />
+    
+    <meta name="application-name" content="FreeGeoTagger" />
+    <meta name="apple-mobile-web-app-title" content="FreeGeoTagger" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="msapplication-TileColor" content="#3b82f6" />
+    
     <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://unpkg.com" />
+    <link rel="dns-prefetch" href="https://tile.openstreetmap.org" />
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Fira+Code:wght@300..700&family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400..700;1,400..700&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Outfit:wght@100..900&family=Oxanium:wght@200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=Space+Grotesk:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "FreeGeoTagger",
+      "url": "https://freegeotagger.com",
+      "description": "Free online tool to add GPS coordinates and geotags to your photos. Batch process multiple images with complete privacy.",
+      "applicationCategory": "PhotographyApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Add GPS coordinates to photos",
+        "Batch processing multiple images",
+        "Support for JPG, PNG, WebP, HEIC formats",
+        "Extract GPS from existing photos",
+        "Interactive map location picker",
+        "Keywords and description metadata",
+        "100% client-side processing",
+        "No file uploads to servers"
+      ],
+      "softwareVersion": "1.0",
+      "author": {
+        "@type": "Organization",
+        "name": "FreeGeoTagger"
+      }
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "FreeGeoTagger",
+      "url": "https://freegeotagger.com",
+      "logo": "https://freegeotagger.com/favicon.png",
+      "description": "Free, privacy-focused photo geotagging tool",
+      "sameAs": []
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is FreeGeoTagger really free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! FreeGeoTagger is 100% free with no hidden costs, subscriptions, or watermarks."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are my photos uploaded to any server?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. All processing happens directly in your browser. Your photos never leave your device, ensuring complete privacy."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What file formats are supported?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "FreeGeoTagger supports JPG, JPEG, PNG, WebP, and HEIC files up to 20MB each."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I geotag multiple photos at once?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! You can upload multiple photos and they will all get the same GPS coordinates you select on the map."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Will GPS work with PNG files?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "PNG has limited EXIF support. GPS coordinates may not display in all viewers. JPG format works best for geotagging."
+          }
+        }
+      ]
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://freegeotagger.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "GPS Finder",
+          "item": "https://freegeotagger.com/gps-finder"
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

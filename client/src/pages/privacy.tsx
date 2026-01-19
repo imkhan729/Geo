@@ -1,9 +1,15 @@
+import { useEffect } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import logoImage from "@assets/Geo_Tagger_Logo_2.webp-removebg-preview_1768829275162.png";
+import { updatePageSEO, SEO_CONFIG } from "@/lib/seo";
 
 export default function Privacy() {
+  useEffect(() => {
+    updatePageSEO(SEO_CONFIG.privacy);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-50">

@@ -34,18 +34,51 @@ A free, open-source, client-side web application for adding GPS coordinates (geo
 ## File Structure
 ```
 client/
+├── index.html                        # Main HTML with comprehensive SEO meta tags
+├── public/
+│   ├── robots.txt                    # Search engine crawler rules
+│   └── sitemap.xml                   # XML sitemap for all pages
 ├── src/
 │   ├── components/
 │   │   ├── theme-provider.tsx        # Dark/light mode context
 │   │   └── theme-toggle.tsx          # Theme switch button
 │   ├── lib/
-│   │   └── geotag-utils.ts           # EXIF writing, geocoding, file utilities
+│   │   ├── geotag-utils.ts           # EXIF writing, geocoding, file utilities
+│   │   └── seo.ts                    # SEO utilities for page-specific meta tags
 │   ├── types/
 │   │   └── piexifjs.d.ts             # TypeScript declarations for piexifjs
 │   ├── pages/
-│   │   └── home.tsx                  # Main page with all 3 modes (landing, geotagger, finder)
+│   │   ├── home.tsx                  # Main page (landing + geotagger modes)
+│   │   ├── gps-finder.tsx            # GPS Finder page
+│   │   ├── privacy.tsx               # Privacy Policy page
+│   │   ├── terms.tsx                 # Terms of Service page
+│   │   └── cookies.tsx               # Cookie Policy page
 │   └── App.tsx                       # Root component with routing
 ```
+
+## SEO Implementation
+Domain: freegeotagger.com
+
+### On-Page SEO
+- Comprehensive meta tags (title, description, keywords, author, robots)
+- Open Graph tags for social sharing (Facebook, LinkedIn)
+- Twitter Card tags for Twitter sharing
+- Canonical URLs for all pages
+- Page-specific titles and descriptions via seo.ts utility
+
+### Technical SEO
+- robots.txt allowing all major search engines
+- XML sitemap with all pages and priorities
+- JSON-LD structured data (WebApplication, Organization, FAQPage, BreadcrumbList)
+- Preconnect hints for performance
+- Mobile-friendly responsive design
+- Semantic HTML structure
+
+### Structured Data
+- WebApplication schema with features and rating
+- Organization schema
+- FAQ schema for homepage FAQs
+- Breadcrumb schema for navigation
 
 ## Key Design Decisions
 - Client-side only processing for maximum privacy

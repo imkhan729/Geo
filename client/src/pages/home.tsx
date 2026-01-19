@@ -26,11 +26,16 @@ import {
 } from "@/lib/geotag-utils";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { updatePageSEO, SEO_CONFIG } from "@/lib/seo";
 
 const ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".heic"];
 
 export default function Home() {
   const [mode, setMode] = useState<"landing" | "geotagger">("landing");
+
+  useEffect(() => {
+    updatePageSEO(SEO_CONFIG.home);
+  }, []);
   const [images, setImages] = useState<ImageFile[]>([]);
   const [latitude, setLatitude] = useState(40.7128);
   const [longitude, setLongitude] = useState(-74.0060);
