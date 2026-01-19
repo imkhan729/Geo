@@ -245,6 +245,8 @@ export default function Home() {
 
     const geotag: GeotagData = { latitude, longitude, keywords: keywords || undefined, description: description || undefined };
     const updatedImages = [...images];
+    let successCount = 0;
+    let errorCount = 0;
 
     for (let i = 0; i < updatedImages.length; i++) {
       const img = updatedImages[i];
@@ -255,15 +257,25 @@ export default function Home() {
         const blob = await addGeotagToImage(img.file, geotag);
         downloadGeotaggedImage(blob, img.name);
         updatedImages[i] = { ...img, status: "success" };
-      } catch {
+        successCount++;
+      } catch (err) {
         updatedImages[i] = { ...img, status: "error" };
+        errorCount++;
+        console.error(`Failed to process ${img.name}:`, err);
       }
       setImages([...updatedImages]);
       setProcessedCount(i + 1);
     }
 
     setIsProcessing(false);
-    toast({ title: "Complete!", description: `${updatedImages.filter(i => i.status === "success").length} images geotagged` });
+    
+    if (errorCount === 0) {
+      toast({ title: "Download Complete!", description: `${successCount} image${successCount !== 1 ? "s" : ""} geotagged and downloaded successfully` });
+    } else if (successCount > 0) {
+      toast({ title: "Partially Complete", description: `${successCount} succeeded, ${errorCount} failed. Check failed images and try again.`, variant: "destructive" });
+    } else {
+      toast({ title: "Download Failed", description: "Could not process any images. Please try again.", variant: "destructive" });
+    }
   }, [images, latitude, longitude, keywords, description, toast]);
 
   const copyCoordinates = useCallback(async () => {
@@ -286,11 +298,11 @@ export default function Home() {
       <div className="min-h-screen bg-background flex flex-col">
         <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-50">
           <div className="container mx-auto px-4 flex items-center justify-between h-14">
-            <button onClick={() => { setMode("landing"); setImages([]); }} className="flex items-center gap-2 hover:opacity-80">
+            <button onClick={() => { setMode("landing"); setImages([]); }} className="flex items-center gap-2 hover:opacity-80" data-testid="button-home">
               <MapPin className="h-5 w-5 text-primary" />
               <span className="font-bold" data-testid="text-logo-title">FreeGeoTagger</span>
             </button>
-            <ThemeToggle />
+            <ThemeToggle data-testid="button-theme-toggle" />
           </div>
         </header>
 
@@ -306,11 +318,11 @@ export default function Home() {
                     onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                     data-testid="input-search"
                   />
-                  <Button variant="ghost" size="icon" className="absolute right-0 top-0 h-full" onClick={handleSearch} disabled={isSearching}>
+                  <Button variant="ghost" size="icon" className="absolute right-0 top-0 h-full" onClick={handleSearch} disabled={isSearching} data-testid="button-search">
                     {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
                   </Button>
                 </div>
-                <Button variant="outline" size="icon" onClick={handleUseMyLocation} disabled={isLocating} title="My location">
+                <Button variant="outline" size="icon" onClick={handleUseMyLocation} disabled={isLocating} title="My location" data-testid="button-locate">
                   {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Locate className="h-4 w-4" />}
                 </Button>
               </div>
@@ -353,8 +365,8 @@ export default function Home() {
               <Card className="flex-1 overflow-hidden">
                 <CardHeader className="py-3 px-4 border-b border-border">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm font-medium">{images.length} image{images.length !== 1 ? "s" : ""} selected</CardTitle>
-                    <Button variant="ghost" size="sm" onClick={() => document.getElementById("add-more")?.click()}>
+                    <CardTitle className="text-sm font-medium" data-testid="text-image-count">{images.length} image{images.length !== 1 ? "s" : ""} selected</CardTitle>
+                    <Button variant="ghost" size="sm" onClick={() => document.getElementById("add-more")?.click()} data-testid="button-add-more">
                       <Upload className="h-4 w-4 mr-1" /> Add more
                     </Button>
                     <input id="add-more" type="file" accept={ACCEPTED_EXTENSIONS.join(",")} multiple onChange={(e) => e.target.files && processFiles(e.target.files)} className="hidden" />
@@ -363,13 +375,14 @@ export default function Home() {
                 <CardContent className="p-3 overflow-auto" style={{ maxHeight: "280px" }}>
                   <div className="grid grid-cols-4 gap-2">
                     {images.map((img) => (
-                      <div key={img.id} className="relative group aspect-square rounded-md overflow-hidden">
+                      <div key={img.id} className="relative group aspect-square rounded-md overflow-hidden" data-testid={`img-thumbnail-${img.id}`}>
                         <img src={img.preview} alt={img.name} className="w-full h-full object-cover" />
                         <Button
                           variant="destructive"
                           size="icon"
-                          className="absolute top-1 right-1 h-5 w-5 invisible group-hover:visible"
+                          className="absolute top-1 right-1 h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
                           onClick={() => removeImage(img.id)}
+                          data-testid={`button-remove-${img.id}`}
                         >
                           <X className="h-3 w-3" />
                         </Button>
@@ -390,11 +403,11 @@ export default function Home() {
                 <CardContent className="p-4 space-y-3">
                   <div>
                     <label className="text-xs text-muted-foreground">Keywords (optional)</label>
-                    <Input placeholder="travel, nature, sunset" value={keywords} onChange={(e) => setKeywords(e.target.value)} className="mt-1" />
+                    <Input placeholder="travel, nature, sunset" value={keywords} onChange={(e) => setKeywords(e.target.value)} className="mt-1" data-testid="input-keywords" />
                   </div>
                   <div>
                     <label className="text-xs text-muted-foreground">Description (optional)</label>
-                    <Textarea placeholder="Add a description..." value={description} onChange={(e) => setDescription(e.target.value)} rows={2} className="mt-1 resize-none" />
+                    <Textarea placeholder="Add a description..." value={description} onChange={(e) => setDescription(e.target.value)} rows={2} className="mt-1 resize-none" data-testid="input-description" />
                   </div>
                   <Button onClick={processAndDownloadAll} disabled={isProcessing} className="w-full" size="lg" data-testid="button-download">
                     {isProcessing ? (
@@ -417,36 +430,36 @@ export default function Home() {
       <div className="min-h-screen bg-background flex flex-col">
         <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-50">
           <div className="container mx-auto px-4 flex items-center justify-between h-14">
-            <button onClick={() => { setMode("landing"); setExtractedGps(null); }} className="flex items-center gap-2 hover:opacity-80">
+            <button onClick={() => { setMode("landing"); setExtractedGps(null); }} className="flex items-center gap-2 hover:opacity-80" data-testid="button-home-finder">
               <MapPin className="h-5 w-5 text-primary" />
-              <span className="font-bold">FreeGeoTagger</span>
+              <span className="font-bold" data-testid="text-logo-finder">FreeGeoTagger</span>
             </button>
-            <ThemeToggle />
+            <ThemeToggle data-testid="button-theme-finder" />
           </div>
         </header>
 
         <main className="flex-1 container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8">
-              <Badge className="mb-4 bg-green-500/10 text-green-600 border-green-500/20">Location Found</Badge>
-              <h1 className="text-3xl font-bold mb-2">GPS Coordinates Extracted</h1>
-              <p className="text-muted-foreground">{extractedGps.fileName}</p>
+              <Badge className="mb-4 bg-green-500/10 text-green-600 border-green-500/20" data-testid="badge-location-found">Location Found</Badge>
+              <h1 className="text-3xl font-bold mb-2" data-testid="text-gps-title">GPS Coordinates Extracted</h1>
+              <p className="text-muted-foreground" data-testid="text-filename">{extractedGps.fileName}</p>
             </div>
 
             <Card className="mb-6">
               <CardContent className="p-0">
                 <div ref={finderMapRef} className="h-[400px] rounded-t-lg" />
-                <div className="p-4 flex items-center justify-between gap-4 flex-wrap">
+                <div className="p-4 flex flex-wrap items-center justify-between gap-4">
                   <div>
                     <p className="text-sm text-muted-foreground">Coordinates</p>
-                    <p className="text-xl font-mono font-bold">{extractedGps.lat.toFixed(6)}, {extractedGps.lng.toFixed(6)}</p>
+                    <p className="text-xl font-mono font-bold" data-testid="text-coordinates">{extractedGps.lat.toFixed(6)}, {extractedGps.lng.toFixed(6)}</p>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" onClick={copyCoordinates}>
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="outline" onClick={copyCoordinates} data-testid="button-copy-coords">
                       {copiedCoords ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
                       {copiedCoords ? "Copied!" : "Copy"}
                     </Button>
-                    <Button onClick={() => window.open(`https://www.google.com/maps?q=${extractedGps.lat},${extractedGps.lng}`, "_blank")}>
+                    <Button onClick={() => window.open(`https://www.google.com/maps?q=${extractedGps.lat},${extractedGps.lng}`, "_blank")} data-testid="button-open-maps">
                       <Globe className="h-4 w-4 mr-2" /> Open in Maps
                     </Button>
                   </div>
@@ -454,11 +467,11 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <div className="flex justify-center gap-4">
-              <Button variant="outline" onClick={() => { setMode("landing"); setExtractedGps(null); }}>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Button variant="outline" onClick={() => { setMode("landing"); setExtractedGps(null); }} data-testid="button-back-home">
                 <ArrowRight className="h-4 w-4 mr-2 rotate-180" /> Back to Home
               </Button>
-              <Button onClick={() => document.getElementById("finder-upload")?.click()}>
+              <Button onClick={() => document.getElementById("finder-upload")?.click()} data-testid="button-check-another">
                 <Eye className="h-4 w-4 mr-2" /> Check Another Image
               </Button>
               <input id="finder-upload" type="file" accept={ACCEPTED_EXTENSIONS.join(",")} onChange={(e) => e.target.files && processFiles(e.target.files, true)} className="hidden" />
@@ -477,13 +490,13 @@ export default function Home() {
             <MapPin className="h-5 w-5 text-primary" />
             <span className="font-bold" data-testid="text-logo-title">FreeGeoTagger</span>
           </div>
-          <nav className="hidden md:flex items-center gap-6 text-sm">
-            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
-            <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">How it Works</a>
-            <a href="#finder" className="text-muted-foreground hover:text-foreground transition-colors">GPS Finder</a>
-            <a href="#faq" className="text-muted-foreground hover:text-foreground transition-colors">FAQ</a>
+          <nav className="hidden md:flex flex-wrap items-center gap-6 text-sm">
+            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-features">Features</a>
+            <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-how-it-works">How it Works</a>
+            <a href="#finder" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-gps-finder">GPS Finder</a>
+            <a href="#faq" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-faq">FAQ</a>
           </nav>
-          <ThemeToggle />
+          <ThemeToggle data-testid="button-theme" />
         </div>
       </header>
 
@@ -510,7 +523,7 @@ export default function Home() {
               <Upload className="h-12 w-12 mx-auto mb-4 text-primary" />
               <h3 className="text-xl font-semibold mb-2">Drop photos here to geotag</h3>
               <p className="text-muted-foreground mb-4">or click to browse</p>
-              <div className="flex justify-center gap-2 flex-wrap">
+              <div className="flex flex-wrap justify-center gap-2">
                 <Badge variant="outline">JPG</Badge>
                 <Badge variant="outline">PNG</Badge>
                 <Badge variant="outline">WebP</Badge>
@@ -610,12 +623,13 @@ export default function Home() {
                 <button
                   className="w-full p-4 text-left flex items-center justify-between gap-4"
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  data-testid={`button-faq-${i}`}
                 >
-                  <span className="font-medium">{faq.q}</span>
+                  <span className="font-medium" data-testid={`text-faq-question-${i}`}>{faq.q}</span>
                   <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${openFaq === i ? "rotate-180" : ""}`} />
                 </button>
                 {openFaq === i && (
-                  <div className="px-4 pb-4 text-muted-foreground text-sm">{faq.a}</div>
+                  <div className="px-4 pb-4 text-muted-foreground text-sm" data-testid={`text-faq-answer-${i}`}>{faq.a}</div>
                 )}
               </Card>
             ))}
