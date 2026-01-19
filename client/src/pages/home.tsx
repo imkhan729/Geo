@@ -500,7 +500,7 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <Badge className="mb-4" variant="secondary"><Sparkles className="h-3 w-3 mr-1" /> Free with GeoTagger</Badge>
           <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-            Add GPS Location to Your Photos Instantly
+            Add GPS Location to<br />Your Photos Instantly
           </h1>
           <h2 className="text-xl md:text-2xl text-muted-foreground font-medium mb-6">
             Free Online Image Geotagging Tool — No Uploads, No Accounts
