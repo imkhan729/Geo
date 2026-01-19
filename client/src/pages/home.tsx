@@ -3,7 +3,9 @@ import {
   Download, Loader2, Upload, X, Search, Locate, 
   CheckCircle, AlertCircle, Camera, Shield, Zap,
   ChevronDown, Sparkles, PenLine, Trash2, HelpCircle,
-  Globe, MapPin, Lock, Users, Check
+  Globe, MapPin, Lock, Users, Check, Clock, Mountain,
+  Compass, HardDrive, Eye, UserX, Plane, Newspaper, 
+  Building, Home as HomeIcon
 } from "lucide-react";
 import logoImage from "@assets/Geo_Tagger_Logo_2.webp-removebg-preview_1768829275162.png";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -572,19 +574,39 @@ export default function Home() {
               Image geotagging is the process of embedding GPS location data into a photo's metadata. This includes:
             </p>
             <div className="grid md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-              <Card className="text-center p-4">
-                <h4 className="font-semibold">Latitude & Longitude</h4>
-              </Card>
-              <Card className="text-center p-4">
-                <h4 className="font-semibold">Timestamp</h4>
-              </Card>
-              <Card className="text-center p-4">
-                <h4 className="font-semibold">Altitude</h4>
-                <p className="text-xs text-muted-foreground">(when available)</p>
-              </Card>
-              <Card className="text-center p-4">
-                <h4 className="font-semibold">Camera Direction</h4>
-              </Card>
+              <div className="card-3d">
+                <Card className="card-3d-inner text-center p-5 bg-gradient-to-br from-blue-500/10 to-transparent border-blue-500/20">
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center mx-auto mb-3">
+                    <MapPin className="h-6 w-6 text-blue-500 icon-glow" />
+                  </div>
+                  <h4 className="font-semibold">Latitude & Longitude</h4>
+                </Card>
+              </div>
+              <div className="card-3d">
+                <Card className="card-3d-inner text-center p-5 bg-gradient-to-br from-amber-500/10 to-transparent border-amber-500/20">
+                  <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center mx-auto mb-3">
+                    <Clock className="h-6 w-6 text-amber-500 icon-glow" />
+                  </div>
+                  <h4 className="font-semibold">Timestamp</h4>
+                </Card>
+              </div>
+              <div className="card-3d">
+                <Card className="card-3d-inner text-center p-5 bg-gradient-to-br from-emerald-500/10 to-transparent border-emerald-500/20">
+                  <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center mx-auto mb-3">
+                    <Mountain className="h-6 w-6 text-emerald-500 icon-glow" />
+                  </div>
+                  <h4 className="font-semibold">Altitude</h4>
+                  <p className="text-xs text-muted-foreground">(when available)</p>
+                </Card>
+              </div>
+              <div className="card-3d">
+                <Card className="card-3d-inner text-center p-5 bg-gradient-to-br from-purple-500/10 to-transparent border-purple-500/20">
+                  <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center mx-auto mb-3">
+                    <Compass className="h-6 w-6 text-purple-500 icon-glow" />
+                  </div>
+                  <h4 className="font-semibold">Camera Direction</h4>
+                </Card>
+              </div>
             </div>
             <p className="text-muted-foreground text-center mt-6">
               Geotagged images can be displayed on maps, sorted by location, and used in location-based platforms, GIS systems, and photo management software.
@@ -602,22 +624,38 @@ export default function Home() {
             </div>
             <p className="text-xl text-muted-foreground mb-8">Your privacy matters.</p>
             <div className="grid md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-              <Card className="p-4">
-                <Shield className="h-6 w-6 mx-auto mb-2 text-green-500" />
-                <p className="font-medium">No image uploads</p>
-              </Card>
-              <Card className="p-4">
-                <Shield className="h-6 w-6 mx-auto mb-2 text-green-500" />
-                <p className="font-medium">No cloud storage</p>
-              </Card>
-              <Card className="p-4">
-                <Shield className="h-6 w-6 mx-auto mb-2 text-green-500" />
-                <p className="font-medium">No tracking</p>
-              </Card>
-              <Card className="p-4">
-                <Shield className="h-6 w-6 mx-auto mb-2 text-green-500" />
-                <p className="font-medium">No accounts required</p>
-              </Card>
+              <div className="card-3d">
+                <Card className="card-3d-inner p-5 text-center bg-gradient-to-br from-green-500/10 to-transparent border-green-500/20">
+                  <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center mx-auto mb-3">
+                    <Upload className="h-6 w-6 text-green-500 icon-glow" />
+                  </div>
+                  <p className="font-medium">No image uploads</p>
+                </Card>
+              </div>
+              <div className="card-3d">
+                <Card className="card-3d-inner p-5 text-center bg-gradient-to-br from-green-500/10 to-transparent border-green-500/20">
+                  <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center mx-auto mb-3">
+                    <HardDrive className="h-6 w-6 text-green-500 icon-glow" />
+                  </div>
+                  <p className="font-medium">No cloud storage</p>
+                </Card>
+              </div>
+              <div className="card-3d">
+                <Card className="card-3d-inner p-5 text-center bg-gradient-to-br from-green-500/10 to-transparent border-green-500/20">
+                  <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center mx-auto mb-3">
+                    <Eye className="h-6 w-6 text-green-500 icon-glow" />
+                  </div>
+                  <p className="font-medium">No tracking</p>
+                </Card>
+              </div>
+              <div className="card-3d">
+                <Card className="card-3d-inner p-5 text-center bg-gradient-to-br from-green-500/10 to-transparent border-green-500/20">
+                  <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center mx-auto mb-3">
+                    <UserX className="h-6 w-6 text-green-500 icon-glow" />
+                  </div>
+                  <p className="font-medium">No accounts required</p>
+                </Card>
+              </div>
             </div>
             <p className="text-muted-foreground mt-6">
               GeoTagger processes all images locally in your browser. Once you close the page, nothing is stored or retained.
@@ -636,26 +674,42 @@ export default function Home() {
             <p className="text-muted-foreground max-w-xl mx-auto">Everything you need to add GPS coordinates to photos — completely free</p>
           </div>
           <div className="grid md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            <Card className="text-center p-6">
-              <Shield className="h-10 w-10 mx-auto mb-4 text-green-500" />
-              <h3 className="font-semibold mb-2">100% Private</h3>
-              <p className="text-sm text-muted-foreground">Your photos never leave your device.</p>
-            </Card>
-            <Card className="text-center p-6">
-              <Zap className="h-10 w-10 mx-auto mb-4 text-yellow-500" />
-              <h3 className="font-semibold mb-2">Lightning Fast</h3>
-              <p className="text-sm text-muted-foreground">No uploads. Batch geotag multiple photos in seconds.</p>
-            </Card>
-            <Card className="text-center p-6">
-              <Globe className="h-10 w-10 mx-auto mb-4 text-blue-500" />
-              <h3 className="font-semibold mb-2">Universal Compatibility</h3>
-              <p className="text-sm text-muted-foreground">Embedded GPS metadata works across all major platforms.</p>
-            </Card>
-            <Card className="text-center p-6">
-              <Camera className="h-10 w-10 mx-auto mb-4 text-purple-500" />
-              <h3 className="font-semibold mb-2">All Major Formats</h3>
-              <p className="text-sm text-muted-foreground">JPG, PNG, WebP, and HEIC (auto-converted).</p>
-            </Card>
+            <div className="card-3d">
+              <Card className="card-3d-inner text-center p-6 h-full bg-gradient-to-br from-green-500/10 to-transparent border-green-500/20">
+                <div className="w-14 h-14 rounded-2xl bg-green-500/20 flex items-center justify-center mx-auto mb-4 animate-float">
+                  <Shield className="h-8 w-8 text-green-500 icon-glow" />
+                </div>
+                <h3 className="font-semibold mb-2">100% Private</h3>
+                <p className="text-sm text-muted-foreground">Your photos never leave your device.</p>
+              </Card>
+            </div>
+            <div className="card-3d">
+              <Card className="card-3d-inner text-center p-6 h-full bg-gradient-to-br from-yellow-500/10 to-transparent border-yellow-500/20">
+                <div className="w-14 h-14 rounded-2xl bg-yellow-500/20 flex items-center justify-center mx-auto mb-4 animate-float-delay-1">
+                  <Zap className="h-8 w-8 text-yellow-500 icon-glow" />
+                </div>
+                <h3 className="font-semibold mb-2">Lightning Fast</h3>
+                <p className="text-sm text-muted-foreground">No uploads. Batch geotag multiple photos in seconds.</p>
+              </Card>
+            </div>
+            <div className="card-3d">
+              <Card className="card-3d-inner text-center p-6 h-full bg-gradient-to-br from-blue-500/10 to-transparent border-blue-500/20">
+                <div className="w-14 h-14 rounded-2xl bg-blue-500/20 flex items-center justify-center mx-auto mb-4 animate-float-delay-2">
+                  <Globe className="h-8 w-8 text-blue-500 icon-glow" />
+                </div>
+                <h3 className="font-semibold mb-2">Universal Compatibility</h3>
+                <p className="text-sm text-muted-foreground">Embedded GPS metadata works across all major platforms.</p>
+              </Card>
+            </div>
+            <div className="card-3d">
+              <Card className="card-3d-inner text-center p-6 h-full bg-gradient-to-br from-purple-500/10 to-transparent border-purple-500/20">
+                <div className="w-14 h-14 rounded-2xl bg-purple-500/20 flex items-center justify-center mx-auto mb-4 animate-float-delay-3">
+                  <Camera className="h-8 w-8 text-purple-500 icon-glow" />
+                </div>
+                <h3 className="font-semibold mb-2">All Major Formats</h3>
+                <p className="text-sm text-muted-foreground">JPG, PNG, WebP, and HEIC (auto-converted).</p>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
@@ -669,30 +723,54 @@ export default function Home() {
             </div>
             <p className="text-center text-muted-foreground mb-8">GeoTagger is ideal for:</p>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
-              <Card className="p-4 flex items-center gap-3">
-                <Camera className="h-5 w-5 text-primary flex-shrink-0" />
-                <span className="text-sm">Photographers organizing location-based shoots</span>
-              </Card>
-              <Card className="p-4 flex items-center gap-3">
-                <MapPin className="h-5 w-5 text-primary flex-shrink-0" />
-                <span className="text-sm">Real estate agents tagging property photos</span>
-              </Card>
-              <Card className="p-4 flex items-center gap-3">
-                <Globe className="h-5 w-5 text-primary flex-shrink-0" />
-                <span className="text-sm">Surveyors & researchers collecting field data</span>
-              </Card>
-              <Card className="p-4 flex items-center gap-3">
-                <Sparkles className="h-5 w-5 text-primary flex-shrink-0" />
-                <span className="text-sm">Travelers & bloggers preserving memories</span>
-              </Card>
-              <Card className="p-4 flex items-center gap-3">
-                <Check className="h-5 w-5 text-primary flex-shrink-0" />
-                <span className="text-sm">Journalists verifying photo locations</span>
-              </Card>
-              <Card className="p-4 flex items-center gap-3">
-                <Shield className="h-5 w-5 text-primary flex-shrink-0" />
-                <span className="text-sm">Businesses managing location-aware media</span>
-              </Card>
+              <div className="card-3d">
+                <Card className="card-3d-inner p-4 flex items-center gap-4 h-full hover-scale">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Camera className="h-5 w-5 text-primary" />
+                  </div>
+                  <span className="text-sm">Photographers organizing location-based shoots</span>
+                </Card>
+              </div>
+              <div className="card-3d">
+                <Card className="card-3d-inner p-4 flex items-center gap-4 h-full hover-scale">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <HomeIcon className="h-5 w-5 text-primary" />
+                  </div>
+                  <span className="text-sm">Real estate agents tagging property photos</span>
+                </Card>
+              </div>
+              <div className="card-3d">
+                <Card className="card-3d-inner p-4 flex items-center gap-4 h-full hover-scale">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Globe className="h-5 w-5 text-primary" />
+                  </div>
+                  <span className="text-sm">Surveyors & researchers collecting field data</span>
+                </Card>
+              </div>
+              <div className="card-3d">
+                <Card className="card-3d-inner p-4 flex items-center gap-4 h-full hover-scale">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Plane className="h-5 w-5 text-primary" />
+                  </div>
+                  <span className="text-sm">Travelers & bloggers preserving memories</span>
+                </Card>
+              </div>
+              <div className="card-3d">
+                <Card className="card-3d-inner p-4 flex items-center gap-4 h-full hover-scale">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Newspaper className="h-5 w-5 text-primary" />
+                  </div>
+                  <span className="text-sm">Journalists verifying photo locations</span>
+                </Card>
+              </div>
+              <div className="card-3d">
+                <Card className="card-3d-inner p-4 flex items-center gap-4 h-full hover-scale">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Building className="h-5 w-5 text-primary" />
+                  </div>
+                  <span className="text-sm">Businesses managing location-aware media</span>
+                </Card>
+              </div>
             </div>
             <p className="text-center text-muted-foreground mt-6">
               If your images need accurate location data, GeoTagger saves time while maintaining privacy.
@@ -708,20 +786,35 @@ export default function Home() {
             <p className="text-muted-foreground">Three simple steps to geotag your photos</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 text-primary font-bold">1</div>
-              <h3 className="font-semibold mb-2">Upload Photos</h3>
-              <p className="text-sm text-muted-foreground">Drag and drop or select one or multiple images</p>
+            <div className="card-3d">
+              <Card className="card-3d-inner text-center p-6 h-full bg-gradient-to-br from-primary/10 to-transparent">
+                <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center mx-auto mb-4 animate-float">
+                  <Upload className="h-8 w-8 text-primary icon-glow" />
+                </div>
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-3 text-sm font-bold">1</div>
+                <h3 className="font-semibold mb-2">Upload Photos</h3>
+                <p className="text-sm text-muted-foreground">Drag and drop or select one or multiple images</p>
+              </Card>
             </div>
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 text-primary font-bold">2</div>
-              <h3 className="font-semibold mb-2">Set Location</h3>
-              <p className="text-sm text-muted-foreground">Click on the map, search an address, or use GPS</p>
+            <div className="card-3d">
+              <Card className="card-3d-inner text-center p-6 h-full bg-gradient-to-br from-primary/10 to-transparent">
+                <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center mx-auto mb-4 animate-float-delay-1">
+                  <MapPin className="h-8 w-8 text-primary icon-glow" />
+                </div>
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-3 text-sm font-bold">2</div>
+                <h3 className="font-semibold mb-2">Set Location</h3>
+                <p className="text-sm text-muted-foreground">Click on the map, search an address, or use GPS</p>
+              </Card>
             </div>
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 text-primary font-bold">3</div>
-              <h3 className="font-semibold mb-2">Download</h3>
-              <p className="text-sm text-muted-foreground">Get photos with embedded GPS metadata instantly</p>
+            <div className="card-3d">
+              <Card className="card-3d-inner text-center p-6 h-full bg-gradient-to-br from-primary/10 to-transparent">
+                <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center mx-auto mb-4 animate-float-delay-2">
+                  <Download className="h-8 w-8 text-primary icon-glow" />
+                </div>
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-3 text-sm font-bold">3</div>
+                <h3 className="font-semibold mb-2">Download</h3>
+                <p className="text-sm text-muted-foreground">Get photos with embedded GPS metadata instantly</p>
+              </Card>
             </div>
           </div>
         </div>
@@ -732,27 +825,47 @@ export default function Home() {
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-4">GeoTagger vs Other Geotagging Tools</h2>
             <p className="text-muted-foreground mb-8">Unlike traditional software or paid tools:</p>
-            <div className="grid md:grid-cols-5 gap-4 max-w-3xl mx-auto mb-6">
-              <Card className="p-4">
-                <Check className="h-6 w-6 mx-auto mb-2 text-green-500" />
-                <p className="text-sm font-medium">No subscriptions</p>
-              </Card>
-              <Card className="p-4">
-                <Check className="h-6 w-6 mx-auto mb-2 text-green-500" />
-                <p className="text-sm font-medium">No file limits</p>
-              </Card>
-              <Card className="p-4">
-                <Check className="h-6 w-6 mx-auto mb-2 text-green-500" />
-                <p className="text-sm font-medium">No uploads</p>
-              </Card>
-              <Card className="p-4">
-                <Check className="h-6 w-6 mx-auto mb-2 text-green-500" />
-                <p className="text-sm font-medium">No installation</p>
-              </Card>
-              <Card className="p-4">
-                <Check className="h-6 w-6 mx-auto mb-2 text-green-500" />
-                <p className="text-sm font-medium">Works in browser</p>
-              </Card>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-3xl mx-auto mb-6">
+              <div className="card-3d">
+                <Card className="card-3d-inner p-4 text-center h-full bg-gradient-to-br from-green-500/10 to-transparent border-green-500/20">
+                  <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center mx-auto mb-2">
+                    <Check className="h-5 w-5 text-green-500 icon-glow" />
+                  </div>
+                  <p className="text-sm font-medium">No subscriptions</p>
+                </Card>
+              </div>
+              <div className="card-3d">
+                <Card className="card-3d-inner p-4 text-center h-full bg-gradient-to-br from-green-500/10 to-transparent border-green-500/20">
+                  <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center mx-auto mb-2">
+                    <Check className="h-5 w-5 text-green-500 icon-glow" />
+                  </div>
+                  <p className="text-sm font-medium">No file limits</p>
+                </Card>
+              </div>
+              <div className="card-3d">
+                <Card className="card-3d-inner p-4 text-center h-full bg-gradient-to-br from-green-500/10 to-transparent border-green-500/20">
+                  <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center mx-auto mb-2">
+                    <Check className="h-5 w-5 text-green-500 icon-glow" />
+                  </div>
+                  <p className="text-sm font-medium">No uploads</p>
+                </Card>
+              </div>
+              <div className="card-3d">
+                <Card className="card-3d-inner p-4 text-center h-full bg-gradient-to-br from-green-500/10 to-transparent border-green-500/20">
+                  <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center mx-auto mb-2">
+                    <Check className="h-5 w-5 text-green-500 icon-glow" />
+                  </div>
+                  <p className="text-sm font-medium">No installation</p>
+                </Card>
+              </div>
+              <div className="card-3d col-span-2 md:col-span-1">
+                <Card className="card-3d-inner p-4 text-center h-full bg-gradient-to-br from-green-500/10 to-transparent border-green-500/20">
+                  <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center mx-auto mb-2">
+                    <Check className="h-5 w-5 text-green-500 icon-glow" />
+                  </div>
+                  <p className="text-sm font-medium">Works in browser</p>
+                </Card>
+              </div>
             </div>
             <p className="text-muted-foreground">
               Most alternatives require accounts, paid plans, or cloud uploads — GeoTagger does not.
