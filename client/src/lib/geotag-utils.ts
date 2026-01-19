@@ -86,6 +86,17 @@ export function extractExistingGps(dataUrl: string): { lat: number; lng: number 
   }
 }
 
+function stringToUtf16Le(str: string): number[] {
+  const bytes: number[] = [];
+  for (let i = 0; i < str.length; i++) {
+    const charCode = str.charCodeAt(i);
+    bytes.push(charCode & 0xFF);
+    bytes.push((charCode >> 8) & 0xFF);
+  }
+  bytes.push(0, 0);
+  return bytes;
+}
+
 function dmsToDecimal(dms: [[number, number], [number, number], [number, number]], ref: string): number {
   const degrees = dms[0][0] / dms[0][1];
   const minutes = dms[1][0] / dms[1][1];
@@ -143,6 +154,13 @@ export async function addGeotagToImage(
   if (geotag.description) {
     exifData["0th"] = exifData["0th"] || {};
     exifData["0th"][piexif.ImageIFD.ImageDescription] = geotag.description;
+  }
+  
+  if (geotag.keywords) {
+    exifData["0th"] = exifData["0th"] || {};
+    const keywordBytes = stringToUtf16Le(geotag.keywords);
+    exifData["0th"][0x9C9E] = keywordBytes;
+    exifData["0th"][0x9C9F] = keywordBytes;
   }
   
   const exifBytes = piexif.dump(exifData);

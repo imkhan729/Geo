@@ -231,7 +231,7 @@ export function GeotagMap({ latitude, longitude, onLocationChange }: GeotagMapPr
         
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Latitude (-90 to 90)</label>
+            <label className="text-xs text-muted-foreground mb-1 block" data-testid="label-latitude">Latitude (-90 to 90)</label>
             <Input
               type="number"
               step="any"
@@ -248,7 +248,7 @@ export function GeotagMap({ latitude, longitude, onLocationChange }: GeotagMapPr
             />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Longitude (-180 to 180)</label>
+            <label className="text-xs text-muted-foreground mb-1 block" data-testid="label-longitude">Longitude (-180 to 180)</label>
             <Input
               type="number"
               step="any"
