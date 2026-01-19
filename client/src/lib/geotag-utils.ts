@@ -111,22 +111,75 @@ function dmsToDecimal(dms: [[number, number], [number, number], [number, number]
   return decimal;
 }
 
+async function convertToJpeg(file: File): Promise<{ blob: Blob; dataUrl: string }> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        URL.revokeObjectURL(url);
+        reject(new Error("Could not get canvas context"));
+        return;
+      }
+      
+      ctx.drawImage(img, 0, 0);
+      URL.revokeObjectURL(url);
+      
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error("Could not convert to JPEG"));
+            return;
+          }
+          
+          const reader = new FileReader();
+          reader.onload = () => {
+            resolve({ blob, dataUrl: reader.result as string });
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        },
+        "image/jpeg",
+        0.95
+      );
+    };
+    
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Could not load image"));
+    };
+    
+    img.src = url;
+  });
+}
+
 export async function addGeotagToImage(
   file: File,
   geotag: GeotagData
 ): Promise<Blob> {
-  let processedFile = file;
-  let isHeic = false;
+  const fileName = file.name.toLowerCase();
+  const isHeic = file.type === "image/heic" || fileName.endsWith(".heic");
+  const isPng = file.type === "image/png" || fileName.endsWith(".png");
+  const isWebp = file.type === "image/webp" || fileName.endsWith(".webp");
+  const needsConversion = isHeic || isPng || isWebp;
   
-  if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
-    isHeic = true;
+  let dataUrl: string;
+  
+  if (isHeic) {
     const jpegBlob = await convertHeicToJpeg(file);
-    processedFile = new File([jpegBlob], file.name.replace(/\.heic$/i, ".jpg"), {
-      type: "image/jpeg"
-    });
+    dataUrl = await readFileAsDataUrl(new File([jpegBlob], "temp.jpg", { type: "image/jpeg" }));
+  } else if (isPng || isWebp) {
+    const converted = await convertToJpeg(file);
+    dataUrl = converted.dataUrl;
+  } else {
+    dataUrl = await readFileAsDataUrl(file);
   }
-  
-  const dataUrl = await readFileAsDataUrl(processedFile);
   
   let exifData: {
     "0th": Record<number, unknown>;
@@ -135,6 +188,7 @@ export async function addGeotagToImage(
     "1st": Record<number, unknown>;
     "thumbnail": string | null;
   };
+  
   try {
     exifData = piexif.load(dataUrl);
   } catch {
@@ -173,14 +227,12 @@ export async function addGeotagToImage(
     array[i] = binary.charCodeAt(i);
   }
   
-  return new Blob([array], { type: isHeic ? "image/jpeg" : processedFile.type });
+  return new Blob([array], { type: "image/jpeg" });
 }
 
 export function downloadGeotaggedImage(blob: Blob, originalName: string): void {
-  const extension = originalName.toLowerCase().endsWith(".heic") ? ".jpg" : "";
   const baseName = originalName.replace(/\.[^/.]+$/, "");
-  const newExtension = extension || originalName.match(/\.[^/.]+$/)?.[0] || ".jpg";
-  const newName = `${baseName}_geotagged${newExtension}`;
+  const newName = `${baseName}_geotagged.jpg`;
   
   saveAs(blob, newName);
 }
