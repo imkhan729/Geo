@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { 
   Download, Loader2, Upload, X, Search, Locate, 
   CheckCircle, AlertCircle, Camera, Shield, Zap,
-  ChevronDown, Sparkles
+  ChevronDown, Sparkles, PenLine, Trash2, HelpCircle
 } from "lucide-react";
 import logoImage from "@assets/Geo_Tagger_Logo_2.webp_1768827957680.jpg";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -43,6 +43,8 @@ export default function Home() {
   const [isSearching, setIsSearching] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [showExistingGeotags, setShowExistingGeotags] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const { toast } = useToast();
   
   const mapRef = useRef<HTMLDivElement>(null);
@@ -235,6 +237,19 @@ export default function Home() {
     { q: "Can I geotag multiple photos at once?", a: "Yes! Upload multiple photos and they'll all get the same GPS coordinates you select." },
   ];
 
+  const currentImage = images[selectedImageIndex] || images[0];
+  const existingGpsText = currentImage?.existingGps 
+    ? `${currentImage.existingGps.lat.toFixed(4)},${currentImage.existingGps.lng.toFixed(4)}`
+    : "No existing geotags";
+
+  const clearAll = useCallback(() => {
+    setImages([]);
+    setKeywords("");
+    setDescription("");
+    setSelectedImageIndex(0);
+    setMode("landing");
+  }, []);
+
   if (mode === "geotagger") {
     return (
       <div className="min-h-screen bg-background flex flex-col">
@@ -248,118 +263,157 @@ export default function Home() {
         </header>
 
         <main className="flex-1 p-4">
-          <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-4" style={{ minHeight: "calc(100vh - 130px)" }}>
-            <div className="flex flex-col gap-3">
-              <div className="flex gap-2">
-                <div className="flex-1 relative">
-                  <Input
-                    placeholder="Search for a place..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                    data-testid="input-search"
-                  />
-                  <Button variant="ghost" size="icon" className="absolute right-0 top-0 h-full" onClick={handleSearch} disabled={isSearching} data-testid="button-search">
-                    {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                  </Button>
-                </div>
-                <Button variant="outline" size="icon" onClick={handleUseMyLocation} disabled={isLocating} title="My location" data-testid="button-locate">
-                  {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Locate className="h-4 w-4" />}
-                </Button>
+          <div className="container mx-auto max-w-6xl">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+              <div className="flex flex-col gap-3">
+                <Card className="overflow-hidden">
+                  <CardHeader className="py-3 px-4 border-b border-border">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <CardTitle className="text-sm font-medium" data-testid="text-image-count">{images.length} image{images.length !== 1 ? "s" : ""}</CardTitle>
+                      <Button variant="ghost" size="sm" onClick={() => document.getElementById("add-more")?.click()} data-testid="button-add-more">
+                        <Upload className="h-4 w-4 mr-1" /> Add more
+                      </Button>
+                      <input id="add-more" type="file" accept={ACCEPTED_EXTENSIONS.join(",")} multiple onChange={(e) => e.target.files && processFiles(e.target.files)} className="hidden" />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <div className="aspect-video bg-muted flex items-center justify-center overflow-hidden">
+                      {currentImage && (
+                        <img src={currentImage.preview} alt={currentImage.name} className="w-full h-full object-contain" data-testid="img-preview-main" />
+                      )}
+                    </div>
+                    {images.length > 1 && (
+                      <div className="p-2 border-t border-border overflow-x-auto">
+                        <div className="flex gap-2">
+                          {images.map((img, idx) => (
+                            <button
+                              key={img.id}
+                              onClick={() => setSelectedImageIndex(idx)}
+                              className={`relative flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-colors ${idx === selectedImageIndex ? "border-primary" : "border-transparent hover:border-muted-foreground/50"}`}
+                              data-testid={`button-select-image-${idx}`}
+                            >
+                              <img src={img.preview} alt={img.name} className="w-full h-full object-cover" />
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                className="absolute top-0.5 right-0.5 h-4 w-4 opacity-0 hover:opacity-100 transition-opacity"
+                                onClick={(e) => { e.stopPropagation(); removeImage(img.id); }}
+                                data-testid={`button-remove-${img.id}`}
+                              >
+                                <X className="h-2 w-2" />
+                              </Button>
+                              {img.status === "success" && <CheckCircle className="absolute bottom-0.5 left-0.5 h-3 w-3 text-green-500" />}
+                              {img.status === "error" && <AlertCircle className="absolute bottom-0.5 left-0.5 h-3 w-3 text-destructive" />}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </div>
 
-              <div ref={mapRef} className="flex-1 min-h-[350px] rounded-lg overflow-hidden border border-border" data-testid="map-container" />
-              
-              <div className="grid grid-cols-2 gap-2">
-                <div className="flex items-center gap-2 bg-muted/50 rounded-md px-3 py-2">
-                  <span className="text-xs font-medium text-muted-foreground">Lat</span>
-                  <Input
-                    type="number"
-                    step="any"
-                    value={latitude.toFixed(6)}
-                    onChange={(e) => {
-                      const val = parseFloat(e.target.value);
-                      if (!isNaN(val) && validateCoordinates(val, longitude)) setLatitude(val);
-                    }}
-                    className="h-7 text-sm border-0 bg-transparent p-0"
-                    data-testid="input-latitude"
-                  />
+              <div className="flex flex-col gap-3">
+                <div className="flex gap-2">
+                  <div className="flex-1 relative">
+                    <Input
+                      placeholder="Search for a place..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                      data-testid="input-search"
+                    />
+                    <Button variant="ghost" size="icon" className="absolute right-0 top-0 h-full" onClick={handleSearch} disabled={isSearching} data-testid="button-search">
+                      {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                  <Button variant="outline" size="icon" onClick={handleUseMyLocation} disabled={isLocating} title="My location" data-testid="button-locate">
+                    {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Locate className="h-4 w-4" />}
+                  </Button>
                 </div>
-                <div className="flex items-center gap-2 bg-muted/50 rounded-md px-3 py-2">
-                  <span className="text-xs font-medium text-muted-foreground">Lon</span>
-                  <Input
-                    type="number"
-                    step="any"
-                    value={longitude.toFixed(6)}
-                    onChange={(e) => {
-                      const val = parseFloat(e.target.value);
-                      if (!isNaN(val) && validateCoordinates(latitude, val)) setLongitude(val);
-                    }}
-                    className="h-7 text-sm border-0 bg-transparent p-0"
-                    data-testid="input-longitude"
-                  />
-                </div>
+
+                <div ref={mapRef} className="flex-1 min-h-[300px] rounded-lg overflow-hidden border border-border" data-testid="map-container" />
               </div>
             </div>
 
-            <div className="flex flex-col gap-3">
-              <Card className="flex-1 overflow-hidden">
-                <CardHeader className="py-3 px-4 border-b border-border">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm font-medium" data-testid="text-image-count">{images.length} image{images.length !== 1 ? "s" : ""} selected</CardTitle>
-                    <Button variant="ghost" size="sm" onClick={() => document.getElementById("add-more")?.click()} data-testid="button-add-more">
-                      <Upload className="h-4 w-4 mr-1" /> Add more
-                    </Button>
-                    <input id="add-more" type="file" accept={ACCEPTED_EXTENSIONS.join(",")} multiple onChange={(e) => e.target.files && processFiles(e.target.files)} className="hidden" />
+            <Card className="bg-muted/50">
+              <CardContent className="p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <label className="text-sm font-medium">Existing Geotags</label>
+                      <button 
+                        onClick={() => setShowExistingGeotags(!showExistingGeotags)} 
+                        className="text-xs text-primary hover:underline"
+                        data-testid="button-show-existing"
+                      >
+                        ({showExistingGeotags ? "hide" : "show"})
+                      </button>
+                    </div>
+                    <Input 
+                      value={showExistingGeotags ? existingGpsText : ""}
+                      placeholder="Hidden"
+                      readOnly 
+                      className="bg-background" 
+                      data-testid="input-existing-geotags"
+                    />
                   </div>
-                </CardHeader>
-                <CardContent className="p-3 overflow-auto" style={{ maxHeight: "280px" }}>
-                  <div className="grid grid-cols-4 gap-2">
-                    {images.map((img) => (
-                      <div key={img.id} className="relative group aspect-square rounded-md overflow-hidden" data-testid={`img-thumbnail-${img.id}`}>
-                        <img src={img.preview} alt={img.name} className="w-full h-full object-cover" />
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-1 right-1 h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => removeImage(img.id)}
-                          data-testid={`button-remove-${img.id}`}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                        {img.status === "success" && <CheckCircle className="absolute bottom-1 left-1 h-4 w-4 text-green-500" />}
-                        {img.status === "error" && <AlertCircle className="absolute bottom-1 left-1 h-4 w-4 text-destructive" />}
-                        {img.status === "processing" && (
-                          <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
-                            <Loader2 className="h-5 w-5 animate-spin" />
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <label className="text-sm font-medium">New Geotags</label>
+                    </div>
+                    <Input 
+                      value={`${latitude.toFixed(4)},${longitude.toFixed(4)}`}
+                      readOnly 
+                      className="bg-background font-mono" 
+                      data-testid="input-new-geotags"
+                    />
                   </div>
-                </CardContent>
-              </Card>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <label className="text-sm font-medium">Keywords and Tags</label>
+                      <HelpCircle className="h-3 w-3 text-muted-foreground" />
+                    </div>
+                    <Input 
+                      placeholder="travel, nature, sunset" 
+                      value={keywords} 
+                      onChange={(e) => setKeywords(e.target.value)} 
+                      className="bg-background" 
+                      data-testid="input-keywords"
+                    />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <label className="text-sm font-medium">Description / Alternative Text</label>
+                      <HelpCircle className="h-3 w-3 text-muted-foreground" />
+                    </div>
+                    <Input 
+                      placeholder="Add a description..." 
+                      value={description} 
+                      onChange={(e) => setDescription(e.target.value)} 
+                      className="bg-background" 
+                      data-testid="input-description"
+                    />
+                  </div>
+                </div>
 
-              <Card>
-                <CardContent className="p-4 space-y-3">
-                  <div>
-                    <label className="text-xs text-muted-foreground">Keywords (optional)</label>
-                    <Input placeholder="travel, nature, sunset" value={keywords} onChange={(e) => setKeywords(e.target.value)} className="mt-1" data-testid="input-keywords" />
-                  </div>
-                  <div>
-                    <label className="text-xs text-muted-foreground">Description (optional)</label>
-                    <Textarea placeholder="Add a description..." value={description} onChange={(e) => setDescription(e.target.value)} rows={2} className="mt-1 resize-none" data-testid="input-description" />
-                  </div>
-                  <Button onClick={processAndDownloadAll} disabled={isProcessing} className="w-full" size="lg" data-testid="button-download">
+                <div className="flex flex-wrap gap-3 justify-center">
+                  <Button onClick={processAndDownloadAll} disabled={isProcessing} className="bg-blue-600 hover:bg-blue-700" data-testid="button-write-exif">
                     {isProcessing ? (
                       <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processing {processedCount}/{images.length}</>
                     ) : (
-                      <><Download className="h-4 w-4 mr-2" /> Geotag & Download All</>
+                      <><PenLine className="h-4 w-4 mr-2" /> Write EXIF Tags</>
                     )}
                   </Button>
-                </CardContent>
-              </Card>
-            </div>
+                  <Button onClick={processAndDownloadAll} disabled={isProcessing} variant="outline" className="bg-green-600 hover:bg-green-700 text-white border-green-600" data-testid="button-download">
+                    <Download className="h-4 w-4 mr-2" /> Download
+                  </Button>
+                  <Button onClick={clearAll} variant="outline" data-testid="button-clear">
+                    <Trash2 className="h-4 w-4 mr-2" /> Clear
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </main>
       </div>
