@@ -496,22 +496,13 @@ export default function Home() {
 
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
-          <Badge className="mb-4" variant="secondary"><Sparkles className="h-3 w-3 mr-1" /> 100% Free & Private</Badge>
+          <Badge className="mb-4" variant="secondary"><Sparkles className="h-3 w-3 mr-1" /> Free with GeoTagger</Badge>
           <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
             Add GPS Location to Your Photos Instantly
           </h1>
-          <h2 className="text-xl md:text-2xl text-muted-foreground font-medium mb-4">
+          <h2 className="text-xl md:text-2xl text-muted-foreground font-medium mb-6">
             Free Online Image Geotagging Tool — No Uploads, No Accounts
           </h2>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-6">
-            GeoTagger is a free, privacy-first online tool that lets you add GPS coordinates to your photos directly in your browser. Geotag multiple images at once, embed accurate location metadata, and download your photos instantly — without uploading them to any server.
-          </p>
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-8 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1"><Check className="h-4 w-4 text-green-500" /> Works entirely in your browser</span>
-            <span className="flex items-center gap-1"><Check className="h-4 w-4 text-green-500" /> No sign-up, no fees, no limits</span>
-            <span className="flex items-center gap-1"><Check className="h-4 w-4 text-green-500" /> Fast batch geotagging</span>
-            <span className="flex items-center gap-1"><Check className="h-4 w-4 text-green-500" /> Supports JPG, PNG, WebP & HEIC</span>
-          </div>
 
           <Card
             className={`max-w-2xl mx-auto cursor-pointer transition-all border-2 border-dashed ${isDragging ? "border-primary bg-primary/5" : "border-primary/30 hover:border-primary/50"}`}
@@ -535,6 +526,13 @@ export default function Home() {
               <input id="hero-upload" type="file" accept={ACCEPTED_EXTENSIONS.join(",")} multiple onChange={(e) => e.target.files && processFiles(e.target.files)} className="hidden" />
             </CardContent>
           </Card>
+
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-6 text-sm text-muted-foreground">
+            <span className="flex items-center gap-1"><Check className="h-4 w-4 text-green-500" /> Works entirely in your browser</span>
+            <span className="flex items-center gap-1"><Check className="h-4 w-4 text-green-500" /> No sign-up, no fees, no limits</span>
+            <span className="flex items-center gap-1"><Check className="h-4 w-4 text-green-500" /> Fast batch geotagging</span>
+            <span className="flex items-center gap-1"><Check className="h-4 w-4 text-green-500" /> Supports JPG, PNG, WebP & HEIC</span>
+          </div>
         </div>
       </section>
 
@@ -547,7 +545,7 @@ export default function Home() {
             </div>
             <div className="space-y-4 text-muted-foreground">
               <p className="text-lg leading-relaxed">
-                GeoTagger is a professional-grade, browser-based image geotagging tool designed to embed precise GPS coordinates directly into your digital photographs.
+                GeoTagger is a free, privacy-first online tool that lets you add GPS coordinates to your photos directly in your browser. Geotag multiple images at once, embed accurate location metadata, and download your photos instantly — without uploading them to any server.
               </p>
               <p className="leading-relaxed">
                 Geotagging adds latitude and longitude information to a photo's EXIF metadata, allowing images to be organized, searched, verified, and displayed on maps based on where they were taken.
