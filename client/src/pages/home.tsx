@@ -300,7 +300,7 @@ export default function Home() {
         <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-50">
           <div className="container mx-auto px-4 flex items-center justify-between h-14">
             <button onClick={() => { setMode("landing"); setImages([]); }} className="hover:opacity-80" data-testid="button-home">
-              <img src={logoImage} alt="GeoTagger" className="h-10" />
+              <img src={logoImage} alt="GeoTagger" className="h-[42px]" />
             </button>
             <ThemeToggle data-testid="button-theme-toggle" />
           </div>
@@ -431,7 +431,7 @@ export default function Home() {
         <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-50">
           <div className="container mx-auto px-4 flex items-center justify-between h-14">
             <button onClick={() => { setMode("landing"); setExtractedGps(null); }} className="hover:opacity-80" data-testid="button-home-finder">
-              <img src={logoImage} alt="GeoTagger" className="h-10" />
+              <img src={logoImage} alt="GeoTagger" className="h-[42px]" />
             </button>
             <ThemeToggle data-testid="button-theme-finder" />
           </div>
@@ -486,7 +486,7 @@ export default function Home() {
       <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-50">
         <div className="container mx-auto px-4 flex items-center justify-between h-14">
           <a href="/" className="hover:opacity-80" data-testid="link-logo">
-            <img src={logoImage} alt="GeoTagger" className="h-10" />
+            <img src={logoImage} alt="GeoTagger" className="h-[42px]" />
           </a>
           <nav className="hidden md:flex flex-wrap items-center gap-6 text-sm">
             <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-features">Features</a>
@@ -637,7 +637,7 @@ export default function Home() {
 
       <footer className="border-t border-border py-8">
         <div className="container mx-auto px-4 text-center">
-          <img src={logoImage} alt="GeoTagger" className="h-14 mx-auto mb-4" />
+          <img src={logoImage} alt="GeoTagger" className="h-[59px] mx-auto mb-4" />
           <p className="text-sm text-muted-foreground mb-2">100% free, open source, and private</p>
           <p className="text-sm text-muted-foreground">Your photos never leave your browser. No data is collected.</p>
         </div>
