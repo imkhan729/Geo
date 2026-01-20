@@ -1,52 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5" />
-    
-    <title>GeoTagger – Free Image Geotagging Tool | Add GPS to Photos Online</title>
-    <meta name="description" content="GeoTagger is a free online tool to add GPS location data to photos. Geotag images locally in your browser with no uploads, no accounts, and full privacy." />
-    <meta name="keywords" content="geotag photos, add gps to images, image location finder, exif gps metadata, free geotagging tool, photo geotagging, GPS coordinates, batch geotagging" />
-    <meta name="author" content="FreeGeoTagger" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    
-    <link rel="canonical" href="https://freegeotagger.com/" />
-    
-    <meta property="og:locale" content="en_US" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="GeoTagger – Free Image Geotagging Tool | Add GPS to Photos Online" />
-    <meta property="og:description" content="GeoTagger is a free online tool to add GPS location data to photos. Geotag images locally in your browser with no uploads and full privacy." />
-    <meta property="og:url" content="https://freegeotagger.com/" />
-    <meta property="og:site_name" content="FreeGeoTagger" />
-    <meta property="og:image" content="https://freegeotagger.com/favicon.png" />
-    <meta property="og:image:alt" content="FreeGeoTagger - Add GPS coordinates to your photos" />
-    
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="GeoTagger – Free Image Geotagging Tool | Add GPS to Photos Online" />
-    <meta name="twitter:description" content="GeoTagger is a free online tool to add GPS location data to photos. Geotag images locally in your browser with no uploads and full privacy." />
-    <meta name="twitter:image" content="https://freegeotagger.com/favicon.png" />
-    <meta name="twitter:image:alt" content="FreeGeoTagger - Add GPS coordinates to your photos" />
-    
-    <meta name="application-name" content="FreeGeoTagger" />
-    <meta name="apple-mobile-web-app-title" content="FreeGeoTagger" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="theme-color" content="#3b82f6" />
-    <meta name="msapplication-TileColor" content="#3b82f6" />
-    
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="apple-touch-icon" href="/favicon.png" />
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://unpkg.com" />
-    <link rel="dns-prefetch" href="https://tile.openstreetmap.org" />
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    
-    <script type="application/ld+json">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5" />
+
+  <title>GeoTagger – Free Image Geotagging Tool | Add GPS to Photos Online</title>
+  <meta name="description"
+    content="GeoTagger is a free online tool to add GPS location data to photos. Geotag images locally in your browser with no uploads, no accounts, and full privacy." />
+  <meta name="keywords"
+    content="geotag photos, add gps to images, image location finder, exif gps metadata, free geotagging tool, photo geotagging, GPS coordinates, batch geotagging" />
+  <meta name="author" content="FreeGeoTagger" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+
+  <link rel="canonical" href="https://freegeotagger.com/" />
+
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="GeoTagger – Free Image Geotagging Tool | Add GPS to Photos Online" />
+  <meta property="og:description"
+    content="GeoTagger is a free online tool to add GPS location data to photos. Geotag images locally in your browser with no uploads and full privacy." />
+  <meta property="og:url" content="https://freegeotagger.com/" />
+  <meta property="og:site_name" content="FreeGeoTagger" />
+  <meta property="og:image" content="https://freegeotagger.com/favicon.png" />
+  <meta property="og:image:alt" content="FreeGeoTagger - Add GPS coordinates to your photos" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="GeoTagger – Free Image Geotagging Tool | Add GPS to Photos Online" />
+  <meta name="twitter:description"
+    content="GeoTagger is a free online tool to add GPS location data to photos. Geotag images locally in your browser with no uploads and full privacy." />
+  <meta name="twitter:image" content="https://freegeotagger.com/favicon.png" />
+  <meta name="twitter:image:alt" content="FreeGeoTagger - Add GPS coordinates to your photos" />
+
+  <meta name="application-name" content="FreeGeoTagger" />
+  <meta name="apple-mobile-web-app-title" content="FreeGeoTagger" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#3b82f6" />
+  <meta name="msapplication-TileColor" content="#3b82f6" />
+
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://unpkg.com" />
+  <link rel="dns-prefetch" href="https://tile.openstreetmap.org" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
@@ -61,8 +66,8 @@
       }
     }
     </script>
-    
-    <script type="application/ld+json">
+
+  <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Organization",
@@ -72,8 +77,8 @@
       "description": "Free, privacy-focused photo geotagging tool"
     }
     </script>
-    
-    <script type="application/ld+json">
+
+  <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "FAQPage",
@@ -129,8 +134,8 @@
       ]
     }
     </script>
-    
-    <script type="application/ld+json">
+
+  <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
@@ -150,9 +155,11 @@
       ]
     }
     </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>
