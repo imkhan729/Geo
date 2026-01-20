@@ -1,13 +1,15 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { 
-  Download, Loader2, Upload, X, Search, Locate, 
+import {
+  Download, Loader2, Upload, X, Search, Locate,
   CheckCircle, AlertCircle, Camera, Shield, Zap,
   ChevronDown, Sparkles, PenLine, Trash2, HelpCircle,
   Globe, MapPin, Lock, Users, Check, Clock, Mountain,
-  Compass, HardDrive, Eye, UserX, Plane, Newspaper, 
+  Compass, HardDrive, Eye, UserX, Plane, Newspaper,
   Building, Home as HomeIcon
 } from "lucide-react";
 import logoImage from "@assets/Geo_Tagger_Logo_2.webp-removebg-preview_1768829275162.png";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,17 +17,20 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import L from "leaflet";
-import { 
-  ImageFile, 
-  GeotagData, 
-  addGeotagToImage, 
+import {
+  ImageFile,
+  GeotagData,
+  addGeotagToImage,
   downloadGeotaggedImage,
   generateId,
   readFileAsDataUrl,
   extractExistingGps,
   convertHeicToJpeg,
   reverseGeocode,
-  validateCoordinates
+  searchPlaces,
+  PlaceSuggestion,
+  validateCoordinates,
+  downloadAsZip
 } from "@/lib/geotag-utils";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
@@ -39,6 +44,7 @@ export default function Home() {
   useEffect(() => {
     updatePageSEO(SEO_CONFIG.home);
   }, []);
+
   const [images, setImages] = useState<ImageFile[]>([]);
   const [latitude, setLatitude] = useState(40.7128);
   const [longitude, setLongitude] = useState(-74.0060);
@@ -54,12 +60,51 @@ export default function Home() {
   const [showExistingGeotags, setShowExistingGeotags] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isWritingExif, setIsWritingExif] = useState(false);
+  const [suggestions, setSuggestions] = useState<PlaceSuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const ignoreSearchRef = useRef(false);
   const [processedBlobs, setProcessedBlobs] = useState<Map<string, Blob>>(new Map());
   const { toast } = useToast();
-  
+
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
+
+  const handleSelectSuggestion = useCallback((suggestion: PlaceSuggestion) => {
+    ignoreSearchRef.current = true;
+    setSearchQuery(suggestion.displayName);
+    setLatitude(suggestion.lat);
+    setLongitude(suggestion.lng);
+    setSuggestions([]);
+    setShowSuggestions(false);
+
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setView([suggestion.lat, suggestion.lng], 13);
+
+      // Update marker position
+      mapInstanceRef.current.eachLayer((layer) => {
+        if (layer instanceof L.Marker) {
+          layer.setLatLng([suggestion.lat, suggestion.lng]);
+        }
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (searchQuery.length > 2 && !ignoreSearchRef.current) {
+        const results = await searchPlaces(searchQuery);
+        setSuggestions(results);
+        setShowSuggestions(true);
+      } else {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+      ignoreSearchRef.current = false;
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   useEffect(() => {
     if (mode !== "geotagger" || !mapRef.current) return;
@@ -150,7 +195,7 @@ export default function Home() {
 
   const processFiles = useCallback(async (files: FileList | File[]) => {
     const fileArray = Array.from(files);
-    
+
     for (const file of fileArray) {
       const isAccepted = ACCEPTED_EXTENSIONS.some(ext => file.name.toLowerCase().endsWith(ext));
       if (!isAccepted || file.size > 20 * 1024 * 1024) continue;
@@ -179,7 +224,7 @@ export default function Home() {
         console.error(err);
       }
     }
-    
+
     if (fileArray.length > 0) {
       setMode("geotagger");
     }
@@ -231,7 +276,7 @@ export default function Home() {
 
     setProcessedBlobs(newBlobs);
     setIsWritingExif(false);
-    
+
     if (errorCount === 0) {
       toast({ title: "EXIF Tags Written!", description: `${successCount} image${successCount !== 1 ? "s" : ""} geotagged successfully. Click Download to save.` });
     } else if (successCount > 0) {
@@ -250,6 +295,7 @@ export default function Home() {
     const updatedImages = [...images];
     let successCount = 0;
     let errorCount = 0;
+    const successfulFiles: { name: string; blob: Blob }[] = [];
 
     for (let i = 0; i < updatedImages.length; i++) {
       const img = updatedImages[i];
@@ -259,7 +305,8 @@ export default function Home() {
       try {
         const existingBlob = processedBlobs.get(img.id);
         const blob = existingBlob || await addGeotagToImage(img.file, geotag);
-        downloadGeotaggedImage(blob, img.name);
+
+        successfulFiles.push({ name: img.name, blob });
         updatedImages[i] = { ...img, status: "success" };
         successCount++;
       } catch (err) {
@@ -271,9 +318,15 @@ export default function Home() {
       setProcessedCount(i + 1);
     }
 
+    if (successfulFiles.length === 1) {
+      downloadGeotaggedImage(successfulFiles[0].blob, successfulFiles[0].name);
+    } else if (successfulFiles.length > 1) {
+      await downloadAsZip(successfulFiles);
+    }
+
     setIsProcessing(false);
     setProcessedBlobs(new Map());
-    
+
     if (errorCount === 0) {
       toast({ title: "Download Complete!", description: `${successCount} image${successCount !== 1 ? "s" : ""} geotagged and downloaded successfully` });
     } else if (successCount > 0) {
@@ -287,13 +340,13 @@ export default function Home() {
     { q: "Is GeoTagger really free?", a: "Yes. GeoTagger is completely free with no hidden fees, subscriptions, or watermarks." },
     { q: "Are my photos uploaded to any server?", a: "No. All processing happens locally in your browser. Your photos never leave your device." },
     { q: "Can I geotag multiple photos at once?", a: "Yes. Batch geotagging is fully supported — upload multiple photos and apply the same location to all." },
-    { q: "What file formats are supported?", a: "JPG, PNG, WebP, and HEIC are all supported. HEIC files are auto-converted to JPG for processing." },
+    { q: "What file formats are supported?", a: "JPG, PNG, WebP, and HEIC are all supported. Note that non-JPEG files are automatically converted to high-quality JPEG to support standard GPS metadata." },
     { q: "Will geotagging affect image quality?", a: "No. Only metadata is modified — image quality remains completely unchanged." },
     { q: "Does this work on mobile devices?", a: "Yes. GeoTagger works on modern mobile browsers including Chrome, Safari, and Firefox." },
   ];
 
   const currentImage = images[selectedImageIndex] || images[0];
-  const existingGpsText = currentImage?.existingGps 
+  const existingGpsText = currentImage?.existingGps
     ? `${currentImage.existingGps.lat.toFixed(4)},${currentImage.existingGps.lng.toFixed(4)}`
     : "No existing geotags";
 
@@ -307,22 +360,24 @@ export default function Home() {
 
   if (mode === "geotagger") {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
-        <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-50">
-          <div className="container mx-auto px-4 flex items-center justify-between h-14">
-            <button onClick={() => { setMode("landing"); setImages([]); }} className="hover:opacity-80" data-testid="button-home">
-              <img src={logoImage} alt="GeoTagger" className="h-[42px]" />
-            </button>
-            <ThemeToggle data-testid="button-theme-toggle" />
+      <div className="min-h-screen flex flex-col">
+        <header className="border-b border-border glass sticky top-0 z-50 shadow-sm">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <div className="flex items-center justify-between h-16">
+              <button onClick={() => { setMode("landing"); setImages([]); }} className="hover:opacity-80 transition-opacity" data-testid="button-home">
+                <img src={logoImage} alt="GeoTagger" className="h-[42px]" />
+              </button>
+              <ThemeToggle data-testid="button-theme-toggle" />
+            </div>
           </div>
         </header>
 
         <main className="flex-1 p-4">
           <div className="container mx-auto max-w-6xl">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-              <div className="flex flex-col gap-3">
-                <Card className="overflow-hidden">
-                  <CardHeader className="py-3 px-4 border-b border-border">
+              <div className="h-[350px] lg:h-[400px] flex flex-col gap-3">
+                <Card className="h-full flex flex-col overflow-hidden">
+                  <CardHeader className="flex-none py-3 px-4 border-b border-border">
                     <div className="flex items-center justify-between gap-2 flex-wrap">
                       <CardTitle className="text-sm font-medium" data-testid="text-image-count">{images.length} image{images.length !== 1 ? "s" : ""}</CardTitle>
                       <Button variant="ghost" size="sm" onClick={() => document.getElementById("add-more")?.click()} data-testid="button-add-more">
@@ -331,14 +386,14 @@ export default function Home() {
                       <input id="add-more" type="file" accept={ACCEPTED_EXTENSIONS.join(",")} multiple onChange={(e) => e.target.files && processFiles(e.target.files)} className="hidden" />
                     </div>
                   </CardHeader>
-                  <CardContent className="p-0">
-                    <div className="aspect-video bg-muted flex items-center justify-center overflow-hidden">
+                  <CardContent className="flex-1 min-h-0 flex flex-col p-0">
+                    <div className="flex-1 bg-muted/30 flex items-center justify-center overflow-hidden relative p-4">
                       {currentImage && (
-                        <img src={currentImage.preview} alt={currentImage.name} className="w-full h-full object-contain" data-testid="img-preview-main" />
+                        <img src={currentImage.preview} alt={currentImage.name} className="max-w-full max-h-full object-contain shadow-sm" data-testid="img-preview-main" />
                       )}
                     </div>
                     {images.length > 1 && (
-                      <div className="p-2 border-t border-border overflow-x-auto">
+                      <div className="flex-none p-2 border-t border-border overflow-x-auto bg-background/50 backdrop-blur-sm">
                         <div className="flex gap-2">
                           {images.map((img, idx) => (
                             <button
@@ -368,26 +423,72 @@ export default function Home() {
                 </Card>
               </div>
 
-              <div className="flex flex-col gap-3">
-                <div className="flex gap-2">
-                  <div className="flex-1 relative">
+              <div className="relative h-[350px] lg:h-[400px] rounded-xl overflow-hidden border border-border shadow-sm group">
+                <div ref={mapRef} className="absolute inset-0 z-0 bg-muted" data-testid="map-container" />
+
+                {/* Overlay Controls */}
+                <div className="absolute top-4 right-4 z-[500] flex gap-2 items-start transition-opacity duration-300">
+                  <div className="relative w-64 md:w-80 shadow-lg hover:scale-[1.01] transition-transform">
+                    <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                      <Search className="h-4 w-4 text-muted-foreground" />
+                    </div>
                     <Input
                       placeholder="Search for a place..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                      className="pl-9 pr-10 h-10 bg-background/95 backdrop-blur-md border-border/60 shadow-sm rounded-lg text-sm focus-visible:ring-1 focus-visible:ring-primary/50"
                       data-testid="input-search"
                     />
-                    <Button variant="ghost" size="icon" className="absolute right-0 top-0 h-full" onClick={handleSearch} disabled={isSearching} data-testid="button-search">
-                      {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                    </Button>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-1">
+                      {isSearching ? (
+                        <div className="h-8 w-8 flex items-center justify-center">
+                          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                        </div>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 hover:bg-transparent text-primary hover:text-primary/80"
+                          onClick={handleSearch}
+                          disabled={isSearching}
+                          data-testid="button-search"
+                        >
+                          <div className="sr-only">Search</div>
+                          <span className="text-xs font-semibold mr-1">Go</span>
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Autocomplete Suggestions */}
+                    {showSuggestions && suggestions.length > 0 && (
+                      <div className="absolute top-full left-0 right-0 mt-2 bg-background/95 backdrop-blur-md border border-border/60 shadow-lg rounded-lg overflow-hidden z-[1001] max-h-60 overflow-y-auto">
+                        {suggestions.map((suggestion, index) => (
+                          <button
+                            key={index}
+                            className="w-full text-left px-4 py-2 hover:bg-primary/10 transition-colors text-sm flex items-start gap-2 border-b border-border/30 last:border-0"
+                            onClick={() => handleSelectSuggestion(suggestion)}
+                          >
+                            <MapPin className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                            <span className="line-clamp-2">{suggestion.displayName}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <Button variant="outline" size="icon" onClick={handleUseMyLocation} disabled={isLocating} title="My location" data-testid="button-locate">
-                    {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Locate className="h-4 w-4" />}
+
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={handleUseMyLocation}
+                    disabled={isLocating}
+                    title="My location"
+                    className="h-10 w-10 bg-background/95 backdrop-blur-md border border-border/60 shadow-lg rounded-lg hover:bg-background transition-transform hover:scale-105"
+                    data-testid="button-locate"
+                  >
+                    {isLocating ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <Locate className="h-4 w-4 text-primary" />}
                   </Button>
                 </div>
-
-                <div ref={mapRef} className="flex-1 min-h-[300px] rounded-lg overflow-hidden border border-border" data-testid="map-container" />
               </div>
             </div>
 
@@ -397,19 +498,19 @@ export default function Home() {
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <label className="text-sm font-medium">Existing Geotags</label>
-                      <button 
-                        onClick={() => setShowExistingGeotags(!showExistingGeotags)} 
+                      <button
+                        onClick={() => setShowExistingGeotags(!showExistingGeotags)}
                         className="text-xs text-primary hover:underline"
                         data-testid="button-show-existing"
                       >
                         ({showExistingGeotags ? "hide" : "show"})
                       </button>
                     </div>
-                    <Input 
+                    <Input
                       value={showExistingGeotags ? existingGpsText : ""}
                       placeholder="Hidden"
-                      readOnly 
-                      className="bg-background" 
+                      readOnly
+                      className="bg-background"
                       data-testid="input-existing-geotags"
                     />
                   </div>
@@ -417,10 +518,10 @@ export default function Home() {
                     <div className="flex items-center gap-2 mb-1">
                       <label className="text-sm font-medium">New Geotags</label>
                     </div>
-                    <Input 
+                    <Input
                       value={`${latitude.toFixed(4)},${longitude.toFixed(4)}`}
-                      readOnly 
-                      className="bg-background font-mono" 
+                      readOnly
+                      className="bg-background font-mono"
                       data-testid="input-new-geotags"
                     />
                   </div>
@@ -429,11 +530,11 @@ export default function Home() {
                       <label className="text-sm font-medium">Keywords and Tags</label>
                       <HelpCircle className="h-3 w-3 text-muted-foreground" />
                     </div>
-                    <Input 
-                      placeholder="travel, nature, sunset" 
-                      value={keywords} 
-                      onChange={(e) => setKeywords(e.target.value)} 
-                      className="bg-background" 
+                    <Input
+                      placeholder="travel, nature, sunset"
+                      value={keywords}
+                      onChange={(e) => setKeywords(e.target.value)}
+                      className="bg-background"
                       data-testid="input-keywords"
                     />
                   </div>
@@ -442,11 +543,11 @@ export default function Home() {
                       <label className="text-sm font-medium">Description / Alternative Text</label>
                       <HelpCircle className="h-3 w-3 text-muted-foreground" />
                     </div>
-                    <Input 
-                      placeholder="Add a description..." 
-                      value={description} 
-                      onChange={(e) => setDescription(e.target.value)} 
-                      className="bg-background" 
+                    <Input
+                      placeholder="Add a description..."
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      className="bg-background"
                       data-testid="input-description"
                     />
                   </div>
@@ -480,66 +581,56 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-50">
-        <div className="container mx-auto px-4 flex items-center justify-between h-14">
-          <a href="/" className="hover:opacity-80" data-testid="link-logo">
-            <img src={logoImage} alt="GeoTagger" className="h-[42px]" />
-          </a>
-          <nav className="hidden md:flex flex-wrap items-center gap-6 text-sm">
-            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-features">Features</a>
-            <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-how-it-works">How it Works</a>
-            <a href="/gps-finder" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-gps-finder">GPS Finder</a>
-            <a href="#faq" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-faq">FAQ</a>
-          </nav>
-          <ThemeToggle data-testid="button-theme" />
-        </div>
-      </header>
+    <div className="min-h-screen">
+      <Header />
 
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4 text-center">
-          <Badge className="mb-4" variant="secondary"><Sparkles className="h-3 w-3 mr-1" /> Free with GeoTagger</Badge>
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-            Add GPS Location to<br />Your Photos Instantly
+      <section className="py-8 md:py-12">
+        <div className="container mx-auto px-4 text-center max-w-6xl">
+          <Badge className="mb-6 shadow-hover" variant="secondary"><Sparkles className="h-3 w-3 mr-1" /> Free with GeoTagger</Badge>
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+            <span className="gradient-text">Add GPS Location to</span>
+            <br />
+            <span className="gradient-text">Your Photos Instantly</span>
           </h1>
-          <h2 className="text-xl md:text-2xl text-muted-foreground font-medium mb-6">
+          <h2 className="text-xl md:text-2xl lg:text-3xl text-muted-foreground font-medium mb-8 max-w-3xl mx-auto">
             Free Online Image Geotagging Tool — No Uploads, No Accounts
           </h2>
 
           <Card
-            className={`max-w-2xl mx-auto cursor-pointer transition-all border-2 border-dashed ${isDragging ? "border-primary bg-primary/5" : "border-primary/30 hover:border-primary/50"}`}
+            className={`max-w-2xl mx-auto cursor-pointer transition-all duration-500 border-2 border-dashed shadow-hover ${isDragging ? "border-primary bg-primary/10 scale-105" : "border-primary/30 hover:border-primary/50 hover:shadow-xl"}`}
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
             onDragLeave={(e) => { e.preventDefault(); setIsDragging(false); }}
             onDrop={(e) => handleDrop(e)}
             onClick={() => document.getElementById("hero-upload")?.click()}
             data-testid="dropzone"
           >
-            <CardContent className="py-12">
-              <Upload className="h-12 w-12 mx-auto mb-4 text-primary" />
-              <h3 className="text-xl font-semibold mb-2">Drop photos here to geotag</h3>
-              <p className="text-muted-foreground mb-4">or click to browse</p>
-              <div className="flex flex-wrap justify-center gap-2 mb-4">
-                <Badge variant="outline">JPG</Badge>
-                <Badge variant="outline">PNG</Badge>
-                <Badge variant="outline">WebP</Badge>
-                <Badge variant="outline">HEIC</Badge>
+            <CardContent className="py-14">
+              <Upload className={`h-14 w-14 mx-auto mb-5 text-primary transition-transform duration-300 ${isDragging ? "scale-125" : ""}`} />
+              <h3 className="text-2xl font-semibold mb-3">Drop photos here to geotag</h3>
+              <p className="text-muted-foreground mb-5 text-lg">or click to browse</p>
+              <div className="flex flex-wrap justify-center gap-2 mb-5">
+                <Badge variant="outline" className="text-sm">JPG</Badge>
+                <Badge variant="outline" className="text-sm">PNG*</Badge>
+                <Badge variant="outline" className="text-sm">WebP*</Badge>
+                <Badge variant="outline" className="text-sm">HEIC*</Badge>
               </div>
-              <p className="text-xs text-muted-foreground">All files are processed locally on your device for maximum privacy and security.</p>
+              <p className="text-xs text-muted-foreground mt-2">* Non-JPEG files are converted to JPEG to ensure Exif compatibility.</p>
+              <p className="text-sm text-muted-foreground max-w-md mx-auto">All files are processed locally on your device for maximum privacy and security.</p>
               <input id="hero-upload" type="file" accept={ACCEPTED_EXTENSIONS.join(",")} multiple onChange={(e) => e.target.files && processFiles(e.target.files)} className="hidden" />
             </CardContent>
           </Card>
 
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-6 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1"><Check className="h-4 w-4 text-green-500" /> Works entirely in your browser</span>
-            <span className="flex items-center gap-1"><Check className="h-4 w-4 text-green-500" /> No sign-up, no fees, no limits</span>
-            <span className="flex items-center gap-1"><Check className="h-4 w-4 text-green-500" /> Fast batch geotagging</span>
-            <span className="flex items-center gap-1"><Check className="h-4 w-4 text-green-500" /> Supports JPG, PNG, WebP & HEIC</span>
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 mt-8 text-sm text-muted-foreground">
+            <span className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> Works entirely in your browser</span>
+            <span className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> No sign-up, no fees, no limits</span>
+            <span className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> Fast batch geotagging</span>
+            <span className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> Supports JPG, PNG, WebP & HEIC</span>
           </div>
         </div>
       </section>
 
       <section id="what-is-geotagger" className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-6xl">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-center gap-2 mb-6">
               <Globe className="h-8 w-8 text-primary" />
@@ -564,7 +655,7 @@ export default function Home() {
       </section>
 
       <section id="what-is-geotagging" className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-6xl">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-center gap-2 mb-6">
               <MapPin className="h-8 w-8 text-primary" />
@@ -616,7 +707,7 @@ export default function Home() {
       </section>
 
       <section id="privacy" className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-6xl">
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex items-center justify-center gap-2 mb-6">
               <Lock className="h-8 w-8 text-green-500" />
@@ -665,7 +756,7 @@ export default function Home() {
       </section>
 
       <section id="features" className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-2 mb-4">
               <Zap className="h-8 w-8 text-primary" />
@@ -715,7 +806,7 @@ export default function Home() {
       </section>
 
       <section id="who-should-use" className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-6xl">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-center gap-2 mb-6">
               <Users className="h-8 w-8 text-primary" />
@@ -780,7 +871,7 @@ export default function Home() {
       </section>
 
       <section id="how-it-works" className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">How It Works</h2>
             <p className="text-muted-foreground">Three simple steps to geotag your photos</p>
@@ -821,7 +912,7 @@ export default function Home() {
       </section>
 
       <section id="vs-others" className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-6xl">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-4">GeoTagger vs Other Geotagging Tools</h2>
             <p className="text-muted-foreground mb-8">Unlike traditional software or paid tools:</p>
@@ -875,7 +966,7 @@ export default function Home() {
       </section>
 
       <section id="faq" className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
           </div>
@@ -899,40 +990,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="border-t border-border py-10">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
-            <div className="md:max-w-md">
-              <img src={logoImage} alt="GeoTagger" className="h-[59px] mb-4" />
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                GeoTagger is a free online image geotagging tool that allows users to add GPS location data to photos directly in their browser. It supports JPG, PNG, WebP, and HEIC files and works without uploads, accounts, or subscriptions.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-8">
-              <div>
-                <h4 className="font-semibold mb-3">Product</h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li><a href="#features" className="hover:text-foreground transition-colors" data-testid="link-footer-features">Features</a></li>
-                  <li><a href="#how-it-works" className="hover:text-foreground transition-colors" data-testid="link-footer-how">How it Works</a></li>
-                  <li><a href="/gps-finder" className="hover:text-foreground transition-colors" data-testid="link-footer-finder">GPS Finder</a></li>
-                  <li><a href="#faq" className="hover:text-foreground transition-colors" data-testid="link-footer-faq">FAQ</a></li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-3">Legal</h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li><a href="/privacy" className="hover:text-foreground transition-colors" data-testid="link-footer-privacy">Privacy Policy</a></li>
-                  <li><a href="/terms" className="hover:text-foreground transition-colors" data-testid="link-footer-terms">Terms of Service</a></li>
-                  <li><a href="/cookies" className="hover:text-foreground transition-colors" data-testid="link-footer-cookies">Cookie Policy</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-border mt-8 pt-6 text-center text-sm text-muted-foreground">
-            <p>&copy; {new Date().getFullYear()} GeoTagger. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

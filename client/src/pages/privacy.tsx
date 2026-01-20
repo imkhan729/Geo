@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
-import logoImage from "@assets/Geo_Tagger_Logo_2.webp-removebg-preview_1768829275162.png";
 import { updatePageSEO, SEO_CONFIG } from "@/lib/seo";
 
 export default function Privacy() {
@@ -12,14 +12,7 @@ export default function Privacy() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-50">
-        <div className="container mx-auto px-4 flex items-center justify-between h-14">
-          <Link href="/" className="hover:opacity-80" data-testid="link-logo">
-            <img src={logoImage} alt="GeoTagger" className="h-[42px]" />
-          </Link>
-          <ThemeToggle data-testid="button-theme" />
-        </div>
-      </header>
+      <Header />
 
       <main className="container mx-auto px-4 py-12 max-w-3xl">
         <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-8" data-testid="link-back">
@@ -70,6 +63,7 @@ export default function Privacy() {
           </section>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
