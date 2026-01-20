@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5" />
+
+  <title>GeoTagger – Free Image Geotagging Tool | Add GPS to Photos Online</title>
+  <meta name="description"
+    content="GeoTagger is a free online tool to add GPS location data to photos. Geotag images locally in your browser with no uploads, no accounts, and full privacy." />
+  <meta name="keywords"
+    content="geotag photos, add gps to images, image location finder, exif gps metadata, free geotagging tool, photo geotagging, GPS coordinates, batch geotagging" />
+  <meta name="author" content="FreeGeoTagger" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+
+  <link rel="canonical" href="https://freegeotagger.com/" />
+
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="GeoTagger – Free Image Geotagging Tool | Add GPS to Photos Online" />
+  <meta property="og:description"
+    content="GeoTagger is a free online tool to add GPS location data to photos. Geotag images locally in your browser with no uploads and full privacy." />
+  <meta property="og:url" content="https://freegeotagger.com/" />
+  <meta property="og:site_name" content="FreeGeoTagger" />
+  <meta property="og:image" content="https://freegeotagger.com/favicon.png" />
+  <meta property="og:image:alt" content="FreeGeoTagger - Add GPS coordinates to your photos" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="GeoTagger – Free Image Geotagging Tool | Add GPS to Photos Online" />
+  <meta name="twitter:description"
+    content="GeoTagger is a free online tool to add GPS location data to photos. Geotag images locally in your browser with no uploads and full privacy." />
+  <meta name="twitter:image" content="https://freegeotagger.com/favicon.png" />
+  <meta name="twitter:image:alt" content="FreeGeoTagger - Add GPS coordinates to your photos" />
+
+  <meta name="application-name" content="FreeGeoTagger" />
+  <meta name="apple-mobile-web-app-title" content="FreeGeoTagger" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#3b82f6" />
+  <meta name="msapplication-TileColor" content="#3b82f6" />
+
+  <link rel="icon" type="image/png" href="/favicon.png?v=2" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://unpkg.com" />
+  <link rel="dns-prefetch" href="https://tile.openstreetmap.org" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "GeoTagger",
+      "applicationCategory": "PhotographyApplication",
+      "operatingSystem": "Web",
+      "description": "GeoTagger is a free browser-based tool that allows users to add GPS location data to photos without uploading files.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "GeoTagger",
+      "url": "https://freegeotagger.com",
+      "logo": "https://freegeotagger.com/favicon.png",
+      "description": "Free, privacy-focused photo geotagging tool"
+    }
+    </script>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is GeoTagger really free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. GeoTagger is completely free with no hidden fees, subscriptions, or watermarks."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are my photos uploaded to any server?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. All processing happens locally in your browser. Your photos never leave your device."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I geotag multiple photos at once?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Batch geotagging is fully supported — upload multiple photos and apply the same location to all."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What file formats are supported?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "JPG, PNG, WebP, and HEIC are all supported. HEIC files are auto-converted to JPG for processing."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Will geotagging affect image quality?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Only metadata is modified — image quality remains completely unchanged."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does this work on mobile devices?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. GeoTagger works on modern mobile browsers including Chrome, Safari, and Firefox."
+          }
+        }
+      ]
+    }
+    </script>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://freegeotagger.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "GPS Finder",
+          "item": "https://freegeotagger.com/gps-finder"
+        }
+      ]
+    }
+    </script>
+  <script type="module" crossorigin src="/assets/index-DidK3jyb.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-yQFnlvSq.css">
+</head>
+
+<body>
+  <div id="root"></div>
+</body>
+
+</html>
