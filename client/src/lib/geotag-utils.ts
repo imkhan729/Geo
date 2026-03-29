@@ -166,6 +166,143 @@ async function convertToJpeg(file: File): Promise<{ blob: Blob; dataUrl: string 
   });
 }
 
+function stringToBytes(str: string): Uint8Array {
+  const bytes = new Uint8Array(str.length);
+  for (let i = 0; i < str.length; i++) {
+    bytes[i] = str.charCodeAt(i) & 0xff;
+  }
+  return bytes;
+}
+
+function uint32ToBytes(val: number): Uint8Array {
+  return new Uint8Array([val & 0xff, (val >> 8) & 0xff, (val >> 16) & 0xff, (val >> 24) & 0xff]);
+}
+
+function uint24ToBytes(val: number): Uint8Array {
+  return new Uint8Array([val & 0xff, (val >> 8) & 0xff, (val >> 16) & 0xff]);
+}
+
+async function injectExifIntoWebP(jpegBlob: Blob, exifBytesStr: string): Promise<Blob> {
+  const webpBlob = await new Promise<Blob>((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(jpegBlob);
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        URL.revokeObjectURL(url);
+        return reject(new Error("No canvas context"));
+      }
+      ctx.drawImage(img, 0, 0);
+      URL.revokeObjectURL(url);
+      canvas.toBlob((b) => {
+        if (b) resolve(b);
+        else reject(new Error("Failed to convert layout to WebP"));
+      }, "image/webp", 1.0);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Image load failed"));
+    };
+    img.src = url;
+  });
+
+  const buffer = await webpBlob.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  const view = new DataView(buffer);
+  const getStr = (arr: Uint8Array) => Array.from(arr).map(b => String.fromCharCode(b)).join('');
+  
+  if (getStr(bytes.slice(0, 4)) !== 'RIFF' || getStr(bytes.slice(8, 12)) !== 'WEBP') {
+    return webpBlob;
+  }
+
+  let pos = 12;
+  let vp8xFlags = 0;
+  let canvasWidth = 0;
+  let canvasHeight = 0;
+  let chunks: {tag: string, payload: Uint8Array}[] = [];
+  
+  while (pos < bytes.length) {
+    if (pos + 8 > bytes.length) break;
+    const tag = getStr(bytes.slice(pos, pos + 4));
+    const size = view.getUint32(pos + 4, true);
+    const paddedSize = size % 2 !== 0 ? size + 1 : size;
+    if (pos + 8 + size > bytes.length) break;
+    const payload = bytes.slice(pos + 8, pos + 8 + size);
+    
+    if (tag === 'VP8X') {
+      vp8xFlags = payload[0];
+      canvasWidth = 1 + (payload[4] | (payload[5] << 8) | (payload[6] << 16));
+      canvasHeight = 1 + (payload[7] | (payload[8] << 8) | (payload[9] << 16));
+    } else if (tag === 'EXIF') {
+       // skip
+    } else {
+      chunks.push({tag, payload});
+      if (!canvasWidth && (tag === 'VP8 ' || tag === 'VP8L')) {
+         if (tag === 'VP8 ' && payload[3] === 0x9d && payload[4] === 0x01 && payload[5] === 0x2a) {
+             canvasWidth = payload[6] | ((payload[7] & 0x3f) << 8);
+             canvasHeight = payload[8] | ((payload[9] & 0x3f) << 8);
+         } else if (tag === 'VP8L') {
+             let b1 = payload[1], b2 = payload[2], b3 = payload[3], b4 = payload[4];
+             canvasWidth = 1 + (((b2 & 0x3F) << 8) | b1);
+             canvasHeight = 1 + (((b4 & 0x0F) << 10) | (b3 << 2) | ((b2 & 0xC0) >> 6));
+         }
+      }
+    }
+    pos += 8 + paddedSize;
+  }
+
+  vp8xFlags |= 0x08; 
+  let exifPayload;
+  if (!exifBytesStr.startsWith("Exif\x00\x00")) {
+    exifPayload = stringToBytes("Exif\x00\x00" + exifBytesStr);
+  } else {
+    exifPayload = stringToBytes(exifBytesStr);
+  }
+  const exifChunkSize = exifPayload.length;
+  
+  const vp8xPayload = new Uint8Array(10);
+  vp8xPayload[0] = vp8xFlags;
+  canvasWidth = canvasWidth || 1;
+  canvasHeight = canvasHeight || 1;
+  vp8xPayload.set(uint24ToBytes(canvasWidth - 1), 4);
+  vp8xPayload.set(uint24ToBytes(canvasHeight - 1), 7);
+  
+  let newFileSize = 4 + 8 + 10;
+  const outputChunks: Uint8Array[] = [
+    stringToBytes('VP8X'), uint32ToBytes(10), vp8xPayload
+  ];
+  
+  for (const chunk of chunks) {
+    outputChunks.push(stringToBytes(chunk.tag));
+    outputChunks.push(uint32ToBytes(chunk.payload.length));
+    outputChunks.push(chunk.payload);
+    if (chunk.payload.length % 2 !== 0) outputChunks.push(new Uint8Array([0]));
+    newFileSize += 8 + chunk.payload.length + (chunk.payload.length % 2 !== 0 ? 1 : 0);
+  }
+  
+  outputChunks.push(stringToBytes('EXIF'));
+  outputChunks.push(uint32ToBytes(exifChunkSize));
+  outputChunks.push(exifPayload);
+  if (exifChunkSize % 2 !== 0) outputChunks.push(new Uint8Array([0]));
+  newFileSize += 8 + exifChunkSize + (exifChunkSize % 2 !== 0 ? 1 : 0);
+  
+  const finalBytes = new Uint8Array(8 + newFileSize);
+  finalBytes.set(stringToBytes('RIFF'), 0);
+  finalBytes.set(uint32ToBytes(newFileSize), 4);
+  finalBytes.set(stringToBytes('WEBP'), 8);
+  
+  let offset = 12;
+  for (const part of outputChunks) {
+    finalBytes.set(part, offset);
+    offset += part.length;
+  }
+  
+  return new Blob([finalBytes], { type: "image/webp" });
+}
+
 export async function addGeotagToImage(
   file: File,
   geotag: GeotagData
@@ -230,12 +367,25 @@ export async function addGeotagToImage(
   const response = await fetch(newDataUrl);
   const blob = await response.blob();
 
+  if (isWebp) {
+    try {
+      return await injectExifIntoWebP(blob, exifBytes);
+    } catch (e) {
+      console.error("Failed to inject EXIF into WebP, falling back to JPEG", e);
+      return blob;
+    }
+  }
+
   return blob;
 }
 
 export function downloadGeotaggedImage(blob: Blob, originalName: string): void {
+  const extensionMatch = originalName.match(/\.([^/.]+)$/);
+  const originalExt = extensionMatch ? extensionMatch[1].toLowerCase() : "jpg";
+  const validExt = originalExt === "heic" ? "jpg" : originalExt;
+  
   const baseName = originalName.replace(/\.[^/.]+$/, "");
-  const newName = `${baseName}_geotagged.jpg`;
+  const newName = `${baseName}_geotagged.${validExt}`;
 
   saveAs(blob, newName);
 }
@@ -244,8 +394,12 @@ export async function downloadAsZip(files: { name: string; blob: Blob }[]): Prom
   const zip = new JSZip();
 
   files.forEach((file) => {
+    const extensionMatch = file.name.match(/\.([^/.]+)$/);
+    const originalExt = extensionMatch ? extensionMatch[1].toLowerCase() : "jpg";
+    const validExt = originalExt === "heic" ? "jpg" : originalExt;
+
     const baseName = file.name.replace(/\.[^/.]+$/, "");
-    const newName = `${baseName}_geotagged.jpg`;
+    const newName = `${baseName}_geotagged.${validExt}`;
     zip.file(newName, file.blob);
   });
 

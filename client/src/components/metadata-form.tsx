@@ -61,7 +61,7 @@ export function MetadataForm({
           <div className="flex items-start gap-2">
             <FileText className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
             <p className="text-xs text-muted-foreground">
-              <strong>Note:</strong> GPS coordinates work best with JPG files. PNG and WebP have limited EXIF support, and some viewers may not display the embedded location. HEIC files will be converted to JPG.
+              <strong>Note:</strong> GPS coordinates work best with JPG and WebP files. PNG has limited EXIF support, and some viewers may not display the embedded location. HEIC files will be converted to JPG.
             </p>
           </div>
         </div>

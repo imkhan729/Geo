@@ -340,7 +340,7 @@ export default function Home() {
     { q: "Is GeoTagger really free?", a: "Yes. GeoTagger is completely free with no hidden fees, subscriptions, or watermarks." },
     { q: "Are my photos uploaded to any server?", a: "No. All processing happens locally in your browser. Your photos never leave your device." },
     { q: "Can I geotag multiple photos at once?", a: "Yes. Batch geotagging is fully supported — upload multiple photos and apply the same location to all." },
-    { q: "What file formats are supported?", a: "JPG, PNG, WebP, and HEIC are all supported. Note that non-JPEG files are automatically converted to high-quality JPEG to support standard GPS metadata." },
+    { q: "What file formats are supported?", a: "JPG, PNG, WebP, and HEIC are all supported. Note that PNG and HEIC files are automatically converted to high-quality JPEG to support standard GPS metadata, while WebP files retain their format." },
     { q: "Will geotagging affect image quality?", a: "No. Only metadata is modified — image quality remains completely unchanged." },
     { q: "Does this work on mobile devices?", a: "Yes. GeoTagger works on modern mobile browsers including Chrome, Safari, and Firefox." },
   ];
@@ -614,7 +614,7 @@ export default function Home() {
                 <Badge variant="outline" className="text-sm">WebP*</Badge>
                 <Badge variant="outline" className="text-sm">HEIC*</Badge>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">* Non-JPEG files are converted to JPEG to ensure Exif compatibility.</p>
+              <p className="text-xs text-muted-foreground mt-2">* PNG and HEIC files are converted to JPEG to ensure Exif compatibility. WebP retains its original format.</p>
               <p className="text-sm text-muted-foreground max-w-md mx-auto">All files are processed locally on your device for maximum privacy and security.</p>
               <input id="hero-upload" type="file" accept={ACCEPTED_EXTENSIONS.join(",")} multiple onChange={(e) => e.target.files && processFiles(e.target.files)} className="hidden" />
             </CardContent>
@@ -798,7 +798,7 @@ export default function Home() {
                   <Camera className="h-8 w-8 text-purple-500 icon-glow" />
                 </div>
                 <h3 className="font-semibold mb-2">All Major Formats</h3>
-                <p className="text-sm text-muted-foreground">JPG, PNG, WebP, and HEIC (auto-converted).</p>
+                <p className="text-sm text-muted-foreground">JPG, WebP. PNG and HEIC are auto-converted.</p>
               </Card>
             </div>
           </div>
