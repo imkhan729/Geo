@@ -72,7 +72,52 @@ export async function readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
 
 export function extractExistingGps(dataUrl: string): { lat: number; lng: number } | null {
   try {
-    const exifData = piexif.load(dataUrl);
+    let exifPayload = dataUrl;
+
+    if (dataUrl.startsWith("data:image/png")) {
+      const base64 = dataUrl.split(',')[1];
+      const binaryStr = window.atob(base64);
+      let pos = 8;
+      let found = false;
+      while (pos < binaryStr.length) {
+        if (pos + 8 > binaryStr.length) break;
+        const len = (binaryStr.charCodeAt(pos) << 24) | (binaryStr.charCodeAt(pos+1) << 16) | (binaryStr.charCodeAt(pos+2) << 8) | binaryStr.charCodeAt(pos+3);
+        const tag = binaryStr.substring(pos+4, pos+8);
+        if (tag === 'eXIf') {
+          const tiffStr = binaryStr.substring(pos+8, pos+8+len);
+          exifPayload = "Exif\x00\x00" + tiffStr;
+          found = true;
+          break;
+        }
+        pos += 12 + len;
+      }
+      if (!found) return null;
+    } else if (dataUrl.startsWith("data:image/webp")) {
+      const base64 = dataUrl.split(',')[1];
+      const binaryStr = window.atob(base64);
+      let pos = 12;
+      let found = false;
+      while (pos < binaryStr.length) {
+        if (pos + 8 > binaryStr.length) break;
+        const tag = binaryStr.substring(pos, pos+4);
+        const len = binaryStr.charCodeAt(pos+4) | (binaryStr.charCodeAt(pos+5) << 8) | (binaryStr.charCodeAt(pos+6) << 16) | (binaryStr.charCodeAt(pos+7) << 24);
+        const paddedLen = len % 2 !== 0 ? len + 1 : len;
+        if (tag === 'EXIF') {
+          const tiffStr = binaryStr.substring(pos+8, pos+8+len);
+          if (!tiffStr.startsWith("Exif\x00\x00")) {
+            exifPayload = "Exif\x00\x00" + tiffStr;
+          } else {
+            exifPayload = tiffStr;
+          }
+          found = true;
+          break;
+        }
+        pos += 8 + paddedLen;
+      }
+      if (!found) return null;
+    }
+
+    const exifData = piexif.load(exifPayload);
     const gpsData = exifData.GPS;
 
     if (!gpsData || !gpsData[piexif.GPSIFD.GPSLatitude] || !gpsData[piexif.GPSIFD.GPSLongitude]) {
