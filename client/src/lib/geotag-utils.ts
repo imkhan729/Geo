@@ -256,8 +256,8 @@ async function injectExifIntoWebP(jpegBlob: Blob, exifBytesStr: string): Promise
 
   vp8xFlags |= 0x08; 
   let exifPayload;
-  if (!exifBytesStr.startsWith("Exif\x00\x00")) {
-    exifPayload = stringToBytes("Exif\x00\x00" + exifBytesStr);
+  if (exifBytesStr.startsWith("Exif\x00\x00")) {
+    exifPayload = stringToBytes(exifBytesStr.substring(6));
   } else {
     exifPayload = stringToBytes(exifBytesStr);
   }
@@ -301,6 +301,86 @@ async function injectExifIntoWebP(jpegBlob: Blob, exifBytesStr: string): Promise
   }
   
   return new Blob([finalBytes], { type: "image/webp" });
+}
+
+function uint32ToBytesBE(val: number): Uint8Array {
+  return new Uint8Array([(val >> 24) & 0xff, (val >> 16) & 0xff, (val >> 8) & 0xff, val & 0xff]);
+}
+
+function getCrc32Table(): Uint32Array {
+  const table = new Uint32Array(256);
+  for (let i = 0; i < 256; i++) {
+    let c = i;
+    for (let k = 0; k < 8; k++) {
+      c = ((c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1));
+    }
+    table[i] = c;
+  }
+  return table;
+}
+const crc32Table = getCrc32Table();
+
+function calculateCrc32(data: Uint8Array): number {
+  let crc = 0xFFFFFFFF;
+  for (let i = 0; i < data.length; i++) {
+    crc = (crc >>> 8) ^ crc32Table[(crc ^ data[i]) & 0xFF];
+  }
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+
+async function injectExifIntoPNG(jpegBlob: Blob, exifBytesStr: string): Promise<Blob> {
+  const pngBlob = await new Promise<Blob>((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(jpegBlob);
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        URL.revokeObjectURL(url);
+        return reject(new Error("No canvas context"));
+      }
+      ctx.drawImage(img, 0, 0);
+      URL.revokeObjectURL(url);
+      canvas.toBlob((b) => {
+        if (b) resolve(b);
+        else reject(new Error("Failed to convert layout to PNG"));
+      }, "image/png");
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Image load failed"));
+    };
+    img.src = url;
+  });
+
+  const buffer = await pngBlob.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  
+  const payloadStr = exifBytesStr.startsWith("Exif\x00\x00") ? exifBytesStr.substring(6) : exifBytesStr;
+  const payload = stringToBytes(payloadStr);
+  
+  const typeBytes = stringToBytes("eXIf");
+  const crcData = new Uint8Array(4 + payload.length);
+  crcData.set(typeBytes, 0);
+  crcData.set(payload, 4);
+  const crc = calculateCrc32(crcData);
+  
+  const chunk = new Uint8Array(12 + payload.length);
+  chunk.set(uint32ToBytesBE(payload.length), 0);
+  chunk.set(crcData, 4);
+  chunk.set(uint32ToBytesBE(crc), 4 + crcData.length);
+  
+  const insertPos = 33;
+  if (bytes.length < insertPos) return pngBlob;
+  
+  const finalBytes = new Uint8Array(bytes.length + chunk.length);
+  finalBytes.set(bytes.subarray(0, insertPos), 0);
+  finalBytes.set(chunk, insertPos);
+  finalBytes.set(bytes.subarray(insertPos), insertPos + chunk.length);
+  
+  return new Blob([finalBytes], { type: "image/png" });
 }
 
 export async function addGeotagToImage(
@@ -372,6 +452,13 @@ export async function addGeotagToImage(
       return await injectExifIntoWebP(blob, exifBytes);
     } catch (e) {
       console.error("Failed to inject EXIF into WebP, falling back to JPEG", e);
+      return blob;
+    }
+  } else if (isPng) {
+    try {
+      return await injectExifIntoPNG(blob, exifBytes);
+    } catch (e) {
+      console.error("Failed to inject EXIF into PNG, falling back to JPEG", e);
       return blob;
     }
   }
