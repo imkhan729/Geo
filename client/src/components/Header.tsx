@@ -1,94 +1,139 @@
 import logoImage from "@assets/Geo_Tagger_Logo_2.webp-removebg-preview_1768829275162.png";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useLocation } from "wouter";
+import { useState } from "react";
+import { Menu, X, MapPin } from "lucide-react";
 
 export function Header() {
     const [location] = useLocation();
+    const [mobileOpen, setMobileOpen] = useState(false);
 
     const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-        // Check if the link contains a hash (section link)
+        setMobileOpen(false);
         if (href.includes('#')) {
             const [path, hash] = href.split('#');
-
-            // If we're on the target page or path is root
             if (location === path || path === '/') {
                 e.preventDefault();
-
-                // If we're not on the home page, navigate there first
                 if (location !== '/' && path === '/') {
                     window.location.href = href;
                     return;
                 }
-
-                // Smooth scroll to the section
                 const element = document.getElementById(hash);
                 if (element) {
                     element.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             }
-            // If we're on a different page, let the browser handle navigation normally
         }
     };
 
+    const navLinks = [
+        { href: "/", label: "Home", testId: "link-home" },
+        { href: "/#features", label: "Features", testId: "link-features" },
+        { href: "/#how-it-works", label: "How it Works", testId: "link-how-it-works" },
+        { href: "/gps-finder", label: "GPS Finder", testId: "link-gps-finder" },
+        { href: "/blog", label: "Blog", testId: "link-blog" },
+    ];
+
     return (
-        <header className="border-b border-border glass sticky top-0 z-50 shadow-sm">
+        <header className="border-b border-border glass sticky top-0 z-50">
             <div className="container mx-auto px-4 max-w-6xl">
                 <div className="flex items-center justify-between h-16">
-                    <a href="/" className="hover:opacity-80 transition-opacity" data-testid="link-logo">
-                        <img src={logoImage} alt="GeoTagger" className="h-[42px]" />
+                    {/* Logo */}
+                    <a href="/" className="hover:opacity-85 transition-opacity flex-shrink-0" data-testid="link-logo">
+                        <img src={logoImage} alt="GeoTagger — Free Photo Geotagging Tool" className="h-[40px] w-auto" />
                     </a>
-                    <div className="flex items-center gap-6">
-                        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+
+                    {/* Desktop nav */}
+                    <nav className="hidden md:flex items-center gap-1 text-sm font-medium" aria-label="Main navigation">
+                        {navLinks.map((link) => (
                             <a
-                                href="/"
-                                onClick={(e) => handleNavClick(e, "/")}
-                                className="nav-link text-muted-foreground hover:text-foreground transition-all duration-300 relative group"
-                                data-testid="link-home"
+                                key={link.href}
+                                href={link.href}
+                                onClick={(e) => handleNavClick(e, link.href)}
+                                className="nav-link px-3 py-1.5 text-muted-foreground hover:text-foreground rounded-md hover:bg-muted/60 transition-all duration-200"
+                                data-testid={link.testId}
                             >
-                                Home
-                                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-green-500 group-hover:w-full transition-all duration-300"></span>
+                                {link.label}
+                                <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-gradient-to-r from-primary to-amber-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
                             </a>
-                            <a
-                                href="/#features"
-                                onClick={(e) => handleNavClick(e, "/#features")}
-                                className="nav-link text-muted-foreground hover:text-foreground transition-all duration-300 relative group"
-                                data-testid="link-features"
-                            >
-                                Features
-                                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-green-500 group-hover:w-full transition-all duration-300"></span>
-                            </a>
-                            <a
-                                href="/#how-it-works"
-                                onClick={(e) => handleNavClick(e, "/#how-it-works")}
-                                className="nav-link text-muted-foreground hover:text-foreground transition-all duration-300 relative group"
-                                data-testid="link-how-it-works"
-                            >
-                                How it Works
-                                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-green-500 group-hover:w-full transition-all duration-300"></span>
-                            </a>
-                            <a
-                                href="/gps-finder"
-                                onClick={(e) => handleNavClick(e, "/gps-finder")}
-                                className="nav-link text-muted-foreground hover:text-foreground transition-all duration-300 relative group"
-                                data-testid="link-gps-finder"
-                            >
-                                GPS Finder
-                                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-green-500 group-hover:w-full transition-all duration-300"></span>
-                            </a>
-                            <a
-                                href="/#faq"
-                                onClick={(e) => handleNavClick(e, "/#faq")}
-                                className="nav-link text-muted-foreground hover:text-foreground transition-all duration-300 relative group"
-                                data-testid="link-faq"
-                            >
-                                FAQ
-                                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-green-500 group-hover:w-full transition-all duration-300"></span>
-                            </a>
-                        </nav>
+                        ))}
+                    </nav>
+
+                    {/* Desktop actions */}
+                    <div className="hidden md:flex items-center gap-3">
                         <ThemeToggle data-testid="button-theme" />
+                        <a
+                            href="/#upload-widget"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                const el = document.getElementById('upload-widget');
+                                if (el) {
+                                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                } else {
+                                    window.location.href = '/#upload-widget';
+                                }
+                            }}
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold font-display bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                            data-testid="link-cta-header"
+                        >
+                            <MapPin className="h-3.5 w-3.5" />
+                            Geotag Free
+                        </a>
+                    </div>
+
+                    {/* Mobile actions */}
+                    <div className="flex md:hidden items-center gap-2">
+                        <ThemeToggle data-testid="button-theme-mobile" />
+                        <button
+                            onClick={() => setMobileOpen(!mobileOpen)}
+                            className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+                            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+                            aria-expanded={mobileOpen}
+                        >
+                            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                        </button>
                     </div>
                 </div>
             </div>
+
+            {/* Mobile menu */}
+            {mobileOpen && (
+                <div className="md:hidden border-t border-border bg-background/98 backdrop-blur-md">
+                    <nav className="container mx-auto px-4 py-3 max-w-6xl flex flex-col gap-1" aria-label="Mobile navigation">
+                        {navLinks.map((link) => (
+                            <a
+                                key={link.href}
+                                href={link.href}
+                                onClick={(e) => handleNavClick(e, link.href)}
+                                className="px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-md transition-colors"
+                                data-testid={`mobile-${link.testId}`}
+                            >
+                                {link.label}
+                            </a>
+                        ))}
+                        <div className="pt-2 pb-1">
+                            <a
+                                href="/#upload-widget"
+                                onClick={(e) => {
+                                    setMobileOpen(false);
+                                    e.preventDefault();
+                                    const el = document.getElementById('upload-widget');
+                                    if (el) {
+                                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    } else {
+                                        window.location.href = '/#upload-widget';
+                                    }
+                                }}
+                                className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-lg text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                                data-testid="mobile-link-cta"
+                            >
+                                <MapPin className="h-4 w-4" />
+                                Geotag Photos Free
+                            </a>
+                        </div>
+                    </nav>
+                </div>
+            )}
         </header>
     );
 }

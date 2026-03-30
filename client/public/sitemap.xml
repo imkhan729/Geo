@@ -6,37 +6,65 @@
   
   <url>
     <loc>https://freegeotagger.com/</loc>
-    <lastmod>2026-01-19</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>https://freegeotagger.com/gps-finder</loc>
-    <lastmod>2026-01-19</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   
   <url>
     <loc>https://freegeotagger.com/privacy</loc>
-    <lastmod>2026-01-19</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   
   <url>
     <loc>https://freegeotagger.com/terms</loc>
-    <lastmod>2026-01-19</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   
   <url>
     <loc>https://freegeotagger.com/cookies</loc>
-    <lastmod>2026-01-19</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
-  
+
+  <url>
+    <loc>https://freegeotagger.com/blog</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://freegeotagger.com/blog/how-to-geotag-photos-for-real-estate</loc>
+    <lastmod>2026-03-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://freegeotagger.com/blog/what-is-exif-gps-metadata</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://freegeotagger.com/blog/how-to-add-gps-to-iphone-photos</loc>
+    <lastmod>2026-03-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
 </urlset>

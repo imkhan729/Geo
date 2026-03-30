@@ -19,7 +19,7 @@ import {
   convertHeicToJpeg
 } from "@/lib/geotag-utils";
 import { useToast } from "@/hooks/use-toast";
-import { updatePageSEO, SEO_CONFIG } from "@/lib/seo";
+import { updatePageSEO, SEO_CONFIG, injectPageSchema } from "@/lib/seo";
 
 const ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".heic"];
 
@@ -38,6 +38,55 @@ export default function GpsFinder() {
 
   useEffect(() => {
     updatePageSEO(SEO_CONFIG.gpsFinder);
+
+    injectPageSchema('gps-finder-webpage', {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "GPS Finder – Extract GPS Coordinates from Photos Free",
+      "url": "https://freegeotagger.com/gps-finder",
+      "description": "Instantly extract GPS coordinates from any geotagged photo. Upload a JPG, PNG, WebP, or HEIC image to find where it was taken and view the exact location on an interactive map.",
+      "inLanguage": "en-US",
+      "dateModified": "2026-03-30",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "FreeGeoTagger",
+        "url": "https://freegeotagger.com"
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://freegeotagger.com/" },
+          { "@type": "ListItem", "position": 2, "name": "GPS Finder", "item": "https://freegeotagger.com/gps-finder" }
+        ]
+      }
+    });
+
+    injectPageSchema('gps-finder-faq', {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is a GPS Finder tool?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A GPS Finder reads EXIF metadata from photos to extract embedded GPS coordinates. When you take a photo with location services enabled, your device stores latitude and longitude in the image file. Our GPS Finder reads this data and displays the exact location on an interactive map." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I find GPS coordinates in a photo?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Upload your photo to our GPS Finder tool. If the image contains GPS metadata (EXIF data), coordinates are automatically extracted and shown on a map. You can copy the coordinates or open the location in Google Maps." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my photo uploaded to your servers?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. All processing happens locally in your browser. Your photos never leave your device — we don't store, transmit, or have access to any of your images." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why doesn't my photo have GPS data?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Photos may lack GPS data if location services were disabled when taken, if the image was edited and metadata was stripped, if taken with a camera without GPS, or if downloaded from social media (which often removes location data for privacy)." }
+        }
+      ]
+    });
   }, []);
 
   const mapRef = useRef<HTMLDivElement>(null);
@@ -170,12 +219,13 @@ export default function GpsFinder() {
               <Eye className="h-3 w-3 mr-1" /> Free GPS Location Finder
             </Badge>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              <span className="gradient-text">Extract GPS Coordinates</span>
+              <span className="gradient-text">GPS Finder</span>
+              {" — "}Extract GPS Coordinates
               <br />
-              <span className="gradient-text">from Any Photo</span>
+              from Any Photo Free
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              Discover where your photos were taken. Upload any image to instantly extract GPS location data and view it on an interactive map — 100% free and private.
+              Upload any photo to instantly extract its GPS coordinates and see exactly where it was taken on a map. Works with JPG, PNG, WebP, and HEIC — 100% free and private.
             </p>
 
             {/* Upload Area */}
