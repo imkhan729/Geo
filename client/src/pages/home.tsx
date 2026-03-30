@@ -42,7 +42,7 @@ const ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".heic"];
 /** 3-D tilt effect for .neon-card, .neon-card-amber, .neon-panel elements */
 function useTiltCards(dep?: unknown) {
   useEffect(() => {
-    const cards = document.querySelectorAll<HTMLElement>('.neon-card, .neon-card-amber, .neon-panel');
+    const cards = document.querySelectorAll<HTMLElement>('.neon-card:not([data-no-tilt]), .neon-card-amber:not([data-no-tilt]), .neon-panel:not([data-no-tilt])');
     const handlers: Array<{ el: HTMLElement; move: (e: MouseEvent) => void; leave: () => void }> = [];
 
     cards.forEach((card) => {
@@ -434,7 +434,7 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
               {/* Photo panel */}
-              <div className="neon-panel flex flex-col rounded-2xl border border-border bg-card shadow-sm overflow-hidden" style={{ height: "360px" }}>
+              <div data-no-tilt className="neon-panel flex flex-col rounded-2xl border border-border bg-card shadow-sm overflow-hidden" style={{ height: "360px" }}>
                 {/* Panel top bar */}
                 <div className="flex-none flex items-center justify-between px-4 py-2.5 border-b border-border/70 bg-muted/30">
                   <div className="flex items-center gap-2 min-w-0">
@@ -517,7 +517,7 @@ export default function Home() {
               </div>
 
               {/* Map panel */}
-              <div className="neon-panel flex flex-col rounded-2xl border border-border bg-card shadow-sm overflow-hidden" style={{ height: "360px" }}>
+              <div data-no-tilt className="neon-panel flex flex-col rounded-2xl border border-border bg-card shadow-sm overflow-hidden" style={{ height: "360px" }}>
                 {/* Search bar — sits above the map, full width */}
                 <div className="flex-none px-3 py-2.5 border-b border-border/70 bg-card z-10">
                   <div className="flex gap-2">
@@ -588,7 +588,7 @@ export default function Home() {
             </div>
 
             {/* ── Metadata + Actions ─────────────────────────── */}
-            <div className="neon-card rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
+            <div data-no-tilt className="neon-card rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 divide-y md:divide-y-0 md:divide-x divide-border/50">
                 {/* Existing GPS */}
                 <div className="px-5 py-4 space-y-1.5">
