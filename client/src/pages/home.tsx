@@ -7,10 +7,8 @@ import {
   Compass, HardDrive, Eye, UserX, Plane, Newspaper,
   Building, Home as HomeIcon
 } from "lucide-react";
-import logoImage from "@assets/Geo_Tagger_Logo_2.webp-removebg-preview_1768829275162.png";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { EclipseButton } from "@/components/ui/eclipse-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -542,28 +540,7 @@ export default function Home() {
     return (
       <div className="min-h-screen flex flex-col bg-muted/20">
 
-        {/* ── Same-style nav bar ─────────────────────────────── */}
-        <header className="border-b border-border glass sticky top-0 z-50">
-          <div className="container mx-auto px-4 max-w-6xl">
-            <div className="flex items-center justify-between h-16">
-              <button
-                onClick={() => { setMode("landing"); setImages([]); }}
-                className="hover:opacity-80 transition-opacity"
-                data-testid="button-home"
-              >
-                <img src={logoImage} alt="GeoTagger" className="h-[40px] w-auto" />
-              </button>
-
-              <div className="flex items-center gap-3">
-                <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-muted-foreground bg-primary/8 border border-primary/15 px-3 py-1.5 rounded-full font-medium font-display">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  {images.length} photo{images.length !== 1 ? "s" : ""} loaded
-                </span>
-                <ThemeToggle data-testid="button-theme-toggle" />
-              </div>
-            </div>
-          </div>
-        </header>
+        <Header />
 
         <main className="flex-1 py-5 px-4">
           <div className="container mx-auto max-w-6xl space-y-4">
@@ -818,7 +795,7 @@ export default function Home() {
                 {/* Clear */}
                 <button
                   onClick={clearAll}
-                  className="inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-border/70 bg-background text-sm font-medium text-muted-foreground hover:text-foreground hover:border-border transition-all active:scale-95"
+                  className="inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-border/70 bg-background text-sm font-medium text-muted-foreground"
                   data-testid="button-clear"
                 >
                   <Trash2 className="h-3.5 w-3.5" /> Clear
@@ -833,6 +810,8 @@ export default function Home() {
 
           </div>
         </main>
+
+        <Footer />
       </div>
     );
   }
