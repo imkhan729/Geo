@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
-import { Calendar, Clock, ArrowRight, MapPin, FileImage, Smartphone } from "lucide-react";
+import { Calendar, Clock, ArrowRight, MapPin, FileImage, Smartphone, Globe, Monitor, Layers } from "lucide-react";
 import { EclipseButton } from "@/components/ui/eclipse-button";
 import { useLocation } from "wouter";
 
@@ -46,6 +46,45 @@ const POSTS = [
     iconColor: "text-teal-600",
     iconBg: "bg-teal-500/10",
     category: "Mobile",
+  },
+  {
+    slug: "how-to-geotag-photos-for-google-business-profile",
+    title: "How to Geotag Photos for Google Business Profile",
+    description:
+      "Add GPS coordinates to your business photos before uploading to Google Business Profile — send a precise location signal to Google and strengthen your local SEO rankings.",
+    date: "2026-04-01",
+    dateDisplay: "April 1, 2026",
+    readingTime: "7 min read",
+    icon: Globe,
+    iconColor: "text-blue-600",
+    iconBg: "bg-blue-500/10",
+    category: "Local SEO",
+  },
+  {
+    slug: "how-to-geotag-photos-android",
+    title: "How to Add GPS to Android Photos – Free & Instant",
+    description:
+      "Android photo missing location data? Add GPS coordinates to any Android photo in seconds — free, browser-based, no app install required. Works in Chrome on any Android device.",
+    date: "2026-04-02",
+    dateDisplay: "April 2, 2026",
+    readingTime: "6 min read",
+    icon: Monitor,
+    iconColor: "text-green-600",
+    iconBg: "bg-green-500/10",
+    category: "Android",
+  },
+  {
+    slug: "best-free-photo-geotagging-tools",
+    title: "Best Free Photo Geotagging Tools in 2026",
+    description:
+      "Compare the best free tools for adding GPS to photos in 2026 — browser-based, desktop, and command-line options reviewed for privacy, batch support, and ease of use.",
+    date: "2026-04-03",
+    dateDisplay: "April 3, 2026",
+    readingTime: "8 min read",
+    icon: Layers,
+    iconColor: "text-violet-600",
+    iconBg: "bg-violet-500/10",
+    category: "Tools",
   },
 ];
 

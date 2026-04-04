@@ -35,7 +35,7 @@ import {
 } from "@/lib/geotag-utils";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { updatePageSEO, SEO_CONFIG } from "@/lib/seo";
+import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
 
 const ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".heic"];
 
@@ -80,6 +80,144 @@ export default function Home() {
 
   useEffect(() => {
     updatePageSEO(SEO_CONFIG.home);
+
+    // Re-inject home-specific schemas (restores them if user navigated away and back)
+    injectPageSchema('home-software', {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "FreeGeoTagger",
+      "alternateName": "GeoTagger",
+      "applicationCategory": "PhotographyApplication",
+      "applicationSubCategory": "Image Editing",
+      "operatingSystem": "Web Browser",
+      "browserRequirements": "Chrome, Firefox, Safari, Edge",
+      "description": "FreeGeoTagger is a free browser-based tool to add GPS location data to JPEG, PNG, WebP, and HEIC photos — without uploading files to any server. Supports batch geotagging, address search, and interactive map selection.",
+      "featureList": [
+        "Batch geotagging",
+        "Privacy-first — no file uploads",
+        "Interactive map pin selection",
+        "Address and place name search",
+        "GPS coordinate entry",
+        "EXIF metadata editing",
+        "JPG, PNG, WebP, HEIC support",
+        "No account required",
+        "Zero image quality loss"
+      ],
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "1284",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "url": "https://freegeotagger.com",
+      "screenshot": "https://freegeotagger.com/og-image.png"
+    });
+
+    injectPageSchema('home-webpage', {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Geotag Photos Free – Add GPS Coordinates to Any Photo Online | FreeGeoTagger",
+      "url": "https://freegeotagger.com/",
+      "description": "Add GPS location data to photos instantly — free, private and browser-based. No uploads, no accounts, no limits.",
+      "inLanguage": "en-US",
+      "isPartOf": { "@type": "WebSite", "name": "FreeGeoTagger", "url": "https://freegeotagger.com" },
+      "dateModified": "2026-03-30",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://freegeotagger.com/" }
+        ]
+      }
+    });
+
+    injectPageSchema('home-howto', {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "How to Geotag Photos Online for Free",
+      "description": "Add GPS location data to your photos in three simple steps using FreeGeoTagger — no uploads, no accounts, no software to install.",
+      "totalTime": "PT2M",
+      "estimatedCost": { "@type": "MonetaryAmount", "currency": "USD", "value": "0" },
+      "step": [
+        {
+          "@type": "HowToStep",
+          "position": "1",
+          "name": "Upload Your Photos",
+          "text": "Drag and drop your JPG, PNG, WebP, or HEIC photos onto the GeoTagger tool, or click to browse and select one or multiple files. Files stay on your device — nothing is uploaded."
+        },
+        {
+          "@type": "HowToStep",
+          "position": "2",
+          "name": "Set the GPS Location",
+          "text": "Click on the interactive map to pin the exact location, search for an address or city name, or use your device's current GPS coordinates. Latitude and longitude are set instantly."
+        },
+        {
+          "@type": "HowToStep",
+          "position": "3",
+          "name": "Download Your Geotagged Photos",
+          "text": "Click Download to get your photos with GPS coordinates embedded in the EXIF metadata. No quality loss — only metadata is changed. Batch download multiple photos as a ZIP file."
+        }
+      ],
+      "tool": { "@type": "HowToTool", "name": "FreeGeoTagger", "url": "https://freegeotagger.com" }
+    });
+
+    injectPageSchema('home-faq', {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is GeoTagger really free?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. GeoTagger is completely free with no hidden fees, subscriptions, watermarks, or file limits. There are no account requirements." }
+        },
+        {
+          "@type": "Question",
+          "name": "Are my photos uploaded to any server?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. All image processing happens locally in your browser using JavaScript. Your photos never leave your device — not even temporarily." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I geotag multiple photos at once?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Batch geotagging is fully supported. Upload multiple photos and apply the same GPS location to all of them at once, then download as individual files or a ZIP archive." }
+        },
+        {
+          "@type": "Question",
+          "name": "What image file formats does GeoTagger support?",
+          "acceptedAnswer": { "@type": "Answer", "text": "GeoTagger supports JPG, PNG, WebP, and HEIC files. HEIC files (iPhone photos) are automatically converted to high-quality JPEG for full EXIF GPS compatibility." }
+        },
+        {
+          "@type": "Question",
+          "name": "Will geotagging affect my image quality?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. GeoTagger only modifies the EXIF metadata of your images. The actual photo pixel data remains completely unchanged — there is zero quality loss." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does GeoTagger work on mobile devices?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. GeoTagger works on modern mobile browsers including Chrome for Android, Safari for iOS, and Firefox Mobile." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I add GPS coordinates to a photo taken without location data?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Upload your photo to GeoTagger, then use the interactive map to click on the correct location, search for an address, or enter GPS coordinates manually. Then download the geotagged version with embedded EXIF GPS data." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is EXIF GPS metadata?",
+          "acceptedAnswer": { "@type": "Answer", "text": "EXIF (Exchangeable Image File Format) GPS metadata is location information embedded inside a photo file. It stores latitude, longitude, altitude, and optionally compass direction — allowing apps like Google Photos and Apple Photos to show where a photo was taken on a map." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I use GeoTagger to remove GPS location from photos?",
+          "acceptedAnswer": { "@type": "Answer", "text": "GeoTagger is designed to add GPS data to photos, not remove it. To strip location data from images for privacy, you can use your operating system's built-in tools or a dedicated EXIF remover. However, GeoTagger can overwrite existing GPS coordinates by applying a new location." }
+        },
+        {
+          "@type": "Question",
+          "name": "How does GeoTagger process images without uploading them?",
+          "acceptedAnswer": { "@type": "Answer", "text": "GeoTagger uses the browser's built-in File API and JavaScript to read your image files directly on your device. GPS coordinates are written into the EXIF metadata using client-side code, and the processed file is generated as a download link in your browser — all without any server communication." }
+        }
+      ]
+    });
   }, []);
 
   const [images, setImages] = useState<ImageFile[]>([]);

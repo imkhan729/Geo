@@ -3,11 +3,28 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
-import { updatePageSEO, SEO_CONFIG } from "@/lib/seo";
+import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
 
 export default function Privacy() {
   useEffect(() => {
     updatePageSEO(SEO_CONFIG.privacy);
+
+    injectPageSchema('privacy-webpage', {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Privacy Policy | FreeGeoTagger",
+      "url": "https://freegeotagger.com/privacy",
+      "description": "FreeGeoTagger's privacy policy. All photo processing happens locally in your browser — your photos never leave your device. No data is collected or uploaded.",
+      "inLanguage": "en-US",
+      "isPartOf": { "@type": "WebSite", "name": "FreeGeoTagger", "url": "https://freegeotagger.com" },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://freegeotagger.com/" },
+          { "@type": "ListItem", "position": 2, "name": "Privacy Policy", "item": "https://freegeotagger.com/privacy" }
+        ]
+      }
+    });
   }, []);
 
   return (

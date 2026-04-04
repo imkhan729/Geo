@@ -46,6 +46,45 @@ export default function BlogRealEstate() {
         },
       ],
     });
+
+    injectPageSchema("blog-re-faq", {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Why should I geotag real estate listing photos?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Geotagged real estate photos provide GPS coordinates that help search engines index your listing for local searches, corroborate your Google Business Profile location, and allow MLS platforms and portals like Zillow to validate address fields. It strengthens local SEO and gives buyers precise property context."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does geotagging real estate photos affect image quality?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Geotagging only modifies the EXIF metadata inside the photo file — the pixel data and visual quality are completely unchanged. You get the same high-resolution image with GPS coordinates added to the metadata."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which real estate platforms read GPS metadata from photos?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Google Business Profile actively reads EXIF GPS data from uploaded photos for local map indexing. Zillow and Realtor.com accept geotagged photos as additional accuracy signals. Modern MLS systems built on the RESO standard can surface GPS data for mapping and search filters. Facebook Marketplace also reads photo EXIF data including GPS."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it safe to geotag real estate listing photos?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, for publicly marketed listings. Since the property address is already public, GPS metadata simply makes that information machine-readable. For vacant properties or high-value homes where you want to limit discoverability, you can verify existing GPS data using a GPS Finder tool before distributing photos."
+          }
+        }
+      ]
+    });
   }, []);
 
   return (
@@ -195,6 +234,18 @@ export default function BlogRealEstate() {
             <h2 className="font-display font-bold text-xl mb-6">Related Articles</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Link
+                href="/blog/how-to-geotag-photos-for-google-business-profile"
+                className="group flex items-start gap-3 p-4 rounded-xl border border-border hover:border-primary/30 hover:bg-muted/30 transition-colors"
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm leading-snug mb-1 group-hover:text-primary transition-colors">
+                    How to Geotag Photos for Google Business Profile
+                  </p>
+                  <p className="text-xs text-muted-foreground">7 min read</p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all flex-shrink-0 mt-0.5" />
+              </Link>
+              <Link
                 href="/blog/what-is-exif-gps-metadata"
                 className="group flex items-start gap-3 p-4 rounded-xl border border-border hover:border-primary/30 hover:bg-muted/30 transition-colors"
               >
@@ -203,18 +254,6 @@ export default function BlogRealEstate() {
                     What Is EXIF GPS Metadata? A Complete Guide
                   </p>
                   <p className="text-xs text-muted-foreground">7 min read</p>
-                </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all flex-shrink-0 mt-0.5" />
-              </Link>
-              <Link
-                href="/blog/how-to-add-gps-to-iphone-photos"
-                className="group flex items-start gap-3 p-4 rounded-xl border border-border hover:border-primary/30 hover:bg-muted/30 transition-colors"
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm leading-snug mb-1 group-hover:text-primary transition-colors">
-                    How to Add GPS Location to iPhone Photos
-                  </p>
-                  <p className="text-xs text-muted-foreground">5 min read</p>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all flex-shrink-0 mt-0.5" />
               </Link>

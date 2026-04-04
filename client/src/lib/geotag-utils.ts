@@ -227,40 +227,14 @@ function uint24ToBytes(val: number): Uint8Array {
   return new Uint8Array([val & 0xff, (val >> 8) & 0xff, (val >> 16) & 0xff]);
 }
 
-async function injectExifIntoWebP(jpegBlob: Blob, exifBytesStr: string): Promise<Blob> {
-  const webpBlob = await new Promise<Blob>((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(jpegBlob);
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        URL.revokeObjectURL(url);
-        return reject(new Error("No canvas context"));
-      }
-      ctx.drawImage(img, 0, 0);
-      URL.revokeObjectURL(url);
-      canvas.toBlob((b) => {
-        if (b) resolve(b);
-        else reject(new Error("Failed to convert layout to WebP"));
-      }, "image/webp", 1.0);
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error("Image load failed"));
-    };
-    img.src = url;
-  });
-
-  const buffer = await webpBlob.arrayBuffer();
+async function injectExifIntoWebP(originalFile: File, exifBytesStr: string): Promise<Blob> {
+  const buffer = await readFileAsArrayBuffer(originalFile);
   const bytes = new Uint8Array(buffer);
   const view = new DataView(buffer);
   const getStr = (arr: Uint8Array) => Array.from(arr).map(b => String.fromCharCode(b)).join('');
   
   if (getStr(bytes.slice(0, 4)) !== 'RIFF' || getStr(bytes.slice(8, 12)) !== 'WEBP') {
-    return webpBlob;
+    return originalFile;
   }
 
   let pos = 12;
@@ -373,58 +347,61 @@ function calculateCrc32(data: Uint8Array): number {
   return (crc ^ 0xFFFFFFFF) >>> 0;
 }
 
-async function injectExifIntoPNG(jpegBlob: Blob, exifBytesStr: string): Promise<Blob> {
-  const pngBlob = await new Promise<Blob>((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(jpegBlob);
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        URL.revokeObjectURL(url);
-        return reject(new Error("No canvas context"));
-      }
-      ctx.drawImage(img, 0, 0);
-      URL.revokeObjectURL(url);
-      canvas.toBlob((b) => {
-        if (b) resolve(b);
-        else reject(new Error("Failed to convert layout to PNG"));
-      }, "image/png");
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error("Image load failed"));
-    };
-    img.src = url;
-  });
+function removeEXIfChunksFromPNG(bytes: Uint8Array): Uint8Array {
+  const sig = bytes.subarray(0, 8);
+  let pos = 8;
+  const parts: Uint8Array[] = [sig];
 
-  const buffer = await pngBlob.arrayBuffer();
-  const bytes = new Uint8Array(buffer);
-  
+  while (pos < bytes.length) {
+    if (pos + 12 > bytes.length) break;
+    const len = (bytes[pos] << 24) | (bytes[pos + 1] << 16) | (bytes[pos + 2] << 8) | bytes[pos + 3];
+    if (len < 0 || pos + 12 + len > bytes.length) break;
+    const type = String.fromCharCode(bytes[pos + 4], bytes[pos + 5], bytes[pos + 6], bytes[pos + 7]);
+    const chunkTotal = 12 + len;
+    if (type !== 'eXIf') {
+      parts.push(bytes.subarray(pos, pos + chunkTotal));
+    }
+    pos += chunkTotal;
+  }
+
+  const total = parts.reduce((s, c) => s + c.length, 0);
+  const result = new Uint8Array(total);
+  let offset = 0;
+  for (const p of parts) { result.set(p, offset); offset += p.length; }
+  return result;
+}
+
+async function injectExifIntoPNG(originalFile: File, exifBytesStr: string): Promise<Blob> {
+  // Read original PNG bytes directly — no re-encoding, preserves compression and size
+  const buffer = await readFileAsArrayBuffer(originalFile);
+  let bytes = new Uint8Array(buffer);
+
+  // Remove any existing eXIf chunks before inserting
+  bytes = removeEXIfChunksFromPNG(bytes);
+
   const payloadStr = exifBytesStr.startsWith("Exif\x00\x00") ? exifBytesStr.substring(6) : exifBytesStr;
   const payload = stringToBytes(payloadStr);
-  
+
   const typeBytes = stringToBytes("eXIf");
   const crcData = new Uint8Array(4 + payload.length);
   crcData.set(typeBytes, 0);
   crcData.set(payload, 4);
   const crc = calculateCrc32(crcData);
-  
+
   const chunk = new Uint8Array(12 + payload.length);
   chunk.set(uint32ToBytesBE(payload.length), 0);
   chunk.set(crcData, 4);
   chunk.set(uint32ToBytesBE(crc), 4 + crcData.length);
-  
+
+  // Insert after IHDR chunk (8 sig + 4 len + 4 type + 13 data + 4 crc = 33)
   const insertPos = 33;
-  if (bytes.length < insertPos) return pngBlob;
-  
+  if (bytes.length < insertPos) return new Blob([bytes], { type: "image/png" });
+
   const finalBytes = new Uint8Array(bytes.length + chunk.length);
   finalBytes.set(bytes.subarray(0, insertPos), 0);
   finalBytes.set(chunk, insertPos);
   finalBytes.set(bytes.subarray(insertPos), insertPos + chunk.length);
-  
+
   return new Blob([finalBytes], { type: "image/png" });
 }
 
@@ -494,14 +471,14 @@ export async function addGeotagToImage(
 
   if (isWebp) {
     try {
-      return await injectExifIntoWebP(blob, exifBytes);
+      return await injectExifIntoWebP(file, exifBytes);
     } catch (e) {
       console.error("Failed to inject EXIF into WebP, falling back to JPEG", e);
       return blob;
     }
   } else if (isPng) {
     try {
-      return await injectExifIntoPNG(blob, exifBytes);
+      return await injectExifIntoPNG(file, exifBytes);
     } catch (e) {
       console.error("Failed to inject EXIF into PNG, falling back to JPEG", e);
       return blob;

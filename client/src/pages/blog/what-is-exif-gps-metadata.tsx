@@ -260,14 +260,14 @@ export default function BlogExifGps() {
             <h2 className="font-display font-bold text-xl mb-6">Related Articles</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Link
-                href="/blog/how-to-geotag-photos-for-real-estate"
+                href="/blog/best-free-photo-geotagging-tools"
                 className="group flex items-start gap-3 p-4 rounded-xl border border-border hover:border-primary/30 hover:bg-muted/30 transition-colors"
               >
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm leading-snug mb-1 group-hover:text-primary transition-colors">
-                    How to Geotag Photos for Real Estate Listings
+                    Best Free Photo Geotagging Tools in 2026
                   </p>
-                  <p className="text-xs text-muted-foreground">6 min read</p>
+                  <p className="text-xs text-muted-foreground">8 min read</p>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all flex-shrink-0 mt-0.5" />
               </Link>

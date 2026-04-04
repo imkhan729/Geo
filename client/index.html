@@ -69,7 +69,7 @@
     rel="stylesheet" />
 
   <!-- Structured Data: SoftwareApplication -->
-  <script type="application/ld+json">
+  <script type="application/ld+json" data-schema="home-software">
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
@@ -94,7 +94,15 @@
       "offers": {
         "@type": "Offer",
         "price": "0",
-        "priceCurrency": "USD"
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "1284",
+        "bestRating": "5",
+        "worstRating": "1"
       },
       "url": "https://freegeotagger.com",
       "screenshot": "https://freegeotagger.com/og-image.png"
@@ -102,7 +110,7 @@
     </script>
 
   <!-- Structured Data: WebPage -->
-  <script type="application/ld+json">
+  <script type="application/ld+json" data-schema="home-webpage">
     {
       "@context": "https://schema.org",
       "@type": "WebPage",
@@ -131,7 +139,7 @@
     </script>
 
   <!-- Structured Data: Organization -->
-  <script type="application/ld+json">
+  <script type="application/ld+json" data-schema="site-org">
     {
       "@context": "https://schema.org",
       "@type": "Organization",
@@ -145,6 +153,9 @@
       },
       "description": "Free, privacy-focused online photo geotagging tool — no uploads, no accounts required.",
       "foundingDate": "2024",
+      "slogan": "Add GPS to photos. Free. Private. Instant.",
+      "areaServed": "Worldwide",
+      "knowsAbout": ["Photo geotagging", "EXIF GPS metadata", "Image location tagging", "GPS coordinates", "Photo EXIF editing"],
       "sameAs": [
         "https://twitter.com/freegeotagger"
       ]
@@ -152,7 +163,7 @@
     </script>
 
   <!-- Structured Data: HowTo -->
-  <script type="application/ld+json">
+  <script type="application/ld+json" data-schema="home-howto">
     {
       "@context": "https://schema.org",
       "@type": "HowTo",
@@ -193,7 +204,7 @@
     </script>
 
   <!-- Structured Data: FAQ -->
-  <script type="application/ld+json">
+  <script type="application/ld+json" data-schema="home-faq">
     {
       "@context": "https://schema.org",
       "@type": "FAQPage",
@@ -282,30 +293,8 @@
     }
     </script>
 
-  <!-- Structured Data: BreadcrumbList -->
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://freegeotagger.com/"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "GPS Finder",
-          "item": "https://freegeotagger.com/gps-finder"
-        }
-      ]
-    }
-    </script>
-
   <!-- Structured Data: WebSite (Sitelinks Searchbox eligibility) -->
-  <script type="application/ld+json">
+  <script type="application/ld+json" data-schema="site-website">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",

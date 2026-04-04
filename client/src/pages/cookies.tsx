@@ -3,11 +3,28 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
-import { updatePageSEO, SEO_CONFIG } from "@/lib/seo";
+import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
 
 export default function Cookies() {
   useEffect(() => {
     updatePageSEO(SEO_CONFIG.cookies);
+
+    injectPageSchema('cookies-webpage', {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Cookie Policy | FreeGeoTagger",
+      "url": "https://freegeotagger.com/cookies",
+      "description": "Cookie policy for FreeGeoTagger. Learn how we use cookies and local storage to save your theme preference and improve your experience.",
+      "inLanguage": "en-US",
+      "isPartOf": { "@type": "WebSite", "name": "FreeGeoTagger", "url": "https://freegeotagger.com" },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://freegeotagger.com/" },
+          { "@type": "ListItem", "position": 2, "name": "Cookie Policy", "item": "https://freegeotagger.com/cookies" }
+        ]
+      }
+    });
   }, []);
 
   return (

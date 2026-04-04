@@ -14,6 +14,9 @@ import BlogIndex from "@/pages/blog/index";
 import BlogRealEstate from "@/pages/blog/how-to-geotag-photos-for-real-estate";
 import BlogExifGps from "@/pages/blog/what-is-exif-gps-metadata";
 import BlogIphone from "@/pages/blog/how-to-add-gps-to-iphone-photos";
+import BlogGbp from "@/pages/blog/how-to-geotag-photos-for-google-business-profile";
+import BlogAndroid from "@/pages/blog/how-to-geotag-photos-android";
+import BlogBestTools from "@/pages/blog/best-free-photo-geotagging-tools";
 import FluidCursorEffect from "@/components/ui/smokey-cursor-effect";
 
 function Router() {
@@ -28,6 +31,9 @@ function Router() {
       <Route path="/blog/how-to-geotag-photos-for-real-estate" component={BlogRealEstate} />
       <Route path="/blog/what-is-exif-gps-metadata" component={BlogExifGps} />
       <Route path="/blog/how-to-add-gps-to-iphone-photos" component={BlogIphone} />
+      <Route path="/blog/how-to-geotag-photos-for-google-business-profile" component={BlogGbp} />
+      <Route path="/blog/how-to-geotag-photos-android" component={BlogAndroid} />
+      <Route path="/blog/best-free-photo-geotagging-tools" component={BlogBestTools} />
       <Route component={NotFound} />
     </Switch>
   );

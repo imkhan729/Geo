@@ -6,10 +6,26 @@ export interface SEOConfig {
   keywords?: string;
 }
 
-/** Inject or replace a named JSON-LD block in <head> */
+/** Inject or replace a named JSON-LD block in <head>.
+ *  Also removes any unattributed schema of the same @type (e.g. static blocks
+ *  in index.html) to prevent "Duplicate field" errors in Google Search Console.
+ */
 export function injectPageSchema(id: string, schema: object) {
+  // Remove existing schema with this ID
   const existing = document.querySelector(`script[data-schema="${id}"]`);
   if (existing) existing.remove();
+
+  // Remove any static (unattributed) schema of the same @type from index.html
+  const schemaType = (schema as Record<string, unknown>)['@type'];
+  if (schemaType) {
+    document.querySelectorAll('script[type="application/ld+json"]:not([data-schema])').forEach(el => {
+      try {
+        const parsed = JSON.parse(el.textContent || '');
+        if (parsed['@type'] === schemaType) el.remove();
+      } catch { /* ignore malformed JSON */ }
+    });
+  }
+
   const script = document.createElement('script');
   script.type = 'application/ld+json';
   script.setAttribute('data-schema', id);
@@ -133,5 +149,26 @@ export const SEO_CONFIG = {
     canonical: "/blog/how-to-add-gps-to-iphone-photos",
     ogType: "article",
     keywords: "add gps to iphone photos, geotag iphone photos, add location to iphone photo, iphone photo missing location, ios photo gps"
+  },
+  blogGbp: {
+    title: "How to Geotag Photos for Google Business Profile | FreeGeoTagger",
+    description: "Add GPS coordinates to photos before uploading to Google Business Profile — boost local SEO, strengthen map indexing, and increase discovery on Google Maps. Free and instant.",
+    canonical: "/blog/how-to-geotag-photos-for-google-business-profile",
+    ogType: "article",
+    keywords: "geotag photos google business profile, add gps to google business photos, google maps photo geotagging, local seo photo metadata, geotag business photos free, gbp photo optimization"
+  },
+  blogAndroid: {
+    title: "How to Add GPS to Android Photos – Free & Instant | FreeGeoTagger",
+    description: "Android photo missing location data? Add GPS coordinates to any Android photo in seconds — free, browser-based, no app install required. Works in Chrome on any Android device.",
+    canonical: "/blog/how-to-geotag-photos-android",
+    ogType: "article",
+    keywords: "geotag photos android, add gps to android photos, android photo missing location, geotagging android photos free, add location to android photo, fix android photo no location"
+  },
+  blogBestTools: {
+    title: "Best Free Photo Geotagging Tools in 2026 | FreeGeoTagger",
+    description: "Compare the best free photo geotagging tools in 2026 — browser-based, desktop, and command-line options reviewed for speed, privacy, batch support, and ease of use.",
+    canonical: "/blog/best-free-photo-geotagging-tools",
+    ogType: "article",
+    keywords: "best photo geotagging tools, free geotagging software 2026, photo geotagging tool comparison, best free geotagging app, online geotagging tool, geotag photos free software"
   }
 };

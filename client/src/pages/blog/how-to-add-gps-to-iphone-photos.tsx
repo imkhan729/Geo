@@ -262,12 +262,12 @@ export default function BlogIphone() {
                 <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all flex-shrink-0 mt-0.5" />
               </Link>
               <Link
-                href="/blog/how-to-geotag-photos-for-real-estate"
+                href="/blog/how-to-geotag-photos-android"
                 className="group flex items-start gap-3 p-4 rounded-xl border border-border hover:border-primary/30 hover:bg-muted/30 transition-colors"
               >
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm leading-snug mb-1 group-hover:text-primary transition-colors">
-                    How to Geotag Photos for Real Estate Listings
+                    How to Add GPS to Android Photos
                   </p>
                   <p className="text-xs text-muted-foreground">6 min read</p>
                 </div>

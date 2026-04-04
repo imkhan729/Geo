@@ -3,11 +3,28 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
-import { updatePageSEO, SEO_CONFIG } from "@/lib/seo";
+import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
 
 export default function Terms() {
   useEffect(() => {
     updatePageSEO(SEO_CONFIG.terms);
+
+    injectPageSchema('terms-webpage', {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Terms of Service | FreeGeoTagger",
+      "url": "https://freegeotagger.com/terms",
+      "description": "Terms of service for FreeGeoTagger — the free, browser-based photo geotagging tool. Read the conditions for using this service.",
+      "inLanguage": "en-US",
+      "isPartOf": { "@type": "WebSite", "name": "FreeGeoTagger", "url": "https://freegeotagger.com" },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://freegeotagger.com/" },
+          { "@type": "ListItem", "position": 2, "name": "Terms of Service", "item": "https://freegeotagger.com/terms" }
+        ]
+      }
+    });
   }, []);
 
   return (
