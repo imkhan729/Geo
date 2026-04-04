@@ -163,52 +163,44 @@ function dmsToDecimal(dms: [[number, number], [number, number], [number, number]
   return decimal;
 }
 
-async function convertToJpeg(file: File): Promise<{ blob: Blob; dataUrl: string }> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
+async function extractExifBytesFromWebP(file: File): Promise<string | null> {
+  const buffer = await readFileAsArrayBuffer(file);
+  const bytes = new Uint8Array(buffer);
+  const view = new DataView(buffer);
+  const getStr = (arr: Uint8Array) => Array.from(arr).map(b => String.fromCharCode(b)).join('');
+  if (getStr(bytes.slice(0, 4)) !== 'RIFF' || getStr(bytes.slice(8, 12)) !== 'WEBP') return null;
+  let pos = 12;
+  while (pos < bytes.length) {
+    if (pos + 8 > bytes.length) break;
+    const tag = getStr(bytes.slice(pos, pos + 4));
+    const size = view.getUint32(pos + 4, true);
+    if (pos + 8 + size > bytes.length) break;
+    if (tag === 'EXIF') {
+      const payload = bytes.slice(pos + 8, pos + 8 + size);
+      return Array.from(payload).map(b => String.fromCharCode(b)).join('');
+    }
+    const paddedSize = size % 2 !== 0 ? size + 1 : size;
+    pos += 8 + paddedSize;
+  }
+  return null;
+}
 
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        URL.revokeObjectURL(url);
-        reject(new Error("Could not get canvas context"));
-        return;
-      }
-
-      ctx.drawImage(img, 0, 0);
-      URL.revokeObjectURL(url);
-
-      canvas.toBlob(
-        (blob) => {
-          if (!blob) {
-            reject(new Error("Could not convert to JPEG"));
-            return;
-          }
-
-          const reader = new FileReader();
-          reader.onload = () => {
-            resolve({ blob, dataUrl: reader.result as string });
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        },
-        "image/jpeg",
-        0.95
-      );
-    };
-
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error("Could not load image"));
-    };
-
-    img.src = url;
-  });
+async function extractExifBytesFromPNG(file: File): Promise<string | null> {
+  const buffer = await readFileAsArrayBuffer(file);
+  const bytes = new Uint8Array(buffer);
+  let pos = 8;
+  while (pos < bytes.length) {
+    if (pos + 12 > bytes.length) break;
+    const len = (bytes[pos] << 24) | (bytes[pos+1] << 16) | (bytes[pos+2] << 8) | bytes[pos+3];
+    if (len < 0 || pos + 12 + len > bytes.length) break;
+    const type = String.fromCharCode(bytes[pos+4], bytes[pos+5], bytes[pos+6], bytes[pos+7]);
+    if (type === 'eXIf') {
+      const payload = bytes.slice(pos + 8, pos + 8 + len);
+      return Array.from(payload).map(b => String.fromCharCode(b)).join('');
+    }
+    pos += 12 + len;
+  }
+  return null;
 }
 
 function stringToBytes(str: string): Uint8Array {
@@ -413,21 +405,8 @@ export async function addGeotagToImage(
   const isHeic = file.type === "image/heic" || fileName.endsWith(".heic");
   const isPng = file.type === "image/png" || fileName.endsWith(".png");
   const isWebp = file.type === "image/webp" || fileName.endsWith(".webp");
-  const needsConversion = isHeic || isPng || isWebp;
 
-  let dataUrl: string;
-
-  if (isHeic) {
-    const jpegBlob = await convertHeicToJpeg(file);
-    dataUrl = await readFileAsDataUrl(new File([jpegBlob], "temp.jpg", { type: "image/jpeg" }));
-  } else if (isPng || isWebp) {
-    const converted = await convertToJpeg(file);
-    dataUrl = converted.dataUrl;
-  } else {
-    dataUrl = await readFileAsDataUrl(file);
-  }
-
-  let exifData: {
+  type ExifData = {
     "0th": Record<number, unknown>;
     "Exif": Record<number, unknown>;
     "GPS": Record<number, unknown>;
@@ -435,6 +414,57 @@ export async function addGeotagToImage(
     "thumbnail": string | null;
   };
 
+  // For WebP and PNG: inject EXIF directly into original binary — no canvas re-encoding
+  if (isWebp || isPng) {
+    let exifData: ExifData = { "0th": {}, "Exif": {}, "GPS": {}, "1st": {}, "thumbnail": null };
+
+    // Preserve existing EXIF if present
+    try {
+      const existingExifStr = isWebp
+        ? await extractExifBytesFromWebP(file)
+        : await extractExifBytesFromPNG(file);
+      if (existingExifStr) {
+        const loadStr = existingExifStr.startsWith("Exif\x00\x00")
+          ? existingExifStr
+          : "Exif\x00\x00" + existingExifStr;
+        exifData = piexif.load(loadStr);
+      }
+    } catch {
+      // Keep empty exifData
+    }
+
+    exifData.GPS = exifData.GPS || {};
+    exifData.GPS[piexif.GPSIFD.GPSLatitudeRef] = geotag.latitude >= 0 ? "N" : "S";
+    exifData.GPS[piexif.GPSIFD.GPSLatitude] = degToDmsRational(geotag.latitude);
+    exifData.GPS[piexif.GPSIFD.GPSLongitudeRef] = geotag.longitude >= 0 ? "E" : "W";
+    exifData.GPS[piexif.GPSIFD.GPSLongitude] = degToDmsRational(geotag.longitude);
+    exifData.GPS[piexif.GPSIFD.GPSVersionID] = [2, 3, 0, 0];
+
+    if (geotag.description) {
+      exifData["0th"][piexif.ImageIFD.ImageDescription] = geotag.description;
+    }
+    if (geotag.keywords) {
+      const keywordBytes = stringToUtf16Le(geotag.keywords);
+      exifData["0th"][0x9C9E] = keywordBytes;
+      exifData["0th"][0x9C9F] = keywordBytes;
+    }
+
+    const exifBytes = piexif.dump(exifData);
+    return isWebp
+      ? await injectExifIntoWebP(file, exifBytes)
+      : await injectExifIntoPNG(file, exifBytes);
+  }
+
+  // JPEG / HEIC path
+  let dataUrl: string;
+  if (isHeic) {
+    const jpegBlob = await convertHeicToJpeg(file);
+    dataUrl = await readFileAsDataUrl(new File([jpegBlob], "temp.jpg", { type: "image/jpeg" }));
+  } else {
+    dataUrl = await readFileAsDataUrl(file);
+  }
+
+  let exifData: ExifData;
   try {
     exifData = piexif.load(dataUrl);
   } catch {
@@ -455,7 +485,6 @@ export async function addGeotagToImage(
     exifData["0th"] = exifData["0th"] || {};
     exifData["0th"][piexif.ImageIFD.ImageDescription] = geotag.description;
   }
-
   if (geotag.keywords) {
     exifData["0th"] = exifData["0th"] || {};
     const keywordBytes = stringToUtf16Le(geotag.keywords);
@@ -465,27 +494,8 @@ export async function addGeotagToImage(
 
   const exifBytes = piexif.dump(exifData);
   const newDataUrl = piexif.insert(exifBytes, dataUrl);
-
   const response = await fetch(newDataUrl);
-  const blob = await response.blob();
-
-  if (isWebp) {
-    try {
-      return await injectExifIntoWebP(file, exifBytes);
-    } catch (e) {
-      console.error("Failed to inject EXIF into WebP, falling back to JPEG", e);
-      return blob;
-    }
-  } else if (isPng) {
-    try {
-      return await injectExifIntoPNG(file, exifBytes);
-    } catch (e) {
-      console.error("Failed to inject EXIF into PNG, falling back to JPEG", e);
-      return blob;
-    }
-  }
-
-  return blob;
+  return response.blob();
 }
 
 export function downloadGeotaggedImage(blob: Blob, originalName: string): void {

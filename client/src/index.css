@@ -522,22 +522,6 @@
     box-shadow: var(--shadow-lg);
   }
 
-  /* Enhanced button hover */
-  button:not(:disabled),
-  .btn:not(:disabled) {
-    transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
-  }
-
-  button:not(:disabled):hover,
-  .btn:not(:disabled):hover {
-    transform: translateY(-1px);
-  }
-
-  button:not(:disabled):active,
-  .btn:not(:disabled):active {
-    transform: translateY(0);
-  }
-
   /* Input focus ring — green */
   input:focus,
   textarea:focus,
