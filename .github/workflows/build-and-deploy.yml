@@ -29,6 +29,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist/public
-          publish_branch: build
+          publish_branch: deploy
           force_orphan: true
           commit_message: "Deploy build [skip ci]"
