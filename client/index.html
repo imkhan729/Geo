@@ -60,13 +60,14 @@
   <link rel="dns-prefetch" href="https://tile.openstreetmap.org" />
   <link rel="dns-prefetch" href="https://nominatim.openstreetmap.org" />
 
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-  <!-- Fonts: Syne (display) + DM Sans (body) -->
-  <link
+  <!-- Fonts: Syne (display) + DM Sans (body) — loaded async to avoid render-blocking -->
+  <link rel="preload" as="style"
     href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
-    rel="stylesheet" />
+    onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" />
+  </noscript>
 
   <!-- Structured Data: SoftwareApplication -->
   <script type="application/ld+json" data-schema="home-software">
@@ -200,96 +201,6 @@
         "name": "FreeGeoTagger",
         "url": "https://freegeotagger.com"
       }
-    }
-    </script>
-
-  <!-- Structured Data: FAQ -->
-  <script type="application/ld+json" data-schema="home-faq">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Is GeoTagger really free?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. GeoTagger is completely free with no hidden fees, subscriptions, watermarks, or file limits. There are no account requirements."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Are my photos uploaded to any server?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "No. All image processing happens locally in your browser using JavaScript. Your photos never leave your device — not even temporarily."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I geotag multiple photos at once?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Batch geotagging is fully supported. Upload multiple photos and apply the same GPS location to all of them at once, then download as individual files or a ZIP archive."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "What image file formats does GeoTagger support?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "GeoTagger supports JPG, PNG, WebP, and HEIC files. HEIC files (iPhone photos) are automatically converted to high-quality JPEG for full EXIF GPS compatibility."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Will geotagging affect my image quality?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "No. GeoTagger only modifies the EXIF metadata of your images. The actual photo pixel data remains completely unchanged — there is zero quality loss."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Does GeoTagger work on mobile devices?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. GeoTagger works on modern mobile browsers including Chrome for Android, Safari for iOS, and Firefox Mobile."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How do I add GPS coordinates to a photo taken without location data?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Upload your photo to GeoTagger, then use the interactive map to click on the correct location, search for an address, or enter GPS coordinates manually. Then download the geotagged version with embedded EXIF GPS data."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "What is EXIF GPS metadata?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "EXIF (Exchangeable Image File Format) GPS metadata is location information embedded inside a photo file. It stores latitude, longitude, altitude, and optionally compass direction — allowing apps like Google Photos and Apple Photos to show where a photo was taken on a map."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I use GeoTagger to remove GPS location from photos?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "GeoTagger is designed to add GPS data to photos, not remove it. To strip location data from images for privacy, you can use your operating system's built-in tools or a dedicated EXIF remover. However, GeoTagger can overwrite existing GPS coordinates by applying a new location."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How does GeoTagger process images without uploading them?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "GeoTagger uses the browser's built-in File API and JavaScript to read your image files directly on your device. GPS coordinates are written into the EXIF metadata using client-side code, and the processed file is generated as a download link in your browser — all without any server communication."
-          }
-        }
-      ]
     }
     </script>
 

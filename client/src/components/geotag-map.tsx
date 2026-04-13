@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from "react";
 import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Search, Navigation, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";

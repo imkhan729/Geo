@@ -30,6 +30,20 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    target: "es2020",
+    cssCodeSplit: true,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes("node_modules/leaflet")) return "leaflet";
+          if (id.includes("node_modules/react-dom")) return "react-dom";
+          if (id.includes("node_modules/react/")) return "react";
+          if (id.includes("node_modules/@radix-ui")) return "radix";
+          if (id.includes("node_modules/framer-motion") || id.includes("node_modules/motion")) return "motion";
+          if (id.includes("node_modules/")) return "vendor";
+        },
+      },
+    },
   },
   server: {
     fs: {

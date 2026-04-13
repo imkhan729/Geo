@@ -40,7 +40,7 @@ export function Header() {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <a href="/" className="hover:opacity-85 transition-opacity flex-shrink-0" data-testid="link-logo">
-                        <img src={logoImage} alt="GeoTagger — Free Photo Geotagging Tool" className="h-[40px] w-auto" />
+                        <img src={logoImage} alt="GeoTagger — Free Photo Geotagging Tool" className="h-[40px] w-auto" width="202" height="70" fetchPriority="high" />
                     </a>
 
                     {/* Desktop nav */}

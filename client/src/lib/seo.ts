@@ -7,18 +7,21 @@ export interface SEOConfig {
 }
 
 /** Inject or replace a named JSON-LD block in <head>.
- *  Also removes any unattributed schema of the same @type (e.g. static blocks
- *  in index.html) to prevent "Duplicate field" errors in Google Search Console.
+ *  Removes ALL other JSON-LD scripts of the same @type (static or dynamic)
+ *  to prevent "Duplicate field" errors in Google Search Console.
  */
 export function injectPageSchema(id: string, schema: object) {
-  // Remove existing schema with this ID
+  // Remove existing schema with this ID first
   const existing = document.querySelector(`script[data-schema="${id}"]`);
   if (existing) existing.remove();
 
-  // Remove any static (unattributed) schema of the same @type from index.html
+  // Remove every other JSON-LD script with the same @type, whether it has a
+  // data-schema attribute or not (covers static blocks in index.html and
+  // previously-injected schemas from other routes during client-side navigation)
   const schemaType = (schema as Record<string, unknown>)['@type'];
   if (schemaType) {
-    document.querySelectorAll('script[type="application/ld+json"]:not([data-schema])').forEach(el => {
+    document.querySelectorAll('script[type="application/ld+json"]').forEach(el => {
+      if (el.getAttribute('data-schema') === id) return; // already removed above
       try {
         const parsed = JSON.parse(el.textContent || '');
         if (parsed['@type'] === schemaType) el.remove();
