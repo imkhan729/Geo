@@ -32,6 +32,8 @@ export default defineConfig({
     emptyOutDir: true,
     target: "es2020",
     cssCodeSplit: true,
+    // All target browsers support modulepreload natively; skip the polyfill (~1 KB)
+    modulePreload: { polyfill: false },
     rollupOptions: {
       output: {
         manualChunks: (id) => {

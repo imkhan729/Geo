@@ -15,7 +15,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import L from "leaflet";
+import type LType from "leaflet";
+
+// Lazy-load Leaflet only when the map is actually needed (after photo upload).
+// This keeps Leaflet (~200 KB) out of the initial JS bundle.
+let _L: typeof LType | null = null;
+async function getL(): Promise<typeof LType> {
+  if (!_L) {
+    await import("leaflet/dist/leaflet.css");
+    _L = (await import("leaflet")).default;
+  }
+  return _L;
+}
 import {
   ImageFile,
   GeotagData,
@@ -240,8 +251,8 @@ export default function Home() {
   const { toast } = useToast();
 
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<L.Map | null>(null);
-  const markerRef = useRef<L.Marker | null>(null);
+  const mapInstanceRef = useRef<LType.Map | null>(null);
+  const markerRef = useRef<LType.Marker | null>(null);
 
   const handleSelectSuggestion = useCallback((suggestion: PlaceSuggestion) => {
     ignoreSearchRef.current = true;
@@ -256,7 +267,7 @@ export default function Home() {
 
       // Update marker position
       mapInstanceRef.current.eachLayer((layer) => {
-        if (layer instanceof L.Marker) {
+        if (_L && layer instanceof _L.Marker) {
           layer.setLatLng([suggestion.lat, suggestion.lng]);
         }
       });
@@ -282,41 +293,48 @@ export default function Home() {
   useEffect(() => {
     if (mode !== "geotagger" || !mapRef.current) return;
 
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.remove();
-    }
+    let cancelled = false;
 
-    const map = L.map(mapRef.current).setView([latitude, longitude], 4);
-    mapInstanceRef.current = map;
+    getL().then((L) => {
+      if (cancelled || !mapRef.current) return;
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; OpenStreetMap',
-      maxZoom: 19,
-    }).addTo(map);
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+      }
 
-    const customIcon = L.divIcon({
-      html: `<div style="background:#2D6A4F;width:24px;height:24px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid white;box-shadow:0 2px 8px rgba(45,106,79,0.5);"></div>`,
-      className: "custom-marker",
-      iconSize: [24, 24],
-      iconAnchor: [12, 24],
-    });
+      const map = L.map(mapRef.current).setView([latitude, longitude], 4);
+      mapInstanceRef.current = map;
 
-    const marker = L.marker([latitude, longitude], { icon: customIcon, draggable: true }).addTo(map);
-    markerRef.current = marker;
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; OpenStreetMap',
+        maxZoom: 19,
+      }).addTo(map);
 
-    marker.on("dragend", () => {
-      const pos = marker.getLatLng();
-      setLatitude(pos.lat);
-      setLongitude(pos.lng);
-    });
+      const customIcon = L.divIcon({
+        html: `<div style="background:#2D6A4F;width:24px;height:24px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid white;box-shadow:0 2px 8px rgba(45,106,79,0.5);"></div>`,
+        className: "custom-marker",
+        iconSize: [24, 24],
+        iconAnchor: [12, 24],
+      });
 
-    map.on("click", (e: L.LeafletMouseEvent) => {
-      marker.setLatLng([e.latlng.lat, e.latlng.lng]);
-      setLatitude(e.latlng.lat);
-      setLongitude(e.latlng.lng);
+      const marker = L.marker([latitude, longitude], { icon: customIcon, draggable: true }).addTo(map);
+      markerRef.current = marker;
+
+      marker.on("dragend", () => {
+        const pos = marker.getLatLng();
+        setLatitude(pos.lat);
+        setLongitude(pos.lng);
+      });
+
+      map.on("click", (e: LType.LeafletMouseEvent) => {
+        marker.setLatLng([e.latlng.lat, e.latlng.lng]);
+        setLatitude(e.latlng.lat);
+        setLongitude(e.latlng.lng);
+      });
     });
 
     return () => {
+      cancelled = true;
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;

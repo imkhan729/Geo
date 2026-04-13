@@ -7,10 +7,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 // Home is loaded eagerly (critical path)
 import Home from "@/pages/home";
-import FluidCursorEffect from "@/components/ui/smokey-cursor-effect";
-
-// Skip cursor effect on touch/mobile — no cursor exists and the WebGL sim kills TBT
-const isPointerDevice = typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
 // All other routes are lazy-loaded to reduce initial bundle size
 const NotFound = lazy(() => import("@/pages/not-found"));
@@ -54,7 +50,6 @@ function App() {
     <ThemeProvider defaultTheme="light" storageKey="geofinder-theme">
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          {isPointerDevice && <FluidCursorEffect />}
           <Toaster />
           <Router />
         </TooltipProvider>
