@@ -1,19 +1,48 @@
-# ── SPA Routing ──────────────────────────────────────────────
+# Routing
+ErrorDocument 404 /404.html
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+
+  # Canonical host: 301 www -> non-www so both hostnames don't serve 200 and
+  # split crawl budget. Must run before the SEO route rewrites below.
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+
+  # Static SEO route pages for crawlers and direct requests.
+  RewriteRule ^gps-finder/?$ /seo-routes/gps-finder.html [L]
+  RewriteRule ^blog/?$ /seo-routes/blog.html [L]
+  RewriteRule ^blog/best-free-photo-geotagging-tools/?$ /seo-routes/blog-best-free-photo-geotagging-tools.html [L]
+  RewriteRule ^blog/how-to-add-gps-to-iphone-photos/?$ /seo-routes/blog-how-to-add-gps-to-iphone-photos.html [L]
+  RewriteRule ^blog/how-to-geotag-photos-android/?$ /seo-routes/blog-how-to-geotag-photos-android.html [L]
+  RewriteRule ^blog/how-to-geotag-photos-for-google-business-profile/?$ /seo-routes/blog-how-to-geotag-photos-for-google-business-profile.html [L]
+  RewriteRule ^blog/how-to-geotag-photos-for-real-estate/?$ /seo-routes/blog-how-to-geotag-photos-for-real-estate.html [L]
+  RewriteRule ^blog/what-is-exif-gps-metadata/?$ /seo-routes/blog-what-is-exif-gps-metadata.html [L]
+  RewriteRule ^blog/how-to-remove-gps-data-from-photos/?$ /seo-routes/blog-how-to-remove-gps-data-from-photos.html [L]
+  RewriteRule ^blog/how-to-fix-wrong-gps-location-on-photos/?$ /seo-routes/blog-how-to-fix-wrong-gps-location-on-photos.html [L]
+  RewriteRule ^blog/how-to-bulk-geotag-photos/?$ /seo-routes/blog-how-to-bulk-geotag-photos.html [L]
+  RewriteRule ^privacy/?$ /seo-routes/privacy.html [L]
+  RewriteRule ^terms/?$ /seo-routes/terms.html [L]
+  RewriteRule ^cookies/?$ /seo-routes/cookies.html [L]
+  RewriteRule ^about/?$ /seo-routes/about.html [L]
+  RewriteRule ^contact/?$ /seo-routes/contact.html [L]
+
   RewriteRule ^index\.html$ - [L]
+  RewriteRule ^ads\.txt$ - [L]
+  RewriteRule ^robots\.txt$ - [L]
+  RewriteRule ^sitemap\.xml$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
+  RewriteRule . - [R=404,L]
 </IfModule>
 
-# ── Compression ───────────────────────────────────────────────
+# Compression
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml
 </IfModule>
 
-# ── Cache Control ─────────────────────────────────────────────
+# Cache Control
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresByType text/css                "access plus 1 year"
@@ -26,16 +55,27 @@
   ExpiresByType text/html               "access plus 0 seconds"
 </IfModule>
 
-# ── Security Headers ──────────────────────────────────────────
+# Security Headers
 <IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "geolocation=(self), camera=(), microphone=()"
+
+  <FilesMatch "\.(?:css|js|mjs|webp|png|jpe?g|svg|woff2)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  <FilesMatch "\.(?:html|xml|txt)$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
 </IfModule>
 
-# ── MIME Types ────────────────────────────────────────────────
+# MIME Types
 <IfModule mod_mime.c>
   AddType application/javascript .js .mjs
   AddType font/woff2 .woff2
+  AddType text/plain .txt
+  AddType application/xml .xml
 </IfModule>
