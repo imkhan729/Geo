@@ -71,6 +71,7 @@ const blogLinks = [
 ];
 
 const BLOG_DIR = "client/src/pages/blog";
+const PAGES_DIR = "client/src/pages";
 
 // ── Homepage FAQ (mirrors the in-app FAQ so crawlers see the same content) ──
 const homeFaqs: Array<{ q: string; a: string }> = [
@@ -332,13 +333,7 @@ ${gpsFinderFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</
     file: "privacy.html",
     ogType: "article",
     h1: "Privacy Policy",
-    body: [
-      "FreeGeoTagger processes photos locally in your browser. Your images are not uploaded to our server when you add or read GPS metadata — all EXIF processing runs on your own device.",
-      "Map and location search features may contact third-party map providers such as OpenStreetMap and Nominatim to display tiles and resolve addresses, but your photo files stay on your device and are never transmitted.",
-      "We do not require accounts and do not collect personal information to use the geotagging or GPS Finder tools. Minimal browser storage may be used for preferences such as light or dark theme.",
-      "If advertising is displayed, Google AdSense and its partners may use cookies or similar technologies to serve, measure, personalize, and limit ads. You can manage ad personalization through Google's Ads Settings.",
-      "Because questions about data practices matter, you can contact us at contact@freegeotagger.com with any privacy request or question.",
-    ],
+    sourceFile: `${PAGES_DIR}/privacy.tsx`,
     links: [...commonLinks, { href: "/cookies", label: "Cookie Policy" }, { href: "/terms", label: "Terms of Service" }],
   },
   {
@@ -346,13 +341,7 @@ ${gpsFinderFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</
     file: "terms.html",
     ogType: "article",
     h1: "Terms of Service",
-    body: [
-      "These terms explain the conditions for using FreeGeoTagger's free browser-based photo geotagging and GPS Finder services.",
-      "FreeGeoTagger is provided free of charge and \"as is,\" without warranties of any kind. While the tool is designed to write standard EXIF GPS metadata accurately, you are responsible for verifying results before relying on them.",
-      "Users are responsible for the photos they modify and for understanding the privacy implications of adding location data to images, particularly before sharing photos publicly.",
-      "You agree not to use the service for any unlawful purpose or in a way that infringes the rights of others. FreeGeoTagger is not liable for any loss arising from use of the tool.",
-      "For any questions about these terms, contact contact@freegeotagger.com.",
-    ],
+    sourceFile: `${PAGES_DIR}/terms.tsx`,
     links: [...commonLinks, { href: "/privacy", label: "Privacy Policy" }, { href: "/cookies", label: "Cookie Policy" }],
   },
   {
@@ -360,12 +349,7 @@ ${gpsFinderFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</
     file: "cookies.html",
     ogType: "article",
     h1: "Cookie Policy",
-    body: [
-      "FreeGeoTagger uses minimal browser storage for essential preferences such as theme selection. The core photo geotagging workflow does not require accounts or photo uploads.",
-      "Map and address-search features load resources from third-party providers (such as OpenStreetMap), which may set their own cookies needed to deliver map tiles.",
-      "If Google AdSense ads are shown, Google and its partners may use cookies or similar technologies to serve, measure, personalize, and limit ads. These cookies help show relevant ads and prevent the same ad from being repeated.",
-      "You can control or delete cookies through your browser settings, and you can manage ad personalization through Google's Ads Settings at any time.",
-    ],
+    sourceFile: `${PAGES_DIR}/cookies.tsx`,
     links: [...commonLinks, { href: "/privacy", label: "Privacy Policy" }, { href: "/terms", label: "Terms of Service" }],
   },
   {
@@ -373,13 +357,7 @@ ${gpsFinderFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</
     file: "about.html",
     ogType: "article",
     h1: "About FreeGeoTagger",
-    body: [
-      "FreeGeoTagger is a free online photo metadata tool built to help people add, edit, and verify GPS coordinates in image files without installing software or creating an account.",
-      "The site provides browser-based geotagging and GPS-checking tools for photographers, real estate teams, business owners, researchers, journalists, and everyday users who need accurate photo location data.",
-      "Image processing runs locally in your browser. Photos are not uploaded to a FreeGeoTagger server when GPS metadata is added or checked, which keeps your images private by design.",
-      "We built FreeGeoTagger because most geotagging tools are either paid, require an account, or upload your photos to the cloud. Our goal is a fast, private, genuinely free alternative that writes standard EXIF GPS data compatible with Google Photos, Apple Photos, Lightroom, and GIS software.",
-      "Alongside the tools, we publish practical guides on the blog covering iPhone and Android geotagging, EXIF GPS metadata, real estate listing photos, and Google Business Profile images.",
-    ],
+    sourceFile: `${PAGES_DIR}/about.tsx`,
     links: [
       ...commonLinks,
       { href: "/privacy", label: "Privacy Policy" },
@@ -391,12 +369,7 @@ ${gpsFinderFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</
     file: "contact.html",
     ogType: "article",
     h1: "Contact FreeGeoTagger",
-    body: [
-      "Use this page for questions about FreeGeoTagger, website content, privacy, cookies, or photo geotagging workflows.",
-      "Email contact@freegeotagger.com with the page URL and a short description of your question, and we will get back to you.",
-      "Support topics include adding GPS coordinates to photos, reading EXIF GPS metadata with the GPS Finder, privacy questions, HEIC and format support, and corrections to published guides.",
-      "For media or partnership enquiries, please use the same email address and include \"Partnership\" in the subject line.",
-    ],
+    sourceFile: `${PAGES_DIR}/contact.tsx`,
     links: [
       ...commonLinks,
       { href: "/about", label: "About FreeGeoTagger" },
@@ -426,6 +399,9 @@ function jsxToHtml(jsx: string) {
     .replace(/<\/Link>/g, "</a>")
     .replace(/\s+className="[^"]*"/g, "")
     .replace(/\s+data-testid="[^"]*"/g, "")
+    // JSX string/whitespace expressions such as {" "} would otherwise be emitted
+    // literally into the static HTML and show up as visible text to crawlers.
+    .replace(/\{\s*["'`]([^"'`]*)["'`]\s*\}/g, "$1")
     .replace(/[ \t]+$/gm, "")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
