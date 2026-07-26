@@ -9,8 +9,8 @@ Allow: /sitemap.xml
 # Sitemap location
 Sitemap: https://freegeotagger.com/sitemap.xml
 
-# Crawl-delay for polite crawling
-Crawl-delay: 1
+# No Crawl-delay directive: Googlebot ignores it entirely, and on a small static
+# site it only slows down the crawlers that do honour it (Bing, Yandex) for no gain.
 
 # Disallow admin or private paths (none currently)
 # Disallow: /admin/

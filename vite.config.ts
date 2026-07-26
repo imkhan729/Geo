@@ -30,13 +30,29 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
-    target: "es2020",
+    target: "es2022",
     cssCodeSplit: true,
-    // All target browsers support modulepreload natively; skip the polyfill (~1 KB)
-    modulePreload: { polyfill: false },
+    modulePreload: false,
     rollupOptions: {
       output: {
         manualChunks: (id) => {
+          // These four are reached ONLY through `await import(...)` in
+          // client/src/lib/geotag-utils.ts. They must be left unassigned so Rollup
+          // emits them as async chunks that load on first use.
+          //
+          // Returning a name here (they used to share an "image-tools" chunk) makes
+          // Rollup add a bare `import "./image-tools-*.js"` side-effect import to the
+          // entry chunk to preserve execution order, dragging ~365 KB into the initial
+          // load on every route. Letting the catch-all below fold them into "vendor"
+          // is even worse, since vendor IS statically imported. So: bail out early,
+          // explicitly, and let Rollup decide.
+          if (
+            id.includes("node_modules/piexifjs") ||
+            id.includes("node_modules/heic2any") ||
+            id.includes("node_modules/jszip") ||
+            id.includes("node_modules/file-saver") ||
+            id.includes("node_modules/pako")
+          ) return undefined;
           if (id.includes("node_modules/leaflet")) return "leaflet";
           if (id.includes("node_modules/react-dom")) return "react-dom";
           if (id.includes("node_modules/react/")) return "react";

@@ -53,10 +53,14 @@ type RouteMeta = {
   faqs?: Array<{ q: string; a: string }>;
 };
 
+/** Site-wide links. Mirrors what the real React footer renders on every page, so the
+ *  prerendered nav does not under-represent the rendered site's internal linking. */
 const commonLinks = [
   { href: "/", label: "Geotag Photos Free" },
   { href: "/gps-finder", label: "GPS Finder" },
   { href: "/blog", label: "Photo Geotagging Blog" },
+  { href: "/about", label: "About FreeGeoTagger" },
+  { href: "/contact", label: "Contact" },
 ];
 
 const blogLinks = [
@@ -193,12 +197,29 @@ const routes: RouteMeta[] = [
 <li><strong>Automatic extraction</strong> — the tool reads the EXIF GPS block locally in your browser.</li>
 <li><strong>View &amp; use the location</strong> — see the coordinates on a map, copy them, or open the spot in Google Maps.</li>
 </ol>
+<p>Nothing is sent anywhere. The file is read from your own disk into memory, the EXIF block is parsed in JavaScript, and the coordinates are rendered on the map. You can confirm this by opening your browser's Network tab, or by disconnecting from the internet once the page has loaded — extraction still works, though the map tiles will stop refreshing.</p>
+
+<h2>Why Use This GPS Finder?</h2>
+<ul>
+<li><strong>No upload, so no exposure.</strong> Checking where a photo was taken is often exactly the moment you do not want to hand it to a server.</li>
+<li><strong>Free with no account</strong> — no sign-up, no file limits, no watermarks.</li>
+<li><strong>Reads all common formats</strong> — JPG, PNG, WebP and HEIC, with HEIC handled without a separate conversion step on your part.</li>
+<li><strong>Shows the exact numbers</strong> — copy decimal coordinates directly, or open the position in Google Maps.</li>
+<li><strong>Works on mobile</strong> — runs in Safari on iPhone and Chrome on Android.</li>
+</ul>
+
+<h2>Understanding GPS Metadata in Photos</h2>
+<p>Location data is stored in a dedicated GPS sub-directory inside a photo's EXIF metadata. The essential fields are latitude and longitude, each paired with a reference field recording the hemisphere — north or south, east or west. Many cameras also record altitude, a UTC timestamp for the satellite fix, and a compass bearing describing which way the lens was pointing.</p>
+<p>Accuracy depends entirely on the device that captured the image. A modern smartphone with a clear view of the sky is typically accurate to within about 5–10 metres. Indoors, underground, or between tall buildings, the fix degrades and a phone may fall back on a cached position from earlier — which is one of the most common reasons a photo appears in the wrong place.</p>
+<p>If a photo turns out to have no coordinates at all, that is usually because location services were switched off for the camera, because the file came from a platform that strips metadata on upload, or because it is a screenshot rather than a camera photo. Any of those can be corrected by <a href="/">adding the location yourself</a>, and our guide on <a href="/blog/how-to-fix-wrong-gps-location-on-photos">fixing wrong photo GPS data</a> covers the causes in more detail.</p>
 
 <h2>Who Uses GPS Finder?</h2>
 <ul>
 <li><strong>Researchers</strong> — extract location data for field studies, documentation, and analysis.</li>
 <li><strong>Photographers</strong> — confirm where images were captured and organize archives by location.</li>
 <li><strong>Real estate &amp; insurance</strong> — verify that listing or claim photos carry the correct coordinates.</li>
+<li><strong>Journalists</strong> — check the stated origin of an image against what its metadata actually says.</li>
+<li><strong>Anyone sharing photos publicly</strong> — see what location a file would reveal before you post it. If you want it gone, follow our guide on <a href="/blog/how-to-remove-gps-data-from-photos">removing GPS data from photos</a>.</li>
 <li><strong>Everyday users</strong> — find out where an old photo was taken.</li>
 </ul>
 
@@ -216,6 +237,21 @@ ${gpsFinderFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</
     contentHtml: `
 <h1>Photo Geotagging Blog — Tips, Guides &amp; How-Tos</h1>
 <p>Practical tutorials on adding GPS coordinates to photos, editing EXIF location metadata, and using geotagged images for local SEO and photography workflows. Guides cover iPhone, Android, real estate listings, Google Business Profile photos, and free geotagging tools.</p>
+<p>Every guide here is written around a question people actually arrive with — a photo that lost its location, a pin that landed in the wrong city, a folder of listing photos that all need the same coordinates, or an address hiding in a file about to be posted publicly. Each one explains the cause before the fix, because photo metadata problems usually repeat until you understand why they happened.</p>
+
+<h2>Where to Start</h2>
+<p>Pick by what you are trying to do rather than reading front to back:</p>
+<ul>
+<li><strong>A photo has no location and you want to add one.</strong> Start with the guide for your device — <a href="/blog/how-to-add-gps-to-iphone-photos">iPhone</a> or <a href="/blog/how-to-geotag-photos-android">Android</a>.</li>
+<li><strong>The location is there but wrong.</strong> Read <a href="/blog/how-to-fix-wrong-gps-location-on-photos">how to fix the wrong GPS location on a photo</a>, which also explains why cached positions and clock drift cause it.</li>
+<li><strong>You have many photos from one place.</strong> <a href="/blog/how-to-bulk-geotag-photos">Bulk geotagging</a> covers the batch workflow.</li>
+<li><strong>You are about to share photos publicly.</strong> <a href="/blog/how-to-remove-gps-data-from-photos">Removing GPS data</a> covers checking and stripping location first.</li>
+<li><strong>You want to understand the format itself.</strong> <a href="/blog/what-is-exif-gps-metadata">What is EXIF GPS metadata</a> explains where coordinates live inside an image file and why editing them costs no quality.</li>
+<li><strong>You are choosing a tool.</strong> <a href="/blog/best-free-photo-geotagging-tools">Six free geotagging tools compared</a>, including desktop and command-line options.</li>
+</ul>
+
+<h2>A Note on Geotagging and SEO</h2>
+<p>Two of these guides cover business use — <a href="/blog/how-to-geotag-photos-for-real-estate">real estate listings</a> and <a href="/blog/how-to-geotag-photos-for-google-business-profile">Google Business Profile</a> — and both say the same uncomfortable thing: photo EXIF data is not a direct Google ranking factor, and most platforms strip metadata when they process an upload. Geotag business photos for accuracy, verification and your own organised library, not as a ranking shortcut. Anyone promising otherwise is overselling it.</p>
 
 <h2>Latest Articles</h2>
 <article>
@@ -593,8 +629,19 @@ function bylineHtml(routePath: string) {
   return `<p class="byline">${parts.join(" &middot; ")}</p>`;
 }
 
+/** Three sibling articles for a blog post, chosen deterministically by rotating the
+ *  blogLinks list. Without this, links flowed only hub -> spoke, leaving several posts
+ *  with a single inbound internal link; spoke <-> spoke linking spreads authority and
+ *  gives crawlers more paths into the newer articles. */
+function siblingLinks(routePath: string) {
+  const i = blogLinks.findIndex((l) => l.href === routePath);
+  if (i < 0) return [];
+  return [1, 2, 3].map((offset) => blogLinks[(i + offset) % blogLinks.length]);
+}
+
 async function buildStaticContent(route: RouteMeta) {
-  const links = route.links ?? commonLinks;
+  const siblings = siblingLinks(route.path);
+  const links = [...(route.links ?? commonLinks), ...siblings];
   const navHtml = [
     '<nav aria-label="Related pages"><ul>',
     ...links.map((link) => `<li><a href="${escapeHtml(link.href)}">${escapeHtml(link.label)}</a></li>`),
