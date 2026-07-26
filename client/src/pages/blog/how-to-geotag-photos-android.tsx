@@ -3,11 +3,13 @@ import { Link } from "wouter";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
+import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { EclipseButton } from "@/components/ui/eclipse-button";
 import { useLocation } from "wouter";
 
 export default function BlogAndroid() {
+  useBlogFaqSchema("how-to-geotag-photos-android");
   const [, navigate] = useLocation();
 
   useEffect(() => {
@@ -50,45 +52,7 @@ export default function BlogAndroid() {
       ],
     });
 
-    injectPageSchema("blog-android-faq", {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "Why do my Android photos not have location data?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Android photos lose location data for several reasons: location permission was denied for the Camera app, Location Services were turned off on the device, the photo was shared via a platform like WhatsApp or Instagram that strips EXIF data, or the photo was downloaded from the internet. You can add GPS coordinates retroactively using FreeGeoTagger — free and browser-based.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "How do I add GPS coordinates to Android photos without an app?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Open Chrome on your Android device and go to FreeGeoTagger (freegeotagger.com). Upload your photo, pin your location on the interactive map or search your address, then download the geotagged photo. No app install needed — everything works directly in Chrome. Your photos never leave your device.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Does geotagging affect photo quality on Android?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "No. Geotagging only modifies the EXIF metadata inside the image file — the pixel data, resolution, and visual quality are completely unchanged. Your photos look identical before and after geotagging.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Can I geotag multiple Android photos at once?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Yes. FreeGeoTagger supports batch geotagging — upload multiple photos at once, set a single GPS location, and download all geotagged files at once as a ZIP archive. This works in Chrome on Android.",
-          },
-        },
-      ],
-    });
-  }, []);
+}, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -129,6 +93,10 @@ export default function BlogAndroid() {
             <p>
               Android is the world's most widely used mobile operating system, and its camera apps embed GPS data automatically — when location services are enabled. The problem is that GPS data goes missing more often than most people realize: a quick permission denial during setup, location turned off to save battery, a photo shared via WhatsApp, or an image downloaded from the web. The result is a photo with no location context that Google Photos can't place on a map and apps can't use for location-based features.
             </p>
+
+            <BlogFigure slug="how-to-geotag-photos-android" />
+
+            <KeyTakeaways slug="how-to-geotag-photos-android" />
 
             <p>
               The solution doesn't require downloading a geotagging app from the Play Store, creating an account, or paying for software. <Link href="/">FreeGeoTagger</Link> is a free, browser-based tool that works directly in Chrome on any Android device. Upload your photo, set the GPS location, download — done. Your photos stay on your device throughout.
@@ -243,6 +211,8 @@ export default function BlogAndroid() {
             <p>
               After geotagging, use our <Link href="/gps-finder">GPS Finder</Link> to verify the coordinates are embedded correctly — and you're done. No app, no account, no upload.
             </p>
+
+            <BlogFaq slug="how-to-geotag-photos-android" />
 
           </article>
 

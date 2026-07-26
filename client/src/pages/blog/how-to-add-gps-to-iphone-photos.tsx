@@ -3,11 +3,13 @@ import { Link } from "wouter";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
+import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { EclipseButton } from "@/components/ui/eclipse-button";
 import { useLocation } from "wouter";
 
 export default function BlogIphone() {
+  useBlogFaqSchema("how-to-add-gps-to-iphone-photos");
   const [, navigate] = useLocation();
 
   useEffect(() => {
@@ -47,37 +49,7 @@ export default function BlogIphone() {
       ],
     });
 
-    injectPageSchema("blog-iphone-faq", {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "Why do my iPhone photos not have location data?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "iPhone photos are missing location data if Location Services is disabled for the Camera app, if the photo was taken in a low-signal area, if the photo was shared via a platform that strips GPS metadata, or if it was saved from a screenshot.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "How do I add GPS coordinates to iPhone photos without an app?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Use FreeGeoTagger — a free browser-based tool. Open it in Safari on your iPhone or on any desktop browser, upload your photo, pin the location on the map, and download the geotagged version. No app install required.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Does adding GPS to iPhone photos affect image quality?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "No. GPS coordinates are stored in the EXIF metadata section of the image file, completely separate from the pixel data. Adding or modifying GPS has zero effect on image quality.",
-          },
-        },
-      ],
-    });
-  }, []);
+}, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -118,6 +90,10 @@ export default function BlogIphone() {
             <p>
               You shot a great photo on your iPhone, only to find it shows up without a location pin in Google Photos, Apple Maps, or your photo management app. No location. No map marker. Just an image with no geographic context.
             </p>
+
+            <BlogFigure slug="how-to-add-gps-to-iphone-photos" />
+
+            <KeyTakeaways slug="how-to-add-gps-to-iphone-photos" />
 
             <p>
               This is a common problem — and it's fixable. You can add GPS coordinates to any iPhone photo retroactively, without reinstalling the Camera app or turning on location services for every app on your device. This guide explains why the GPS data is missing and exactly how to add it back.
@@ -243,6 +219,8 @@ export default function BlogIphone() {
             <p>
               <Link href="/">Start geotagging now →</Link>
             </p>
+            <BlogFaq slug="how-to-add-gps-to-iphone-photos" />
+
           </article>
 
           {/* Related posts */}

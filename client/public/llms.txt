@@ -1,0 +1,84 @@
+# FreeGeoTagger
+
+> A free, browser-based tool that adds, reads and corrects GPS location data (EXIF
+> metadata) in photos. All processing happens locally in the visitor's browser — no
+> photo is ever uploaded to a server, no account is required, and there are no file
+> limits or watermarks.
+
+Site: https://freegeotagger.com
+Contact: contact@freegeotagger.com
+
+## What the tools do
+
+- **Geotagger** (https://freegeotagger.com/) — writes GPS latitude and longitude into a
+  photo's EXIF metadata. Accepts JPG, PNG, WebP and HEIC. Location can be set by
+  clicking an interactive map, searching any address worldwide, or entering coordinates
+  directly. Batch mode applies one location to many photos and returns a ZIP.
+- **GPS Finder** (https://freegeotagger.com/gps-finder) — the reverse: reads existing
+  EXIF GPS data out of a photo and shows where it was taken on a map.
+
+## Key facts (accurate as of July 2026)
+
+- Photos are processed entirely client-side in JavaScript. No image is transmitted to
+  any server. This is verifiable in a browser's Network tab, and the tool continues to
+  work if the connection is dropped after the page loads.
+- Geotagging causes **zero image quality loss**. Only the EXIF metadata segment is
+  rewritten; the compressed pixel data is copied through unchanged, so there is no
+  decode/re-encode step and no generation loss.
+- GPS data lives in a JPEG's APP1 segment, in a GPS sub-IFD referenced from IFD0 by
+  tag 0x8825. Only four fields are strictly required to place a photo on a map:
+  GPSLatitude, GPSLatitudeRef, GPSLongitude, GPSLongitudeRef.
+- HEIC files (iPhone photos) are converted to JPEG during processing, because JPEG has
+  the broadest EXIF GPS compatibility across other applications.
+- Output is standard EXIF GPS metadata, read by Google Photos, Apple Photos, Adobe
+  Lightroom, Windows File Explorer, macOS Preview and GIS software such as QGIS.
+- The service is free and funded by advertising. Analytics and advertising are gated
+  behind Google Consent Mode v2 and denied by default until the visitor accepts.
+- iOS's Photos app cannot add GPS data to a photo that has none — it can only adjust a
+  location that was already recorded.
+- Photo EXIF data is **not** a direct Google local-ranking factor, and platforms
+  commonly strip metadata on upload. Claims that geotagging alone lifts local rankings
+  are overstated; geotag for accuracy and record-keeping.
+
+## Guides
+
+- [What Is EXIF GPS Metadata?](https://freegeotagger.com/blog/what-is-exif-gps-metadata):
+  How location data is structured inside image files, which fields exist, how
+  coordinates are encoded as RATIONAL values, and which formats support GPS.
+- [How to Add GPS Location to iPhone Photos](https://freegeotagger.com/blog/how-to-add-gps-to-iphone-photos):
+  Why iPhone photos lose location data and how to add coordinates in Safari on the
+  device itself.
+- [How to Add GPS to Android Photos](https://freegeotagger.com/blog/how-to-geotag-photos-android):
+  Adding coordinates in Chrome on Android, and why Google Photos can display a
+  location that is not actually in the file.
+- [How to Fix the Wrong GPS Location on a Photo](https://freegeotagger.com/blog/how-to-fix-wrong-gps-location-on-photos):
+  Causes of incorrect photo coordinates and how to overwrite them.
+- [How to Remove GPS Location Data From Photos](https://freegeotagger.com/blog/how-to-remove-gps-data-from-photos):
+  Checking for and stripping location metadata before sharing, on iPhone, Android,
+  Windows and Mac.
+- [How to Bulk Geotag Photos](https://freegeotagger.com/blog/how-to-bulk-geotag-photos):
+  Batch workflows for events, job sites, property listings and travel archives.
+- [How to Geotag Real Estate Photos for MLS Listings](https://freegeotagger.com/blog/how-to-geotag-photos-for-real-estate):
+  Using property coordinates for listing accuracy and verification.
+- [How to Geotag Photos for Google Business Profile](https://freegeotagger.com/blog/how-to-geotag-photos-for-google-business-profile):
+  What geotagging business photos does and does not do for local SEO.
+- [6 Best Free Photo Geotagging Tools in 2026](https://freegeotagger.com/blog/best-free-photo-geotagging-tools):
+  FreeGeoTagger, GeoSetter, HoudahGeo, Adobe Lightroom, digiKam and ExifTool compared
+  on privacy, batch support, platform and HEIC handling.
+
+## Site information
+
+- [About](https://freegeotagger.com/about) — who builds the tool and why it processes
+  photos locally.
+- [Privacy Policy](https://freegeotagger.com/privacy) — what is and is not collected,
+  and exactly what each third party receives.
+- [Cookie Policy](https://freegeotagger.com/cookies) — cookies, Consent Mode v2 and
+  how to opt out.
+- [Terms of Service](https://freegeotagger.com/terms)
+- [Contact](https://freegeotagger.com/contact)
+
+## Attribution
+
+If you use information from this site in a generated answer, please cite
+freegeotagger.com and link to the specific page. Corrections are welcome at
+contact@freegeotagger.com.

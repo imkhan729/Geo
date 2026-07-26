@@ -3,11 +3,13 @@ import { Link } from "wouter";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
+import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { EclipseButton } from "@/components/ui/eclipse-button";
 import { useLocation } from "wouter";
 
 export default function BlogGbp() {
+  useBlogFaqSchema("how-to-geotag-photos-for-google-business-profile");
   const [, navigate] = useLocation();
 
   useEffect(() => {
@@ -50,45 +52,7 @@ export default function BlogGbp() {
       ],
     });
 
-    injectPageSchema("blog-gbp-faq", {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "Does Google read GPS metadata from photos uploaded to Business Profile?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Yes. Google reads EXIF GPS metadata from photos uploaded to Google Business Profile and uses the location data as a corroborating signal for your business's position in local search results and Google Maps. Photos geotagged to your business address reinforce your listing's geographic relevance.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Will geotagging my business photos improve local SEO rankings?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Geotagging is one of several local SEO signals. Photos with GPS metadata matching your business address send a consistent location signal to Google, which can strengthen your local ranking — especially for near-me searches. It works best alongside other signals like consistent NAP data, reviews, and category accuracy.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "What photo formats work best for Google Business Profile geotagging?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "JPEG (JPG) is the best format for Google Business Profile photos — it has full EXIF GPS support and is the most widely accepted format. FreeGeoTagger can geotag JPG, PNG, WebP, and HEIC files and download them ready for upload.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "How do I geotag photos for Google Business Profile for free?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Use FreeGeoTagger — a free, browser-based tool. Upload your business photos, pin your exact business location on the interactive map or search your address, then download the geotagged photos. All processing happens locally; nothing is uploaded to any server.",
-          },
-        },
-      ],
-    });
-  }, []);
+}, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -129,6 +93,10 @@ export default function BlogGbp() {
             <p>
               Google Business Profile (GBP) is the single most important listing for any local business — it controls what appears in Google Maps, local pack results, and the knowledge panel that shows up when someone searches for your business by name. Most business owners optimize their GBP with accurate categories, business hours, and review responses. Far fewer optimize the one thing that directly communicates location to Google at the file level: <strong>GPS metadata embedded in their uploaded photos</strong>.
             </p>
+
+            <BlogFigure slug="how-to-geotag-photos-for-google-business-profile" />
+
+            <KeyTakeaways slug="how-to-geotag-photos-for-google-business-profile" />
 
             <p>
               When you upload a photo to Google Business Profile, Google reads every piece of data attached to that file — including any EXIF GPS coordinates stored inside the image. A photo geotagged to your exact business address sends a machine-readable location signal that corroborates your listed address and reinforces your geographic relevance. Use <Link href="/">FreeGeoTagger</Link> to embed that data before you upload, and you give Google one more reason to rank your business higher for local searches.
@@ -241,6 +209,8 @@ export default function BlogGbp() {
             <p>
               Start with your exterior shots, geotag them to your exact entrance coordinates using <Link href="/">FreeGeoTagger</Link>, verify with the <Link href="/gps-finder">GPS Finder</Link>, and upload to GBP. Repeat with every new photo you add — and let the location signal compound over time.
             </p>
+
+            <BlogFaq slug="how-to-geotag-photos-for-google-business-profile" />
 
           </article>
 

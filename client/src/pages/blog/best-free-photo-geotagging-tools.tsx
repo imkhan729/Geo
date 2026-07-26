@@ -3,11 +3,13 @@ import { Link } from "wouter";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
+import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { EclipseButton } from "@/components/ui/eclipse-button";
 import { useLocation } from "wouter";
 
 export default function BlogBestTools() {
+  useBlogFaqSchema("best-free-photo-geotagging-tools");
   const [, navigate] = useLocation();
 
   useEffect(() => {
@@ -50,45 +52,7 @@ export default function BlogBestTools() {
       ],
     });
 
-    injectPageSchema("blog-tools-faq", {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "What is the best free photo geotagging tool?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "FreeGeoTagger is the best free browser-based geotagging tool — no install, no account, completely private (no uploads), and it works on Windows, Mac, Linux, iOS, and Android. For power users who need GPS track import or advanced metadata editing, GeoSetter (Windows) or ExifTool (command line) are strong free alternatives.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Can I geotag photos in bulk for free?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Yes. FreeGeoTagger supports batch geotagging at no cost — upload multiple photos, set one GPS location, and download all geotagged files as a ZIP. ExifTool also supports unlimited batch geotagging from GPS track files via command line.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Is there a geotagging tool that works without uploading photos to a server?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Yes. FreeGeoTagger processes all photos locally in your browser using JavaScript — your images never leave your device. Desktop tools like GeoSetter, HoudahGeo, and ExifTool also process files locally. Avoid any browser-based tool that requires file upload to a server if privacy is a concern.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Do I need to install software to geotag photos?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "No. FreeGeoTagger is entirely browser-based and requires no installation — open it in Chrome, Firefox, Safari, or Edge on any operating system and start geotagging immediately. Desktop tools like GeoSetter and HoudahGeo require installation but offer additional features like GPS track import.",
-          },
-        },
-      ],
-    });
-  }, []);
+}, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -129,6 +93,10 @@ export default function BlogBestTools() {
             <p>
               Photo geotagging — embedding GPS coordinates into a photo's <Link href="/blog/what-is-exif-gps-metadata">EXIF metadata</Link> — is useful across a surprising range of workflows: organizing travel photos, tagging real estate listings, optimizing Google Business Profile images, meeting archival requirements, or simply making sure Google Photos can place your memories on a map.
             </p>
+
+            <BlogFigure slug="best-free-photo-geotagging-tools" />
+
+            <KeyTakeaways slug="best-free-photo-geotagging-tools" />
 
             <p>
               The good news: you don't need to pay for this. There are several excellent free geotagging tools in 2026 spanning browser-based, desktop, and command-line options. The best choice depends on your operating system, how many photos you need to process, and how much technical comfort you have. This guide covers the top options honestly — including their limitations.
@@ -324,6 +292,8 @@ export default function BlogBestTools() {
             <p>
               For power workflows requiring GPS track import or deep catalog integration, GeoSetter (Windows), digiKam (all platforms), or ExifTool (command line) extend what's possible at no cost. The right tool is the one that fits your workflow — but the barrier to geotagging has never been lower.
             </p>
+
+            <BlogFaq slug="best-free-photo-geotagging-tools" />
 
           </article>
 

@@ -3,11 +3,50 @@ import { Link } from "wouter";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
-import { Calendar, Clock, ArrowRight, MapPin, FileImage, Smartphone, Globe, Monitor, Layers } from "lucide-react";
+import { Calendar, Clock, ArrowRight, MapPin, FileImage, Smartphone, Globe, Monitor, Layers, ShieldOff, Crosshair, Images } from "lucide-react";
 import { EclipseButton } from "@/components/ui/eclipse-button";
 import { useLocation } from "wouter";
 
 const POSTS = [
+  {
+    slug: "how-to-bulk-geotag-photos",
+    title: "How to Bulk Geotag Photos: Add GPS to Hundreds of Images at Once",
+    description:
+      "Batch geotagging saves hours when many photos share one location. Efficient workflows for events, job sites, listings, and travel archives — free and private.",
+    date: "2026-07-12",
+    dateDisplay: "July 12, 2026",
+    readingTime: "6 min read",
+    icon: Images,
+    iconColor: "text-sky-600",
+    iconBg: "bg-sky-500/10",
+    category: "Workflow",
+  },
+  {
+    slug: "how-to-fix-wrong-gps-location-on-photos",
+    title: "How to Fix or Change the Wrong GPS Location on a Photo",
+    description:
+      "Photo pinned to the wrong place on the map? Learn why photo GPS data ends up incorrect and how to rewrite the coordinates in seconds with zero quality loss.",
+    date: "2026-07-10",
+    dateDisplay: "July 10, 2026",
+    readingTime: "6 min read",
+    icon: Crosshair,
+    iconColor: "text-orange-600",
+    iconBg: "bg-orange-500/10",
+    category: "How-To",
+  },
+  {
+    slug: "how-to-remove-gps-data-from-photos",
+    title: "How to Remove GPS Location Data from Photos",
+    description:
+      "Protect your privacy before sharing photos publicly. Check for embedded GPS coordinates and strip them on iPhone, Android, Windows, and Mac — with no quality loss.",
+    date: "2026-07-08",
+    dateDisplay: "July 8, 2026",
+    readingTime: "7 min read",
+    icon: ShieldOff,
+    iconColor: "text-rose-600",
+    iconBg: "bg-rose-500/10",
+    category: "Privacy",
+  },
   {
     slug: "how-to-geotag-photos-for-real-estate",
     title: "How to Geotag Photos for Real Estate Listings",

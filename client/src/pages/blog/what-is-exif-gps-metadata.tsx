@@ -3,11 +3,13 @@ import { Link } from "wouter";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
+import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { EclipseButton } from "@/components/ui/eclipse-button";
 import { useLocation } from "wouter";
 
 export default function BlogExifGps() {
+  useBlogFaqSchema("what-is-exif-gps-metadata");
   const [, navigate] = useLocation();
 
   useEffect(() => {
@@ -47,37 +49,7 @@ export default function BlogExifGps() {
       ],
     });
 
-    injectPageSchema("blog-exif-faq", {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "What is EXIF GPS metadata?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "EXIF GPS metadata is location information — latitude, longitude, altitude, and direction — embedded inside a photo file's EXIF data block. It tells apps and services exactly where a photo was taken.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Can I add GPS data to a photo after it was taken?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Yes. You can add GPS coordinates to any JPEG, PNG, WebP, or HEIC photo using FreeGeoTagger — a free, browser-based tool that embeds GPS into the EXIF metadata without affecting image quality.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "How do I read GPS data from a photo?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Use the FreeGeoTagger GPS Finder tool. Upload any geotagged photo and it will extract the embedded GPS coordinates and display them on a map — free and private.",
-          },
-        },
-      ],
-    });
-  }, []);
+}, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -118,6 +90,10 @@ export default function BlogExifGps() {
             <p>
               Every time you take a photo with a modern smartphone, your device quietly embeds a detailed block of technical data into the image file. This data — known as EXIF metadata — includes camera settings, timestamps, device model, and, if location services are enabled, precise GPS coordinates.
             </p>
+
+            <BlogFigure slug="what-is-exif-gps-metadata" />
+
+            <KeyTakeaways slug="what-is-exif-gps-metadata" />
 
             <p>
               EXIF GPS metadata is what makes Google Photos organize your images on a world map, lets Apple Photos show "Taken near Paris," and allows platforms like Flickr to cluster photos by location. It's also something you can add to any photo after the fact — which is exactly what <Link href="/">FreeGeoTagger</Link> does.
@@ -253,6 +229,8 @@ export default function BlogExifGps() {
             <p>
               Try <Link href="/">FreeGeoTagger</Link> to add GPS to your photos, or use the <Link href="/gps-finder">GPS Finder</Link> to read GPS from existing images. Both tools are free and work entirely in your browser.
             </p>
+            <BlogFaq slug="what-is-exif-gps-metadata" />
+
           </article>
 
           {/* Related posts */}

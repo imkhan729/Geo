@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
 import { SEO_CONFIG } from "../client/src/lib/seo";
+import { BLOG_EXTRAS } from "../client/src/lib/blog-content";
 
 const SITE_URL = "https://freegeotagger.com";
 const OG_IMAGE = `${SITE_URL}/og-image.png`;
@@ -15,15 +16,15 @@ const seoByPath = new Map(
 /** Publication dates for Article schema. Google requires datePublished (and strongly
  *  prefers dateModified) for Article rich results. Keyed by canonical path. */
 const POST_DATES: Record<string, { published: string; modified: string }> = {
-  "/blog/how-to-add-gps-to-iphone-photos": { published: "2026-03-22", modified: "2026-03-22" },
-  "/blog/what-is-exif-gps-metadata": { published: "2026-03-25", modified: "2026-03-25" },
-  "/blog/how-to-geotag-photos-for-real-estate": { published: "2026-03-28", modified: "2026-03-28" },
-  "/blog/how-to-geotag-photos-for-google-business-profile": { published: "2026-04-01", modified: "2026-04-01" },
-  "/blog/how-to-geotag-photos-android": { published: "2026-04-02", modified: "2026-04-02" },
-  "/blog/best-free-photo-geotagging-tools": { published: "2026-04-03", modified: "2026-04-03" },
-  "/blog/how-to-remove-gps-data-from-photos": { published: "2026-07-08", modified: "2026-07-08" },
-  "/blog/how-to-fix-wrong-gps-location-on-photos": { published: "2026-07-10", modified: "2026-07-10" },
-  "/blog/how-to-bulk-geotag-photos": { published: "2026-07-12", modified: "2026-07-12" },
+  "/blog/how-to-add-gps-to-iphone-photos": { published: "2026-03-22", modified: "2026-07-26" },
+  "/blog/what-is-exif-gps-metadata": { published: "2026-03-25", modified: "2026-07-26" },
+  "/blog/how-to-geotag-photos-for-real-estate": { published: "2026-03-28", modified: "2026-07-26" },
+  "/blog/how-to-geotag-photos-for-google-business-profile": { published: "2026-04-01", modified: "2026-07-26" },
+  "/blog/how-to-geotag-photos-android": { published: "2026-04-02", modified: "2026-07-26" },
+  "/blog/best-free-photo-geotagging-tools": { published: "2026-04-03", modified: "2026-07-26" },
+  "/blog/how-to-remove-gps-data-from-photos": { published: "2026-07-08", modified: "2026-07-26" },
+  "/blog/how-to-fix-wrong-gps-location-on-photos": { published: "2026-07-10", modified: "2026-07-26" },
+  "/blog/how-to-bulk-geotag-photos": { published: "2026-07-12", modified: "2026-07-26" },
 };
 
 const AUTHOR = { "@type": "Organization", name: "FreeGeoTagger", url: SITE_URL };
@@ -391,9 +392,42 @@ function replaceOrInsert(html: string, selector: RegExp, replacement: string) {
   return html.replace("</head>", `  ${replacement}\n</head>`);
 }
 
+/** Expand the <KeyTakeaways/>, <BlogFigure/> and <BlogFaq/> components (see
+ *  client/src/components/blog-extras.tsx) into static HTML using the shared data in
+ *  client/src/lib/blog-content.ts. Without this the tags would survive into the
+ *  prerendered output as literal, meaningless markup. */
+function expandBlogExtras(jsx: string) {
+  const tagRe = /<(KeyTakeaways|BlogFigure|BlogFaq)\s+slug="([^"]+)"\s*\/>/g;
+  return jsx.replace(tagRe, (_match, tag: string, slug: string) => {
+    const extras = BLOG_EXTRAS[slug];
+    if (!extras) throw new Error(`<${tag}> references unknown blog slug "${slug}" — add it to client/src/lib/blog-content.ts`);
+
+    if (tag === "KeyTakeaways") {
+      const items = extras.takeaways.map((t) => `<li>${escapeHtml(t)}</li>`).join("\n");
+      return `<aside class="key-takeaways">\n<h2>Key takeaways</h2>\n<ul>\n${items}\n</ul>\n</aside>`;
+    }
+
+    if (tag === "BlogFigure") {
+      const { src, alt, caption, width, height } = extras.image;
+      return [
+        "<figure>",
+        `<img src="${src}" alt="${escapeHtml(alt)}" width="${width}" height="${height}" loading="lazy" decoding="async" />`,
+        `<figcaption>${escapeHtml(caption)}</figcaption>`,
+        "</figure>",
+      ].join("\n");
+    }
+
+    // BlogFaq
+    const qa = extras.faqs
+      .map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</p>`)
+      .join("\n");
+    return `<section>\n<h2>Frequently asked questions</h2>\n${qa}\n</section>`;
+  });
+}
+
 /** Convert a JSX fragment from a page's <article> into plain, crawlable HTML. */
 function jsxToHtml(jsx: string) {
-  return jsx
+  return expandBlogExtras(jsx)
     .replace(/\{\/\*[\s\S]*?\*\/\}/g, "") // JSX comments
     .replace(/<Link\b[\s\S]*?href="([^"]*)"[\s\S]*?>/g, '<a href="$1">')
     .replace(/<\/Link>/g, "</a>")
@@ -420,11 +454,15 @@ async function articleFromSource(sourceFile: string) {
 }
 
 function faqSchema(route: RouteMeta) {
-  if (!route.faqs?.length) return null;
+  // Blog posts take their FAQs from the shared blog-content module (same data that
+  // renders the visible Q&A), everything else from the route's own `faqs`.
+  const slug = route.path.replace("/blog/", "");
+  const faqs = isBlogPost(route.path) ? BLOG_EXTRAS[slug]?.faqs : route.faqs;
+  if (!faqs?.length) return null;
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: route.faqs.map((f) => ({
+    mainEntity: faqs.map((f) => ({
       "@type": "Question",
       name: f.q,
       acceptedAnswer: { "@type": "Answer", text: f.a },
@@ -450,6 +488,10 @@ function schemaFor(route: RouteMeta) {
     // strongly recommended. Omitting them makes the page ineligible entirely.
     const dates = POST_DATES[route.path];
     if (!dates) throw new Error(`No POST_DATES entry for blog post "${route.path}"`);
+    const slug = route.path.replace("/blog/", "");
+    const extras = BLOG_EXTRAS[slug];
+    const img = extras?.image;
+
     schemas.push({
       "@context": "https://schema.org",
       "@type": "Article",
@@ -457,7 +499,10 @@ function schemaFor(route: RouteMeta) {
       name: route.h1,
       url: pageUrl,
       description: seo.description,
-      image: { "@type": "ImageObject", url: OG_IMAGE, width: 1200, height: 630 },
+      // Prefer the article's own lead image over the generic social card.
+      image: img
+        ? { "@type": "ImageObject", url: `${SITE_URL}${img.src}`, width: img.width, height: img.height, caption: img.caption }
+        : { "@type": "ImageObject", url: OG_IMAGE, width: 1200, height: 630 },
       datePublished: dates.published,
       dateModified: dates.modified,
       author: AUTHOR,
@@ -465,6 +510,13 @@ function schemaFor(route: RouteMeta) {
       mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
       inLanguage: "en-US",
       isPartOf: { "@type": "WebSite", name: "FreeGeoTagger", url: SITE_URL },
+      // Answer/voice engines use speakable to pick the passages worth reading aloud.
+      speakable: {
+        "@type": "SpeakableSpecification",
+        cssSelector: [".key-takeaways", "h1"],
+      },
+      // Surfaces the article's own summary points as machine-readable statements.
+      ...(extras?.takeaways.length ? { abstract: extras.takeaways.join(" ") } : {}),
     });
   } else {
     // Everything else (blog hub, tool pages, trust pages) is a WebPage — the legal

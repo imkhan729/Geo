@@ -3,11 +3,13 @@ import { Link } from "wouter";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
+import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { EclipseButton } from "@/components/ui/eclipse-button";
 import { useLocation } from "wouter";
 
 export default function BlogRealEstate() {
+  useBlogFaqSchema("how-to-geotag-photos-for-real-estate");
   const [, navigate] = useLocation();
 
   useEffect(() => {
@@ -47,45 +49,7 @@ export default function BlogRealEstate() {
       ],
     });
 
-    injectPageSchema("blog-re-faq", {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Why should I geotag real estate listing photos?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Geotagged real estate photos provide GPS coordinates that help search engines index your listing for local searches, corroborate your Google Business Profile location, and allow MLS platforms and portals like Zillow to validate address fields. It strengthens local SEO and gives buyers precise property context."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Does geotagging real estate photos affect image quality?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "No. Geotagging only modifies the EXIF metadata inside the photo file — the pixel data and visual quality are completely unchanged. You get the same high-resolution image with GPS coordinates added to the metadata."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Which real estate platforms read GPS metadata from photos?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Google Business Profile actively reads EXIF GPS data from uploaded photos for local map indexing. Zillow and Realtor.com accept geotagged photos as additional accuracy signals. Modern MLS systems built on the RESO standard can surface GPS data for mapping and search filters. Facebook Marketplace also reads photo EXIF data including GPS."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is it safe to geotag real estate listing photos?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes, for publicly marketed listings. Since the property address is already public, GPS metadata simply makes that information machine-readable. For vacant properties or high-value homes where you want to limit discoverability, you can verify existing GPS data using a GPS Finder tool before distributing photos."
-          }
-        }
-      ]
-    });
-  }, []);
+}, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -126,6 +90,10 @@ export default function BlogRealEstate() {
             <p>
               In real estate, location is everything. Yet thousands of property photos uploaded to MLS platforms, real estate websites, and Google Business profiles every day are missing one critical piece of data: GPS coordinates embedded in the image file itself.
             </p>
+
+            <BlogFigure slug="how-to-geotag-photos-for-real-estate" />
+
+            <KeyTakeaways slug="how-to-geotag-photos-for-real-estate" />
 
             <p>
               Geotagged photos don't just tell buyers <em>where</em> a property is — they help search engines, mapping apps, and AI tools understand the photo's context. For agents and photographers, adding GPS metadata to listing photos is one of the simplest technical improvements you can make with an outsized impact on discoverability.
@@ -227,6 +195,8 @@ export default function BlogRealEstate() {
             <p>
               No software. No account. No cost. <Link href="/">Try it now →</Link>
             </p>
+            <BlogFaq slug="how-to-geotag-photos-for-real-estate" />
+
           </article>
 
           {/* Related posts */}

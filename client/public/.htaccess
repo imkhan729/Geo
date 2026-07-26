@@ -31,6 +31,7 @@ ErrorDocument 404 /404.html
   RewriteRule ^index\.html$ - [L]
   RewriteRule ^ads\.txt$ - [L]
   RewriteRule ^robots\.txt$ - [L]
+  RewriteRule ^llms\.txt$ - [L]
   RewriteRule ^sitemap\.xml$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
