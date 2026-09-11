@@ -50,6 +50,7 @@ import {
   ImageFile,
   GeotagData,
   addGeotagToImage,
+  addGeotagAndVerify,
   downloadGeotaggedImage,
   generateId,
   readFileAsDataUrl,
@@ -295,9 +296,13 @@ export default function Home() {
   const removeImage = useCallback((id: string) => {
     setImages((prev) => {
       const filtered = prev.filter((img) => img.id !== id);
+      setProcessedBlobs((cur) => {
+        const next = new Map(cur);
+        next.delete(id);
+        return next;
+      });
       if (filtered.length === 0) {
         setSelectedImageIndex(0);
-        setProcessedBlobs(new Map());
       } else {
         setSelectedImageIndex((cur) => (cur >= filtered.length ? filtered.length - 1 : cur));
       }
@@ -338,12 +343,31 @@ export default function Home() {
       setImages([...updated]);
 
       try {
-        const blob = await addGeotagToImage(img.file, geotag);
-        newBlobs.set(img.id, blob);
-        updated[i] = { ...img, status: "success" };
-        successCount++;
-      } catch (err) {
-        updated[i] = { ...img, status: "error", error: "Failed to embed GPS" };
+        const { blob, verification } = await addGeotagAndVerify(img.file, geotag);
+
+        if (verification.isValid && verification.coordinatesVerified) {
+          newBlobs.set(img.id, blob);
+          updated[i] = {
+            ...img,
+            status: "success",
+            verification,
+          };
+          successCount++;
+        } else {
+          updated[i] = {
+            ...img,
+            status: "error",
+            error: verification.error || "EXIF verification failed: coordinates mismatch",
+            verification,
+          };
+          errorCount++;
+        }
+      } catch (err: any) {
+        updated[i] = {
+          ...img,
+          status: "error",
+          error: err.message || "Failed to embed GPS",
+        };
         errorCount++;
         console.error(`Failed to process ${img.name}:`, err);
       }
@@ -358,18 +382,18 @@ export default function Home() {
     if (errorCount === 0) {
       toast({
         title: "EXIF GPS Embedded & Verified!",
-        description: `${successCount} photo${successCount !== 1 ? "s" : ""} tagged successfully. Click Download to save.`,
+        description: `${successCount} photo${successCount !== 1 ? "s" : ""} tagged and binary-verified successfully.`,
       });
     } else if (successCount > 0) {
       toast({
         title: "Partially Complete",
-        description: `${successCount} succeeded, ${errorCount} failed.`,
+        description: `${successCount} verified, ${errorCount} failed verification.`,
         variant: "destructive",
       });
     } else {
       toast({
-        title: "Process Failed",
-        description: "Could not embed GPS metadata into the selected images.",
+        title: "Verification Failed",
+        description: "Could not embed or verify GPS metadata in output files.",
         variant: "destructive",
       });
     }
@@ -400,14 +424,23 @@ export default function Home() {
       setImages([...updated]);
 
       try {
-        const existingBlob = newBlobs.get(img.id);
-        const blob = existingBlob || (await addGeotagToImage(img.file, geotag));
-        newBlobs.set(img.id, blob);
+        let blob = newBlobs.get(img.id);
+        if (!blob) {
+          const res = await addGeotagAndVerify(img.file, geotag);
+          if (!res.verification.isValid || !res.verification.coordinatesVerified) {
+            throw new Error(res.verification.error || "EXIF verification failed");
+          }
+          blob = res.blob;
+          newBlobs.set(img.id, blob);
+          updated[i] = { ...img, status: "success", verification: res.verification };
+        } else {
+          updated[i] = { ...img, status: "success" };
+        }
+
         successfulFiles.push({ name: img.name, blob });
-        updated[i] = { ...img, status: "success" };
         successCount++;
-      } catch (err) {
-        updated[i] = { ...img, status: "error", error: "Download failed" };
+      } catch (err: any) {
+        updated[i] = { ...img, status: "error", error: err.message || "Download failed" };
         errorCount++;
         console.error(`Failed to save ${img.name}:`, err);
       }
@@ -429,7 +462,7 @@ export default function Home() {
     if (errorCount === 0) {
       toast({
         title: "Download Complete!",
-        description: `${successCount} photo${successCount !== 1 ? "s" : ""} saved with embedded GPS coordinates.`,
+        description: `${successCount} photo${successCount !== 1 ? "s" : ""} saved with verified GPS metadata.`,
       });
     } else if (successCount > 0) {
       toast({
@@ -456,18 +489,25 @@ export default function Home() {
         description: description.trim() || undefined,
       };
 
-      const existingBlob = processedBlobs.get(image.id);
-      const blob = existingBlob || (await addGeotagToImage(image.file, geotag));
+      let blob = processedBlobs.get(image.id);
+      if (!blob) {
+        const res = await addGeotagAndVerify(image.file, geotag);
+        if (!res.verification.isValid || !res.verification.coordinatesVerified) {
+          throw new Error(res.verification.error || "EXIF verification failed");
+        }
+        blob = res.blob;
+      }
+
       await downloadGeotaggedImage(blob, image.name);
       toast({
         title: "Photo Downloaded",
-        description: `Saved ${image.name} with GPS metadata.`,
+        description: `Saved ${image.name} with verified GPS metadata.`,
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       toast({
         title: "Download Failed",
-        description: `Could not save ${image.name}.`,
+        description: `Could not save ${image.name}: ${err.message || err}`,
         variant: "destructive",
       });
     }

@@ -26,6 +26,28 @@ export interface DmsCoordinate {
   formatted: string;
 }
 
+export interface VerificationResult {
+  isValid: boolean;
+  format: "jpeg" | "png" | "webp" | "unknown";
+  coordinatesVerified: boolean;
+  extractedGps?: {
+    lat: number;
+    lng: number;
+    altitude?: number;
+  };
+  diffLatDegrees: number;
+  diffLngDegrees: number;
+  diffMeters: number;
+  altitudeVerified?: boolean;
+  error?: string;
+  details?: {
+    hasApp1OrExifChunk: boolean;
+    hasGpsIfd: boolean;
+    headerValid: boolean;
+    crcValid?: boolean;
+  };
+}
+
 export interface ImageFile {
   id: string;
   file: File;
@@ -36,14 +58,25 @@ export interface ImageFile {
   existingGps?: { lat: number; lng: number; altitude?: number } | null;
   status: "pending" | "processing" | "success" | "error";
   error?: string;
+  verification?: VerificationResult;
 }
 
 function degToDmsRational(deg: number): [[number, number], [number, number], [number, number]] {
   const absolute = Math.abs(deg);
-  const degrees = Math.floor(absolute);
+  let degrees = Math.floor(absolute);
   const minutesFloat = (absolute - degrees) * 60;
-  const minutes = Math.floor(minutesFloat);
-  const seconds = Math.round((minutesFloat - minutes) * 60 * 100);
+  let minutes = Math.floor(minutesFloat);
+  let seconds = Math.round((minutesFloat - minutes) * 60 * 100);
+
+  // Normalize potential boundary over-rounding (e.g. 59.999 -> 60.00)
+  if (seconds >= 6000) {
+    seconds = 0;
+    minutes += 1;
+  }
+  if (minutes >= 60) {
+    minutes = 0;
+    degrees += 1;
+  }
 
   return [
     [degrees, 1],
@@ -63,16 +96,55 @@ export async function convertHeicToJpeg(file: File): Promise<Blob> {
   return Array.isArray(result) ? result[0] : result;
 }
 
-export async function readFileAsDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+function safeAtob(base64: string): string {
+  if (typeof atob === "function") return atob(base64);
+  if (typeof Buffer !== "undefined") return Buffer.from(base64, "base64").toString("binary");
+  return "";
 }
 
-export async function readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
+export async function readFileAsDataUrl(file: File | Blob): Promise<string> {
+  let mimeType = file.type;
+  if (!mimeType && "name" in file && typeof (file as File).name === "string") {
+    const name = (file as File).name.toLowerCase();
+    if (name.endsWith(".jpg") || name.endsWith(".jpeg")) mimeType = "image/jpeg";
+    else if (name.endsWith(".png")) mimeType = "image/png";
+    else if (name.endsWith(".webp")) mimeType = "image/webp";
+  }
+
+  if (typeof FileReader !== "undefined") {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        let res = reader.result as string;
+        if (mimeType && res.startsWith("data:application/octet-stream;")) {
+          res = `data:${mimeType};` + res.substring(res.indexOf(";base64,") + 1);
+        }
+        resolve(res);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  const buf = Buffer.from(await file.arrayBuffer());
+  if (!mimeType || mimeType === "application/octet-stream") {
+    if (buf.length >= 2 && buf[0] === 0xff && buf[1] === 0xd8) {
+      mimeType = "image/jpeg";
+    } else if (buf.length >= 8 && buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) {
+      mimeType = "image/png";
+    } else if (buf.length >= 12 && buf.subarray(0, 4).toString() === "RIFF" && buf.subarray(8, 12).toString() === "WEBP") {
+      mimeType = "image/webp";
+    } else {
+      mimeType = "application/octet-stream";
+    }
+  }
+  return `data:${mimeType};base64,${buf.toString("base64")}`;
+}
+
+export async function readFileAsArrayBuffer(file: File | Blob): Promise<ArrayBuffer> {
+  if (typeof file.arrayBuffer === "function") {
+    return await file.arrayBuffer();
+  }
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result as ArrayBuffer);
@@ -88,7 +160,7 @@ export async function extractExistingGps(dataUrl: string): Promise<{ lat: number
 
     if (dataUrl.startsWith("data:image/png")) {
       const base64 = dataUrl.split(',')[1];
-      const binaryStr = window.atob(base64);
+      const binaryStr = safeAtob(base64);
       let pos = 8;
       let found = false;
       while (pos < binaryStr.length) {
@@ -106,7 +178,7 @@ export async function extractExistingGps(dataUrl: string): Promise<{ lat: number
       if (!found) return null;
     } else if (dataUrl.startsWith("data:image/webp")) {
       const base64 = dataUrl.split(',')[1];
-      const binaryStr = window.atob(base64);
+      const binaryStr = safeAtob(base64);
       let pos = 12;
       let found = false;
       while (pos < binaryStr.length) {
@@ -127,6 +199,12 @@ export async function extractExistingGps(dataUrl: string): Promise<{ lat: number
         pos += 8 + paddedLen;
       }
       if (!found) return null;
+    } else if (dataUrl.startsWith("data:") && !dataUrl.startsWith("data:image/jpeg")) {
+      // Normalize any other data url prefix (e.g. data:image/jpg or octet-stream) to data:image/jpeg;base64,
+      const commaIdx = dataUrl.indexOf(",");
+      if (commaIdx !== -1) {
+        exifPayload = "data:image/jpeg;base64," + dataUrl.substring(commaIdx + 1);
+      }
     }
 
     const exifData = piexif.load(exifPayload);
@@ -190,10 +268,20 @@ export function decimalToDms(val: number, isLat: boolean): DmsCoordinate {
     ? (val >= 0 ? "N" : "S")
     : (val >= 0 ? "E" : "W");
   const absolute = Math.abs(val);
-  const degrees = Math.floor(absolute);
+  let degrees = Math.floor(absolute);
   const minutesFloat = (absolute - degrees) * 60;
-  const minutes = Math.floor(minutesFloat);
-  const seconds = Math.round((minutesFloat - minutes) * 60 * 100) / 100;
+  let minutes = Math.floor(minutesFloat);
+  let seconds = Math.round((minutesFloat - minutes) * 60 * 100) / 100;
+
+  if (seconds >= 60) {
+    seconds = 0;
+    minutes += 1;
+  }
+  if (minutes >= 60) {
+    minutes = 0;
+    degrees += 1;
+  }
+
   const formatted = `${degrees}° ${minutes}' ${seconds.toFixed(2)}" ${direction}`;
   return { degrees, minutes, seconds, direction, formatted };
 }
@@ -225,6 +313,18 @@ export function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+export function calculateDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371000; // Earth mean radius in meters
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Math.round(R * c * 100) / 100;
 }
 
 async function extractExifBytesFromWebP(file: File): Promise<string | null> {
@@ -505,6 +605,17 @@ export async function addGeotagToImage(
     exifData.GPS[piexif.GPSIFD.GPSLongitude] = degToDmsRational(geotag.longitude);
     exifData.GPS[piexif.GPSIFD.GPSVersionID] = [2, 3, 0, 0];
 
+    const now = new Date();
+    const year = now.getUTCFullYear();
+    const month = String(now.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(now.getUTCDate()).padStart(2, "0");
+    exifData.GPS[29] = `${year}:${month}:${day}`; // GPSDateStamp
+    exifData.GPS[7] = [
+      [now.getUTCHours(), 1],
+      [now.getUTCMinutes(), 1],
+      [now.getUTCSeconds(), 1],
+    ]; // GPSTimeStamp
+
     if (geotag.altitude !== undefined && !isNaN(geotag.altitude)) {
       exifData.GPS[piexif.GPSIFD.GPSAltitudeRef] = geotag.altitude >= 0 ? 0 : 1;
       exifData.GPS[piexif.GPSIFD.GPSAltitude] = [Math.round(Math.abs(geotag.altitude) * 100), 100];
@@ -551,6 +662,17 @@ export async function addGeotagToImage(
   exifData.GPS[piexif.GPSIFD.GPSLongitude] = degToDmsRational(geotag.longitude);
   exifData.GPS[piexif.GPSIFD.GPSVersionID] = [2, 3, 0, 0];
 
+  const now = new Date();
+  const year = now.getUTCFullYear();
+  const month = String(now.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(now.getUTCDate()).padStart(2, "0");
+  exifData.GPS[29] = `${year}:${month}:${day}`; // GPSDateStamp
+  exifData.GPS[7] = [
+    [now.getUTCHours(), 1],
+    [now.getUTCMinutes(), 1],
+    [now.getUTCSeconds(), 1],
+  ]; // GPSTimeStamp
+
   if (geotag.altitude !== undefined && !isNaN(geotag.altitude)) {
     exifData.GPS[piexif.GPSIFD.GPSAltitudeRef] = geotag.altitude >= 0 ? 0 : 1;
     exifData.GPS[piexif.GPSIFD.GPSAltitude] = [Math.round(Math.abs(geotag.altitude) * 100), 100];
@@ -571,6 +693,175 @@ export async function addGeotagToImage(
   const newDataUrl = piexif.insert(exifBytes, dataUrl);
   const response = await fetch(newDataUrl);
   return response.blob();
+}
+
+export async function verifyGeotaggedBlob(
+  blob: Blob,
+  expected: GeotagData
+): Promise<VerificationResult> {
+  try {
+    const buffer = await blob.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    const view = new DataView(buffer);
+
+    let format: "jpeg" | "png" | "webp" | "unknown" = "unknown";
+    let headerValid = false;
+    let hasApp1OrExifChunk = false;
+    let crcValid: boolean | undefined = undefined;
+    const readAscii = (arr: Uint8Array, start: number, len: number) => {
+      let s = "";
+      for (let i = 0; i < len; i++) s += String.fromCharCode(arr[start + i]);
+      return s;
+    };
+
+    // Detect format and verify container integrity
+    if (bytes.length >= 4 && bytes[0] === 0xFF && bytes[1] === 0xD8) {
+      format = "jpeg";
+      headerValid = true;
+      let pos = 2;
+      while (pos + 4 < bytes.length) {
+        if (bytes[pos] !== 0xFF) break;
+        const marker = bytes[pos + 1];
+        if (marker === 0xDA || marker === 0xD9) break; // SOS or EOI
+        const length = (bytes[pos + 2] << 8) | bytes[pos + 3];
+        if (marker === 0xE1 && pos + 10 <= bytes.length) {
+          const id = readAscii(bytes, pos + 4, 6);
+          if (id.startsWith("Exif")) {
+            hasApp1OrExifChunk = true;
+            break;
+          }
+        }
+        pos += 2 + length;
+      }
+    } else if (
+      bytes.length >= 8 &&
+      bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47 &&
+      bytes[4] === 0x0D && bytes[5] === 0x0A && bytes[6] === 0x1A && bytes[7] === 0x0A
+    ) {
+      format = "png";
+      headerValid = true;
+      let pos = 8;
+      while (pos + 12 <= bytes.length) {
+        const len = (bytes[pos] << 24) | (bytes[pos + 1] << 16) | (bytes[pos + 2] << 8) | bytes[pos + 3];
+        if (len < 0 || pos + 12 + len > bytes.length) break;
+        const type = readAscii(bytes, pos + 4, 4);
+        if (type === "eXIf") {
+          hasApp1OrExifChunk = true;
+          const chunkData = bytes.subarray(pos + 4, pos + 8 + len);
+          const computedCrc = calculateCrc32(chunkData);
+          const storedCrc = view.getUint32(pos + 8 + len, false);
+          crcValid = computedCrc === storedCrc;
+          break;
+        }
+        pos += 12 + len;
+      }
+    } else if (bytes.length >= 12) {
+      const riff = readAscii(bytes, 0, 4);
+      const webp = readAscii(bytes, 8, 4);
+      if (riff === "RIFF" && webp === "WEBP") {
+        format = "webp";
+        headerValid = true;
+        let pos = 12;
+        while (pos + 8 <= bytes.length) {
+          const tag = readAscii(bytes, pos, 4);
+          const size = view.getUint32(pos + 4, true);
+          if (tag === "EXIF") {
+            hasApp1OrExifChunk = true;
+            break;
+          }
+          const paddedSize = size % 2 !== 0 ? size + 1 : size;
+          pos += 8 + paddedSize;
+        }
+      }
+    }
+
+    if (!headerValid) {
+      return {
+        isValid: false,
+        format: "unknown",
+        coordinatesVerified: false,
+        diffLatDegrees: 0,
+        diffLngDegrees: 0,
+        diffMeters: 0,
+        error: "Corrupted image header or unrecognized image container format.",
+        details: { hasApp1OrExifChunk, hasGpsIfd: false, headerValid },
+      };
+    }
+
+    // Re-read and extract GPS directly from the generated blob
+    const mimeType = format === "jpeg" ? "image/jpeg" : `image/${format}`;
+    const dataUrl = await readFileAsDataUrl(new File([blob], `verify.${format}`, { type: mimeType }));
+    const extracted = await extractExistingGps(dataUrl);
+
+    if (!extracted) {
+      return {
+        isValid: false,
+        format,
+        coordinatesVerified: false,
+        diffLatDegrees: 0,
+        diffLngDegrees: 0,
+        diffMeters: 0,
+        error: "Verification failed: GPS metadata chunk was not detected in output binary.",
+        details: { hasApp1OrExifChunk, hasGpsIfd: false, headerValid, crcValid },
+      };
+    }
+
+    const diffLat = Math.abs(extracted.lat - expected.latitude);
+    const diffLng = Math.abs(extracted.lng - expected.longitude);
+    const distanceMeters = calculateDistanceMeters(extracted.lat, extracted.lng, expected.latitude, expected.longitude);
+
+    // Tolerance check: standard rational EXIF format has precision of 0.01 seconds (~0.3m)
+    // We allow up to 5 meters / 0.0001 degrees
+    const coordsMatch = distanceMeters <= 5.0 || (diffLat < 0.0001 && diffLng < 0.0001);
+
+    let altMatch: boolean | undefined = undefined;
+    if (expected.altitude !== undefined) {
+      if (extracted.altitude !== undefined) {
+        altMatch = Math.abs(extracted.altitude - expected.altitude) <= 1.5;
+      } else {
+        altMatch = false;
+      }
+    }
+
+    const isFullyValid = coordsMatch && (altMatch === undefined || altMatch) && (crcValid === undefined || crcValid);
+
+    return {
+      isValid: isFullyValid,
+      format,
+      coordinatesVerified: coordsMatch,
+      extractedGps: extracted,
+      diffLatDegrees: diffLat,
+      diffLngDegrees: diffLng,
+      diffMeters: distanceMeters,
+      altitudeVerified: altMatch,
+      details: {
+        hasApp1OrExifChunk,
+        hasGpsIfd: true,
+        headerValid,
+        crcValid,
+      },
+      error: isFullyValid ? undefined : "Output coordinates or container CRC did not match expected values.",
+    };
+  } catch (err: any) {
+    return {
+      isValid: false,
+      format: "unknown",
+      coordinatesVerified: false,
+      diffLatDegrees: 0,
+      diffLngDegrees: 0,
+      diffMeters: 0,
+      error: `Verification error: ${err.message || err}`,
+    };
+  }
+}
+
+export async function addGeotagAndVerify(
+  file: File,
+  geotag: GeotagData
+): Promise<{ blob: Blob; verification: VerificationResult }> {
+  const blob = await addGeotagToImage(file, geotag);
+  const verification = await verifyGeotaggedBlob(blob, geotag);
+  return { blob, verification };
 }
 
 export async function downloadGeotaggedImage(blob: Blob, originalName: string): Promise<void> {

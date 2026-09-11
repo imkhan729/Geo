@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Phase 5: Metadata Engine & Verification] - 2026-09-11
+
+### Added
+- Created binary verification engine `verifyGeotaggedBlob(blob, expected)` in `client/src/lib/geotag-utils.ts`:
+  - Directly inspects binary file container integrity (JPEG APP1 marker and Exif header, PNG `eXIf` chunk structure and CRC32 verification, WebP VP8X header and EXIF chunk).
+  - Re-reads and extracts GPS coordinates and altitude directly from output blob.
+  - Computes geodesic distance difference between input target coordinates and serialized binary coordinates using Haversine formula (`calculateDistanceMeters`).
+  - Enforces strict tolerance checks: geodesic error $< 5.0$m (or $< 0.0001^\circ$), altitude tolerance $\le 1.5$m, and chunk CRC32 matching.
+- Implemented `addGeotagAndVerify(file, geotag)`: Complete write $\rightarrow$ re-read $\rightarrow$ binary verify loop providing verification diagnostics (`VerificationResult`).
+- Added automated verification test suite `script/test-metadata-engine.ts` with 8 comprehensive automated test suites covering:
+  - Haversine geodesic distance calculations.
+  - DMS boundary over-rounding normalization ($40.999999^\circ \rightarrow 41^\circ 0' 0.00''$).
+  - JPEG geotagging and binary verification loop.
+  - PNG geotagging, `eXIf` chunk insertion, and CRC32 verification.
+  - WebP geotagging, VP8X container update, and EXIF verification.
+  - Equator and Prime Meridian hemisphere boundary handling ($(0.0, 0.0)$).
+  - Southern and Western hemisphere handling (Buenos Aires: $-34.6037, -58.3816$).
+  - Verification guardrails: catching coordinate and container mismatches ($> 10,851$ km).
+
+### Enhanced
+- Hardened EXIF payload writing in `addGeotagToImage`:
+  - Added UTC `GPSDateStamp` (EXIF GPS tag 29) and `GPSTimeStamp` (EXIF GPS tag 7) for standards-compliant timestamp recording.
+  - Normalized boundary condition handling in `degToDmsRational` and `decimalToDms` so fractional seconds cascade smoothly into minutes and degrees (seconds $< 60$, minutes $< 60$).
+  - Handled multi-environment data URL parsing and MIME type fallbacks for both client-side browser execution and headless unit testing.
+- Integrated `addGeotagAndVerify` into `client/src/pages/home.tsx` for individual file geotagging, batch processing, and ZIP archive packaging, attaching `VerificationResult` to UI items.
+
+---
+
 ## [Phase 4: Homepage Core Tool UI] - 2026-09-11
 
 ### Added
