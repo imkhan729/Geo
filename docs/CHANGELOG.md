@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Phase 11: Bing + IndexNow] - 2026-09-11
+
+### Added
+- **Bing Webmaster Verification Support**: Added standard `client/public/BingSiteAuth.xml` verification file and injected `<meta name="msvalidate.01" content="E0D90E8F27DE42939B95E0528659FECA" />` into `client/index.html` and all prerendered static SEO routes.
+- **IndexNow Key Management**: Created `client/public/f83e29a0b14c46f6a73d819e6d0a7f14.txt` hosting the IndexNow key at the root location (`https://freegeotagger.com/f83e29a0b14c46f6a73d819e6d0a7f14.txt`).
+- **IndexNow Shared Module (`server/indexnow.ts`)**: Implemented strict canonical URL validation, 17-route filtering, key location generation, git diff change detection mapper, and sanitized logging.
+- **Deployment & Submission CLI Hook (`script/indexnow-submit.ts`)**: Automated CLI tool supporting `--git` (automatic detection of changed pages), `--urls`, `--all`, and safe dry-run mode. Added npm scripts `npm run indexnow` and `npm run test:indexnow`.
+- **Phase 11 Automated Test Suite (`script/test-indexnow.ts`)**: 28 automated tests validating Bing XML, IndexNow key file, meta tag, Apache exemptions, URL guardrails (blocking blobs, query params, foreign hosts, HTTP), git path mapping, payload schema, sanitized logging, and dry-run execution.
+
+### Enhanced
+- **Apache Direct Static File Serving (`.htaccess`)**: Configured direct exemption rules for `BingSiteAuth.xml` and any IndexNow key file (`([a-f0-9]{32,128})\.txt`) ensuring they bypass route rewriting on Hostinger.
+- **Backend Endpoint Hardening (`server/routes.ts`)**: Hardened `POST /api/indexnow` with admin secret authorization, dynamic key text file serving (`GET /:key.txt`), and sanitized logging.
+
+---
+
 ## [Phase 10: AEO + GEO Improvements] - 2026-09-11
 
 ### Added

@@ -1,6 +1,13 @@
 import type { Express, Request, Response } from "express";
 import { type Server } from "http";
 import { serverGeocoding } from "./geocoding";
+import {
+  INDEXNOW_HOST,
+  BING_SITE_AUTH_CODE,
+  getIndexNowKey,
+  createIndexNowPayload,
+  submitToIndexNow,
+} from "./indexnow";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -61,63 +68,57 @@ export async function registerRoutes(
     }
   });
 
-  // IndexNow Submission Endpoint (Phase 7 & 11 readiness)
+  // Bing Webmaster Verification Route (Phase 11 requirement)
+  app.get("/BingSiteAuth.xml", (_req: Request, res: Response) => {
+    const code = process.env.BING_SITE_AUTH_CODE || BING_SITE_AUTH_CODE;
+    res.setHeader("Content-Type", "application/xml; charset=utf-8");
+    res.send(`<?xml version="1.0"?>\n<users>\n  <user>${code}</user>\n</users>\n`);
+  });
+
+  // Dynamic IndexNow Key Text File (Phase 11 requirement)
+  app.get("/:key([a-f0-9]{32,128}).txt", (req: Request, res: Response) => {
+    const activeKey = getIndexNowKey();
+    if (req.params.key === activeKey) {
+      res.setHeader("Content-Type", "text/plain; charset=utf-8");
+      return res.send(`${activeKey}\n`);
+    }
+    return res.status(404).send("Not found");
+  });
+
+  // IndexNow Submission Endpoint (Phase 11 requirement)
   app.post("/api/indexnow", async (req: Request, res: Response) => {
-    const { host, key, keyLocation, urlList } = req.body || {};
+    // Secret protection in production if ADMIN_SECRET is set
+    if (process.env.ADMIN_SECRET) {
+      const authHeader = req.headers.authorization;
+      const keyHeader = req.headers["x-admin-key"];
+      const authorized =
+        keyHeader === process.env.ADMIN_SECRET ||
+        authHeader === `Bearer ${process.env.ADMIN_SECRET}`;
 
-    if (!Array.isArray(urlList) || urlList.length === 0) {
-      return res.status(400).json({ error: "Invalid 'urlList': must be a non-empty array of URLs" });
-    }
-
-    const effectiveHost = host || "freegeotagger.com";
-    const apiKey = key || process.env.INDEXNOW_KEY || "development_key";
-
-    // Validate URLs belong to target host
-    const invalidUrls = urlList.filter(
-      (u: any) => typeof u !== "string" || !u.includes(effectiveHost)
-    );
-
-    if (invalidUrls.length > 0) {
-      return res.status(400).json({
-        error: "All URLs in urlList must belong to the specified host",
-        invalidUrls: invalidUrls.slice(0, 5),
-      });
-    }
-
-    // In production with valid key, forward to IndexNow API
-    if (process.env.INDEXNOW_SUBMIT === "true" && process.env.INDEXNOW_KEY) {
-      try {
-        const payload = {
-          host: effectiveHost,
-          key: apiKey,
-          keyLocation: keyLocation || `https://${effectiveHost}/${apiKey}.txt`,
-          urlList,
-        };
-
-        const response = await fetch("https://api.indexnow.org/indexnow", {
-          method: "POST",
-          headers: { "Content-Type": "application/json; charset=utf-8" },
-          body: JSON.stringify(payload),
-        });
-
-        return res.json({
-          success: response.ok,
-          status: response.status,
-          submittedCount: urlList.length,
-        });
-      } catch (err: any) {
-        return res.status(502).json({ error: "IndexNow submission failed", details: err.message });
+      if (!authorized) {
+        return res.status(401).json({ error: "Unauthorized: valid admin key required" });
       }
     }
 
-    // Development/dry-run mode
-    return res.json({
-      success: true,
-      mode: "dry-run",
-      host: effectiveHost,
-      submittedCount: urlList.length,
-      message: "IndexNow payload validated successfully (dry-run mode)",
+    const { host, key, keyLocation, urlList } = req.body || {};
+
+    const validation = createIndexNowPayload(urlList, {
+      host: host || INDEXNOW_HOST,
+      key,
+      keyLocation,
     });
+
+    if (!validation.valid || !validation.payload) {
+      return res.status(400).json({
+        error: validation.error || "Invalid IndexNow payload",
+        invalidUrls: validation.invalidUrls,
+      });
+    }
+
+    const dryRun = req.query.dryRun === "true" || process.env.INDEXNOW_SUBMIT !== "true";
+    const result = await submitToIndexNow(validation.payload, { dryRun });
+
+    return res.status(result.success ? 200 : result.status).json(result);
   });
 
   // Explicit 404 for unhandled API requests

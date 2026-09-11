@@ -46,6 +46,8 @@ ErrorDocument 404 /404.html
   RewriteRule ^robots\.txt$ - [L]
   RewriteRule ^llms\.txt$ - [L]
   RewriteRule ^sitemap\.xml$ - [L]
+  RewriteRule ^BingSiteAuth\.xml$ - [L]
+  RewriteRule ^([a-f0-9]{32,128})\.txt$ - [L]
   RewriteRule ^favicon\.png$ - [L]
   RewriteRule ^logo\.png$ - [L]
   RewriteRule ^og-image\.png$ - [L]
