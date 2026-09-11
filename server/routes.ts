@@ -120,5 +120,10 @@ export async function registerRoutes(
     });
   });
 
+  // Explicit 404 for unhandled API requests
+  app.all("/api/*", (_req: Request, res: Response) => {
+    res.status(404).json({ error: "API endpoint not found" });
+  });
+
   return httpServer;
 }

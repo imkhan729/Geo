@@ -4,7 +4,39 @@ export interface SEOConfig {
   canonical?: string;
   ogType?: string;
   keywords?: string;
+  ogImage?: string;
+  robots?: string;
 }
+
+export const SITE_URL = "https://freegeotagger.com";
+export const SITE_LOGO_URL = "https://freegeotagger.com/favicon.png";
+export const SITE_LOGO_WIDTH = 289;
+export const SITE_LOGO_HEIGHT = 289;
+
+/** Canonical Organization schema with validated logo dimensions */
+export const ORGANIZATION_SCHEMA = {
+  "@type": "Organization",
+  "name": "FreeGeoTagger",
+  "url": SITE_URL,
+  "logo": {
+    "@type": "ImageObject",
+    "url": SITE_LOGO_URL,
+    "width": SITE_LOGO_WIDTH,
+    "height": SITE_LOGO_HEIGHT,
+  },
+  "sameAs": [
+    "https://twitter.com/freegeotagger"
+  ]
+};
+
+/** Canonical WebSite schema for Google Site Name recognition */
+export const WEBSITE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "FreeGeoTagger",
+  "alternateName": ["Free Geo Tagger", "GeoTagger"],
+  "url": `${SITE_URL}/`
+};
 
 /** Inject or replace a named JSON-LD block in <head>.
  *  Removes ALL other JSON-LD scripts of the same @type (static or dynamic)
@@ -37,7 +69,7 @@ export function injectPageSchema(id: string, schema: object) {
 }
 
 export function updatePageSEO(config: SEOConfig) {
-  const baseUrl = "https://freegeotagger.com";
+  const baseUrl = SITE_URL;
   // Titles in SEO_CONFIG are already length-tuned to Google's ~60-character render
   // limit (enforced by script/validate-meta.ts). Appending a brand suffix here would
   // push them over and cause SERP truncation, so use them verbatim.
@@ -68,6 +100,18 @@ export function updatePageSEO(config: SEOConfig) {
   const ogType = document.querySelector('meta[property="og:type"]');
   if (ogType && config.ogType) {
     ogType.setAttribute("content", config.ogType);
+  }
+
+  if (config.ogImage) {
+    const ogImage = document.querySelector('meta[property="og:image"]');
+    if (ogImage) ogImage.setAttribute("content", config.ogImage);
+    const twImage = document.querySelector('meta[name="twitter:image"]');
+    if (twImage) twImage.setAttribute("content", config.ogImage);
+  }
+
+  if (config.robots) {
+    const robots = document.querySelector('meta[name="robots"]');
+    if (robots) robots.setAttribute("content", config.robots);
   }
   
   const twitterTitle = document.querySelector('meta[name="twitter:title"]');

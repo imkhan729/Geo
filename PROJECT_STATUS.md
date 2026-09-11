@@ -1,13 +1,14 @@
 # Project Status
 
-Current phase: Phase 8 — Homepage SEO Content
+Current phase: Phase 9 — Technical SEO
 Status: PASS
-Last completed phase: Phase 8 — Homepage SEO Content
+Last completed phase: Phase 9 — Technical SEO
 Current branch: master
-Latest commit: Pending Phase 8 commit
+Latest commit: Pending Phase 9 commit
 Tests passing:
 - TypeScript check (`npm run check`) PASS (0 errors)
-- Production build & static prerender (`npm run build`) PASS (17/17 static routes generated, homepage crawlable words: 1,727 words)
+- Production build & static prerender (`npm run build`) PASS (17/17 static routes generated)
+- Technical SEO test suite (`npx tsx script/test-technical-seo.ts`) PASS (9/9 tests passing: Canonicals, SERP limits, robots.txt, sitemap.xml, OG 1200x630, WebSite site name schema, Organization logo binary dimension verification, .htaccess rewrite/redirect directives, 404 recovery)
 - Title & meta description length validation (17/17 compliant) PASS
 - SEO audit (`node script/seo-check.mjs dist/public`) PASS (0 HIGH, 0 MED)
 - Geocoder provider test suite (`npx tsx script/test-geocoder-provider.ts`) PASS (8/8 tests passing)
@@ -17,6 +18,6 @@ Tests passing:
 Known issues:
 - Legacy database, auth, and animation dependencies (`drizzle-orm`, `pg`, `passport`, `connect-pg-simple`) exist from initial scaffold and can be pruned safely in subsequent phases (Phase 14).
 - Trust pages (`/about`, `/contact`, `/privacy`, `/terms`, `/cookies`) and blog index are under 800 words and should be expanded with rich, helpful first-party content (Phase 18).
-Next approved phase: Phase 9 — Blog & Trust Page Content Architecture (Awaiting user approval: "NEXT")
+Next approved phase: Phase 10 — AEO + GEO Improvements (Awaiting user approval: "NEXT")
 
 

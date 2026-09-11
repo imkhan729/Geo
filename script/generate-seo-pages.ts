@@ -32,7 +32,7 @@ const PUBLISHER = {
   "@type": "Organization",
   name: "FreeGeoTagger",
   url: SITE_URL,
-  logo: { "@type": "ImageObject", url: LOGO, width: 512, height: 512 },
+  logo: { "@type": "ImageObject", url: LOGO, width: 289, height: 289 },
 };
 
 const isBlogPost = (p: string) => p.startsWith("/blog/");
