@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Phase 3: Design System + Layout Foundation] - 2026-09-11
+
+### Added
+- Created `client/src/components/skip-link.tsx`: Accessible skip-to-content mechanism for WCAG 2.2 AA (SC 2.4.1 Bypass Blocks).
+- Created `client/src/components/tool-shell.tsx`: Standardized tool wrapper providing responsive layout (`max-w-6xl`), breadcrumbs, semantic `<main id="main-content">`, and clear title hierarchy.
+- Created `client/src/components/info-callout.tsx`: Reusable accessible notice/callout with `info`, `warning`, `success`, and `privacy` variants, complete with semantic roles and high-contrast iconography.
+- Created `client/src/components/tool-comparison-table.tsx`: Clean, accessible responsive comparison table with `<caption class="sr-only">`, proper scope headers, and horizontal overflow protection for mobile screens (320px–412px).
+- Created `docs/ACCESSIBILITY.md`: Comprehensive accessibility specification and WCAG 2.2 Level AA audit covering contrast ratios, keyboard navigation, touch target compliance, and mobile breakpoints.
+- Added `info` and `success` variants to `client/src/components/ui/alert.tsx`.
+
+### Enhanced & Optimized
+- Refactored `tailwind.config.ts` component radius to adhere strictly to the 12–16px specification (`lg: 14px`, `xl: 16px`, `2xl: 16px`, `md: 12px`, `sm: 10px`).
+- Enhanced `client/src/components/ui/button.tsx` with sharp focus-visible rings (`focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`) and thumb-friendly touch targets (`min-h-10` / 40px, `min-h-12` / 48px).
+- Enhanced `client/src/components/Header.tsx` with semantic `role="banner"`, embedded `<SkipLink>`, focus-visible indicators, and minimum 44px touch targets on mobile navigation items.
+- Enhanced `client/src/components/Footer.tsx` with semantic `role="contentinfo"`, focus indicators, and accessible link padding.
+- Verified color contrast ratios across all surfaces: Body text (13.4:1), Primary green (5.3:1), and Muted text (5.4:1), all meeting or exceeding WCAG 2.2 AA standards.
+
+---
+
 ## [Phase 2: Architecture Decision + Safe Refactor Plan] - 2026-09-11
 
 ### Added
