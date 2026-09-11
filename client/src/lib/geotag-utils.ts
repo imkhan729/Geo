@@ -1,3 +1,5 @@
+import { geocoder, type PlaceResult } from "./geocoding";
+
 type PiexifModule = typeof import("piexifjs");
 
 async function getPiexif(): Promise<PiexifModule> {
@@ -12,11 +14,8 @@ export interface GeotagData {
   description?: string;
 }
 
-export interface PlaceSuggestion {
-  lat: number;
-  lng: number;
-  displayName: string;
-}
+export type PlaceSuggestion = PlaceResult;
+export type { PlaceResult };
 
 export interface DmsCoordinate {
   degrees: number;
@@ -989,61 +988,36 @@ export async function downloadAsZip(files: { name: string; blob: Blob }[]): Prom
 export async function reverseGeocode(
   query: string
 ): Promise<{ lat: number; lng: number; displayName: string } | null> {
-  try {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`,
-      {
-        headers: {
-          "User-Agent": "FreeGeoTagger/1.0"
-        }
-      }
-    );
-
-    const data = await response.json();
-
-    if (data && data.length > 0) {
-      return {
-        lat: parseFloat(data[0].lat),
-        lng: parseFloat(data[0].lon),
-        displayName: data[0].display_name
-      };
-    }
-
-    return null;
-  } catch {
-    return null;
+  const results = await geocoder.search(query);
+  if (results && results.length > 0) {
+    return {
+      lat: results[0].lat,
+      lng: results[0].lng,
+      displayName: results[0].displayName,
+    };
   }
+  return null;
+}
+
+export async function reverseGeocodeCoords(
+  lat: number,
+  lng: number
+): Promise<{ lat: number; lng: number; displayName: string } | null> {
+  const result = await geocoder.reverse(lat, lng);
+  if (result) {
+    return {
+      lat: result.lat,
+      lng: result.lng,
+      displayName: result.displayName,
+    };
+  }
+  return null;
 }
 
 export async function searchPlaces(
   query: string
 ): Promise<PlaceSuggestion[]> {
-  try {
-    if (!query || query.length < 3) return [];
-
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`,
-      {
-        headers: {
-          "User-Agent": "FreeGeoTagger/1.0"
-        }
-      }
-    );
-
-    const data = await response.json();
-
-    if (data && Array.isArray(data)) {
-      return data.map((item: any) => ({
-        lat: parseFloat(item.lat),
-        lng: parseFloat(item.lon),
-        displayName: item.display_name
-      }));
-    }
-
-    return [];
-  } catch {
-    return [];
-  }
+  return await geocoder.search(query);
 }
 
 export function validateCoordinates(lat: number, lng: number): boolean {

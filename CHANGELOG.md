@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Phase 7: Nominatim Geocoder Hardening & Multi-Provider Architecture] - 2026-09-11
+
+### Added
+- Created `client/src/lib/geocoding/`:
+  - `types.ts`: Decoupled provider interfaces (`PlaceResult`, `GeocoderProvider`, `MapPickerAdapter`, `GeocoderConfig`).
+  - `cache.ts`: `GeocodingCache` with LRU capacity management, query normalization, and ~11m (4 decimal place) coordinate proximity rounding.
+  - `rate-limiter.ts`: `RateLimiter` queue strictly enforcing OpenStreetMap Nominatim's 1 req/sec usage policy.
+  - `nominatim-provider.ts`: Hardened direct Nominatim provider with query validation (min 3 chars), timeout guards (`AbortController` 6s), compliant User-Agent headers, and in-memory caching.
+  - `photon-provider.ts`: High-speed OSM Elasticsearch geocoding provider (Komoot Photon) as an automatic zero-key secondary fallback.
+  - `composite-provider.ts`: Resilient failover composite provider that queries primary first and transparently falls back to secondary on error or empty results.
+  - `proxy-provider.ts`: Backend proxy provider that uses server `/api/geocode` endpoints when available and gracefully degrades to client-side direct providers on static hosting (Hostinger Apache).
+  - `index.ts`: Unified module entry point, singleton `geocoder`, and provider swap registry (`getGeocoder()`, `setGeocoderProvider()`).
+- Created `client/src/lib/maps/`:
+  - `leaflet-adapter.ts`: Concrete implementation of `MapPickerAdapter` decoupling Leaflet DOM logic from UI components.
+  - `index.ts`: Maps entry point and adapter exports.
+- Created `server/geocoding.ts`:
+  - Server-side geocoding service with in-memory caching, 1 req/sec rate limiting, and coordinate bounds validation.
+- Added server API endpoints in `server/routes.ts`:
+  - `GET /api/health`: Health status endpoint returning uptime, ISO timestamp, service identity, and version.
+  - `GET /api/geocode/search`: Server-side geocoding search proxy with input validation.
+  - `GET /api/geocode/reverse`: Server-side reverse geocoding proxy with lat/lng range validation.
+  - `POST /api/indexnow`: IndexNow submission endpoint with host and URL list validation for Phase 11 readiness.
+- Added `script/test-geocoder-provider.ts`:
+  - Automated test suite covering rate limiter timing, LRU cache eviction, coordinate grouping, query rejection, failover, short-circuiting, proxy degradation, and server geocoding validation (8/8 tests passing).
+
+### Enhanced
+- Refactored `client/src/lib/geotag-utils.ts`:
+  - Re-exported `PlaceResult` and aliased `PlaceSuggestion = PlaceResult` for 100% backward compatibility.
+  - Delegated `searchPlaces(query)` and `reverseGeocode(query)` to `geocoder`, ensuring automatic rate limiting, caching, and fallback across the app.
+  - Added `reverseGeocodeCoords(lat, lng)` helper.
+- Consolidated legacy map components per `docs/MIGRATION_MAP.md`:
+  - Refactored `client/src/components/geotag-map.tsx` to wrap `LeafletMap`.
+  - Refactored `client/src/components/location-map.tsx` to wrap `LeafletMap` with `readOnly={true}`, eliminating duplicate Leaflet DOM and marker icon code.
+
+---
+
 ## [Phase 6: GPS Finder Upgrade] - 2026-09-11
 
 ### Added

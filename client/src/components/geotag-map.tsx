@@ -1,10 +1,9 @@
-import { useEffect, useRef, useCallback } from "react";
-import L from "leaflet";
+import { useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Search, Navigation, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { LeafletMap } from "@/components/tool/leaflet-map";
 import { reverseGeocode, validateCoordinates } from "@/lib/geotag-utils";
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,130 +14,45 @@ interface GeotagMapProps {
 }
 
 export function GeotagMap({ latitude, longitude, onLocationChange }: GeotagMapProps) {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<L.Map | null>(null);
-  const markerRef = useRef<L.Marker | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    if (!mapRef.current) return;
-
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.remove();
-    }
-
-    const map = L.map(mapRef.current).setView([latitude, longitude], 13);
-    mapInstanceRef.current = map;
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19,
-    }).addTo(map);
-
-    const customIcon = L.divIcon({
-      html: `
-        <div style="
-          background-color: hsl(217, 91%, 60%);
-          width: 32px;
-          height: 32px;
-          border-radius: 50% 50% 50% 0;
-          transform: rotate(-45deg);
-          border: 3px solid white;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        ">
-          <div style="
-            width: 10px;
-            height: 10px;
-            background: white;
-            border-radius: 50%;
-            transform: rotate(45deg);
-          "></div>
-        </div>
-      `,
-      className: "custom-marker",
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-    });
-
-    const marker = L.marker([latitude, longitude], { 
-      icon: customIcon,
-      draggable: true 
-    }).addTo(map);
-    markerRef.current = marker;
-
-    marker.on("dragend", () => {
-      const pos = marker.getLatLng();
-      onLocationChange(pos.lat, pos.lng);
-    });
-
-    map.on("click", (e: L.LeafletMouseEvent) => {
-      const { lat, lng } = e.latlng;
-      marker.setLatLng([lat, lng]);
-      onLocationChange(lat, lng);
-    });
-
-    return () => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (markerRef.current && mapInstanceRef.current) {
-      const currentPos = markerRef.current.getLatLng();
-      if (Math.abs(currentPos.lat - latitude) > 0.0001 || Math.abs(currentPos.lng - longitude) > 0.0001) {
-        markerRef.current.setLatLng([latitude, longitude]);
-        mapInstanceRef.current.setView([latitude, longitude], mapInstanceRef.current.getZoom());
-      }
-    }
-  }, [latitude, longitude]);
-
-  const handleSearch = useCallback(async () => {
+  const handleSearch = async () => {
     if (!searchQuery.trim()) return;
-    
     setIsSearching(true);
     try {
       const result = await reverseGeocode(searchQuery);
       if (result) {
         onLocationChange(result.lat, result.lng);
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.setView([result.lat, result.lng], 15);
-        }
         toast({
           title: "Location found",
-          description: result.displayName.substring(0, 100),
+          description: result.displayName,
         });
       } else {
         toast({
           title: "Location not found",
-          description: "Try a different search term",
+          description: "Try searching for a city, address, or landmark",
           variant: "destructive",
         });
       }
     } catch {
       toast({
         title: "Search failed",
-        description: "Please try again",
+        description: "Could not complete location search",
         variant: "destructive",
       });
     } finally {
       setIsSearching(false);
     }
-  }, [searchQuery, onLocationChange, toast]);
+  };
 
   const handleUseMyLocation = useCallback(() => {
     if (!navigator.geolocation) {
       toast({
         title: "Geolocation not supported",
-        description: "Your browser doesn't support location services",
+        description: "Your browser does not support geolocation",
         variant: "destructive",
       });
       return;
@@ -149,9 +63,6 @@ export function GeotagMap({ latitude, longitude, onLocationChange }: GeotagMapPr
       (position) => {
         const { latitude: lat, longitude: lng } = position.coords;
         onLocationChange(lat, lng);
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.setView([lat, lng], 15);
-        }
         toast({
           title: "Location found",
           description: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
@@ -181,7 +92,7 @@ export function GeotagMap({ latitude, longitude, onLocationChange }: GeotagMapPr
           Click on the map or drag the marker to set GPS coordinates
         </p>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         <div className="flex gap-2">
           <div className="flex-1 relative">
@@ -223,15 +134,20 @@ export function GeotagMap({ latitude, longitude, onLocationChange }: GeotagMapPr
           </Button>
         </div>
 
-        <div 
-          ref={mapRef} 
-          className="h-[300px] rounded-md overflow-hidden border border-border"
-          data-testid="map-container"
-        />
-        
+        <div className="h-[300px] rounded-md overflow-hidden border border-border" data-testid="map-container">
+          <LeafletMap
+            latitude={latitude}
+            longitude={longitude}
+            onCoordinatesChange={onLocationChange}
+            className="w-full h-full"
+          />
+        </div>
+
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block" data-testid="label-latitude">Latitude (-90 to 90)</label>
+            <label className="text-xs text-muted-foreground mb-1 block" data-testid="label-latitude">
+              Latitude (-90 to 90)
+            </label>
             <Input
               type="number"
               step="any"
@@ -248,7 +164,9 @@ export function GeotagMap({ latitude, longitude, onLocationChange }: GeotagMapPr
             />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block" data-testid="label-longitude">Longitude (-180 to 180)</label>
+            <label className="text-xs text-muted-foreground mb-1 block" data-testid="label-longitude">
+              Longitude (-180 to 180)
+            </label>
             <Input
               type="number"
               step="any"

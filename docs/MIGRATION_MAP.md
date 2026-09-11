@@ -40,8 +40,8 @@ Every single existing URL must be mapped and preserved. No route may be removed,
 | `client/src/components/Header.tsx` | Keep / Refactor | Modernize navigation, mobile drawer, accessible aria labels (Phase 3). |
 | `client/src/components/Footer.tsx` | Keep / Refactor | Complete internal linking, trust links, copyright (Phase 3). |
 | `client/src/components/cookie-consent.tsx` | Keep | Integrates with Consent Mode v2 (Phase 15). |
-| `client/src/components/geotag-map.tsx` | Refactor | Abstract map provider; ensure non-blocking loading (Phase 7). |
-| `client/src/components/location-map.tsx` | Refactor | Consolidate duplicate map logic with `geotag-map.tsx` (Phase 7). |
+| `client/src/components/geotag-map.tsx` | Refactored | Abstracted map provider; delegates to `LeafletMap` and provider layer (Phase 7). |
+| `client/src/components/location-map.tsx` | Refactored | Consolidated duplicate map logic with `LeafletMap` (Phase 7). |
 | `client/src/components/multi-image-uploader.tsx` | Refactor | Enhance drag/drop, keyboard accessibility, mobile file picker (Phase 4). |
 | `client/src/components/metadata-panel.tsx` | Refactor | Re-architect into clean coordinate input & verification card (Phase 4). |
 | `client/src/components/metadata-form.tsx` | Consolidate | Merge form logic into unified tool panel (Phase 4). |
