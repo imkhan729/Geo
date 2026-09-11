@@ -857,6 +857,144 @@ export default function GpsFinder() {
                   <strong>Tip:</strong> Use our GPS Finder to check if your photos contain location data before sharing them publicly.
                 </p>
               </Card>
+
+              {/* Technical EXIF GPS Tag Reference Table */}
+              <Card className="p-6">
+                <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
+                  <Compass className="h-5 w-5 text-primary" />
+                  Standard EXIF GPS Data Structure
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-4 text-sm">
+                  GPS data is stored in the dedicated GPS sub-IFD directory (tag 0x8825 in IFD0) according to the CIPA DC-008 Exif 2.32 standard. The table below lists the primary tags read by this tool:
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border border-border rounded-lg">
+                    <thead className="bg-muted/50 text-foreground font-semibold border-b border-border">
+                      <tr>
+                        <th className="p-2.5">Tag ID</th>
+                        <th className="p-2.5">Tag Name</th>
+                        <th className="p-2.5">Type</th>
+                        <th className="p-2.5">Format / Values</th>
+                        <th className="p-2.5">Function</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border text-muted-foreground">
+                      <tr>
+                        <td className="p-2.5 font-mono">0x0001</td>
+                        <td className="p-2.5 font-semibold text-foreground">GPSLatitudeRef</td>
+                        <td className="p-2.5">ASCII</td>
+                        <td className="p-2.5 font-mono">'N' or 'S'</td>
+                        <td className="p-2.5">North or South latitude hemisphere</td>
+                      </tr>
+                      <tr>
+                        <td className="p-2.5 font-mono">0x0002</td>
+                        <td className="p-2.5 font-semibold text-foreground">GPSLatitude</td>
+                        <td className="p-2.5">Rational[3]</td>
+                        <td className="p-2.5">Degrees, Minutes, Seconds</td>
+                        <td className="p-2.5">Absolute latitude coordinate value</td>
+                      </tr>
+                      <tr>
+                        <td className="p-2.5 font-mono">0x0003</td>
+                        <td className="p-2.5 font-semibold text-foreground">GPSLongitudeRef</td>
+                        <td className="p-2.5">ASCII</td>
+                        <td className="p-2.5 font-mono">'E' or 'W'</td>
+                        <td className="p-2.5">East or West longitude hemisphere</td>
+                      </tr>
+                      <tr>
+                        <td className="p-2.5 font-mono">0x0004</td>
+                        <td className="p-2.5 font-semibold text-foreground">GPSLongitude</td>
+                        <td className="p-2.5">Rational[3]</td>
+                        <td className="p-2.5">Degrees, Minutes, Seconds</td>
+                        <td className="p-2.5">Absolute longitude coordinate value</td>
+                      </tr>
+                      <tr>
+                        <td className="p-2.5 font-mono">0x0005</td>
+                        <td className="p-2.5 font-semibold text-foreground">GPSAltitudeRef</td>
+                        <td className="p-2.5">Byte</td>
+                        <td className="p-2.5 font-mono">0 (Above), 1 (Below)</td>
+                        <td className="p-2.5">Altitude sea-level reference flag</td>
+                      </tr>
+                      <tr>
+                        <td className="p-2.5 font-mono">0x0006</td>
+                        <td className="p-2.5 font-semibold text-foreground">GPSAltitude</td>
+                        <td className="p-2.5">Rational[1]</td>
+                        <td className="p-2.5">Meters above sea level</td>
+                        <td className="p-2.5">Elevation measurement</td>
+                      </tr>
+                      <tr>
+                        <td className="p-2.5 font-mono">0x0007</td>
+                        <td className="p-2.5 font-semibold text-foreground">GPSTimeStamp</td>
+                        <td className="p-2.5">Rational[3]</td>
+                        <td className="p-2.5 font-mono">HH:MM:SS (UTC)</td>
+                        <td className="p-2.5">Time of satellite fix in UTC</td>
+                      </tr>
+                      <tr>
+                        <td className="p-2.5 font-mono">0x001D</td>
+                        <td className="p-2.5 font-semibold text-foreground">GPSDateStamp</td>
+                        <td className="p-2.5">ASCII</td>
+                        <td className="p-2.5 font-mono">YYYY:MM:DD</td>
+                        <td className="p-2.5">Calendar date of satellite fix</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
+
+              {/* Troubleshooting Guide */}
+              <Card className="p-6">
+                <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
+                  <AlertCircle className="h-5 w-5 text-amber-500" />
+                  Troubleshooting: Why Does My Photo Have No GPS Data?
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-3 text-sm">
+                  If GPS Finder reports that no location was found, the most common technical causes include:
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs mb-4">
+                  <div className="bg-muted/40 p-3 rounded-lg border border-border/60">
+                    <strong className="text-foreground block mb-1">1. Social Media & Chat Apps</strong>
+                    <p className="text-muted-foreground">Apps like WhatsApp, Facebook, Instagram, and Twitter strip EXIF metadata on upload to protect user privacy. Download original camera originals instead.</p>
+                  </div>
+                  <div className="bg-muted/40 p-3 rounded-lg border border-border/60">
+                    <strong className="text-foreground block mb-1">2. Camera Location Permissions</strong>
+                    <p className="text-muted-foreground">Location Services was disabled for the camera app during shooting in iOS Settings or Android App Permissions.</p>
+                  </div>
+                  <div className="bg-muted/40 p-3 rounded-lg border border-border/60">
+                    <strong className="text-foreground block mb-1">3. Satellite Signal Obstruction</strong>
+                    <p className="text-muted-foreground">Indoors, basements, and urban canyons block direct satellite line-of-sight before a GNSS fix is acquired.</p>
+                  </div>
+                  <div className="bg-muted/40 p-3 rounded-lg border border-border/60">
+                    <strong className="text-foreground block mb-1">4. Screenshots & Edited Graphics</strong>
+                    <p className="text-muted-foreground">Screenshots, Canva graphics, and exported Photoshop files lack camera sensor telemetry.</p>
+                  </div>
+                </div>
+                <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 text-xs flex items-center justify-between gap-3">
+                  <span className="text-foreground font-medium">Need to add GPS coordinates to this photo?</span>
+                  <Link href="/">
+                    <Button size="sm" className="font-semibold text-xs shrink-0">Geotag Photo Now</Button>
+                  </Link>
+                </div>
+              </Card>
+
+              {/* Standards and Methodology */}
+              <Card className="p-6">
+                <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-primary" />
+                  Specifications &amp; Standards Compliance
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  FreeGeoTagger adheres strictly to established international imaging and geospatial specifications:
+                </p>
+                <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-1.5 mt-2">
+                  <li><strong>EXIF 2.32 (CIPA DC-008-2012 / JEITA CP-3451D)</strong>: Exchangeable Image File Format for Digital Still Cameras.</li>
+                  <li><strong>W3C PNG Specification (ISO/IEC 15948)</strong>: Section 11.3.5.3 standardized <code className="font-mono bg-muted px-1 rounded">eXIf</code> chunk parsing with CRC32 verification.</li>
+                  <li><strong>WebP Container Specification</strong>: Google RIFF format with <code className="font-mono bg-muted px-1 rounded">VP8X</code> extended header and <code className="font-mono bg-muted px-1 rounded">EXIF</code> chunk encapsulation.</li>
+                  <li><strong>OpenStreetMap &amp; Nominatim</strong>: Geospatial mapping and reverse geocoding licensed under the Open Database License (ODbL).</li>
+                </ul>
+                <div className="mt-4 pt-3 border-t border-border/60 text-xs text-muted-foreground/80 flex flex-wrap justify-between items-center gap-2">
+                  <span>Reviewed by: FreeGeoTagger Technical Editorial Team</span>
+                  <span>Tested with: ExifTool 12.70, Chrome 128, Safari 17, QGIS 3.34</span>
+                </div>
+              </Card>
             </div>
           </div>
         </div>

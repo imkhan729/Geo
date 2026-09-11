@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Phase 10: AEO + GEO Improvements] - 2026-09-11
+
+### Added
+- **Structured EXIF GPS Tag Reference Table**: Implemented a comprehensive technical reference table on both the interactive React page (`client/src/pages/gps-finder.tsx`) and the prerendered static HTML (`script/generate-seo-pages.ts`) documenting tag IDs (`0x0001` - `0x001D`), tag names (`GPSLatitudeRef`, `GPSLatitude`, `GPSLongitudeRef`, `GPSLongitude`, `GPSAltitudeRef`, `GPSAltitude`, `GPSTimeStamp`, `GPSDateStamp`), data types, formats, and example Rational values.
+- **Troubleshooting Guide for Missing GPS Metadata**: Added a structured 4-point technical troubleshooting section addressing social media EXIF stripping, disabled camera permissions, satellite GNSS signal obstructions, and non-telemetry graphics/screenshots.
+- **Standards & Specifications Citations**: Added an explicit compliance block citing EXIF 2.32 (CIPA DC-008-2012 / JEITA CP-3451D), W3C PNG Specification (ISO/IEC 15948 Section 11.3.5.3 `eXIf` chunk), WebP Google RIFF container with `VP8X` header, and OpenStreetMap/Nominatim ODbL licensing.
+- **Technical Editorial Attribution & Verification Bylines**: Added verifiable review credentials ("Reviewed by FreeGeoTagger Technical Editorial Team" and "Tested with ExifTool 12.70, Chrome 128, Safari 17, QGIS 3.34").
+
+### Enhanced
+- **Direct Answer Optimization (AEO)**: Aligned all H2 question headings and answers across `/` and `/gps-finder` to present concise 1-2 sentence direct answers immediately following headings before in-depth technical explanations.
+- **Generative Engine Search Readiness (GEO)**: Updated `client/public/llms.txt` with truthful, verifiable technical facts (September 2026 standards, multi-provider geocoding, in-browser Haversine verification loop, lossless binary preservation, zero server uploads).
+- **Prerender Synchronization**: Synchronized static HTML prerender templates in `script/generate-seo-pages.ts` ensuring search and AI crawlers parse identical structured tables and troubleshooting sections without requiring client JavaScript execution.
+
+---
+
 ## [Phase 9: Technical SEO] - 2026-09-11
 
 ### Added

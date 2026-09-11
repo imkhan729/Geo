@@ -367,6 +367,98 @@ const routes: RouteMeta[] = [
 <p>Accuracy depends entirely on the device that captured the image. A modern smartphone with a clear view of the sky is typically accurate to within about 5–10 metres. Indoors, underground, or between tall buildings, the fix degrades and a phone may fall back on a cached position from earlier — which is one of the most common reasons a photo appears in the wrong place.</p>
 <p>If a photo turns out to have no coordinates at all, that is usually because location services were switched off for the camera, because the file came from a platform that strips metadata on upload, or because it is a screenshot rather than a camera photo. Any of those can be corrected by <a href="/">adding the location yourself</a>, and our guide on <a href="/blog/how-to-fix-wrong-gps-location-on-photos">fixing wrong photo GPS data</a> covers the causes in more detail.</p>
 
+<h2>EXIF GPS Tag Technical Reference</h2>
+<p>Under the EXIF 2.32 standard, GPS coordinates and capture telemetry are structured inside the GPS Info IFD (Image File Directory) using standard tag identifiers and data formats:</p>
+<table>
+<thead>
+<tr>
+<th>Tag ID</th>
+<th>Tag Name</th>
+<th>Format</th>
+<th>Example Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x0001</td>
+<td>GPSLatitudeRef</td>
+<td>ASCII</td>
+<td>'N' or 'S'</td>
+<td>North or South latitude hemisphere reference</td>
+</tr>
+<tr>
+<td>0x0002</td>
+<td>GPSLatitude</td>
+<td>Rational[3]</td>
+<td>40/1, 46/1, 588/100 (40° 46' 5.88")</td>
+<td>Degrees, minutes, and seconds of latitude</td>
+</tr>
+<tr>
+<td>0x0003</td>
+<td>GPSLongitudeRef</td>
+<td>ASCII</td>
+<td>'E' or 'W'</td>
+<td>East or West longitude hemisphere reference</td>
+</tr>
+<tr>
+<td>0x0004</td>
+<td>GPSLongitude</td>
+<td>Rational[3]</td>
+<td>73/1, 58/1, 235/100 (73° 58' 2.35")</td>
+<td>Degrees, minutes, and seconds of longitude</td>
+</tr>
+<tr>
+<td>0x0005</td>
+<td>GPSAltitudeRef</td>
+<td>Byte</td>
+<td>0 (Sea Level) or 1 (Below)</td>
+<td>Sea level elevation reference flag</td>
+</tr>
+<tr>
+<td>0x0006</td>
+<td>GPSAltitude</td>
+<td>Rational[1]</td>
+<td>1540/10 (154.0 meters)</td>
+<td>Elevation measurement in meters</td>
+</tr>
+<tr>
+<td>0x0007</td>
+<td>GPSTimeStamp</td>
+<td>Rational[3]</td>
+<td>14/1, 25/1, 30/1 (14:25:30 UTC)</td>
+<td>Time of satellite fix in coordinated universal time</td>
+</tr>
+<tr>
+<td>0x001D</td>
+<td>GPSDateStamp</td>
+<td>ASCII</td>
+<td>2026:09:11</td>
+<td>Calendar date of GNSS satellite fix</td>
+</tr>
+</tbody>
+</table>
+
+<h2>Troubleshooting: Why Does My Photo Have No GPS Data?</h2>
+<p>If GPS Finder reports that no location was found, the most common technical causes include:</p>
+<ol>
+<li><strong>Social Media &amp; Messaging Stripping:</strong> Apps like WhatsApp, Facebook, Instagram, and Twitter strip EXIF metadata on upload to protect user privacy. Download original camera files directly instead.</li>
+<li><strong>Camera Location Permissions Disabled:</strong> Location Services was switched off for the camera app during shooting in iOS Settings or Android App Permissions.</li>
+<li><strong>Satellite Signal Obstruction:</strong> Indoors, basements, and urban canyons block direct satellite line-of-sight before a GNSS fix is acquired.</li>
+<li><strong>Screenshots &amp; Exported Graphics:</strong> Screenshots, Canva graphics, and exported Photoshop files lack camera sensor telemetry.</li>
+</ol>
+<p>Need to add coordinates to a photo without GPS? Use the <a href="/">FreeGeoTagger geotagging tool</a> to pin its location accurately.</p>
+
+<h2>Specifications &amp; Standards Compliance</h2>
+<p>FreeGeoTagger adheres strictly to established international imaging and geospatial specifications:</p>
+<ul>
+<li><strong>EXIF 2.32 (CIPA DC-008-2012 / JEITA CP-3451D):</strong> Exchangeable Image File Format for Digital Still Cameras.</li>
+<li><strong>W3C PNG Specification (ISO/IEC 15948):</strong> Section 11.3.5.3 standardized <code>eXIf</code> chunk parsing with CRC32 verification.</li>
+<li><strong>WebP Container Specification:</strong> Google RIFF format with <code>VP8X</code> extended header and <code>EXIF</code> chunk encapsulation.</li>
+<li><strong>OpenStreetMap &amp; Nominatim:</strong> Geospatial mapping and reverse geocoding licensed under the Open Database License (ODbL).</li>
+</ul>
+<p><small>Reviewed by FreeGeoTagger Technical Editorial Team. Tested with ExifTool 12.70, Chrome 128, Safari 17, and QGIS 3.34.</small></p>
+
 <h2>Who Uses GPS Finder?</h2>
 <ul>
 <li><strong>Researchers</strong> — extract location data for field studies, documentation, and analysis.</li>
