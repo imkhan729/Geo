@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Phase 8: Homepage SEO Content] - 2026-09-11
+
+### Added
+- Comprehensive below-the-fold homepage SEO content structuring (1,727 crawlable words) strictly following Section 12.2 and Section 26 of the Master Guide:
+  - Section 1: "How It Works — Geotag Any Photo in 3 Simple Steps" (Upload, Position Pin, Download with visual step cards).
+  - Section 2: "What GPS Data Is Added to Your Photos?" (Detailed EXIF breakdown: GPSLatitude, GPSLongitude, GPSAltitude, GPSTimeStamp, GPSMapDatum, GPSProcessingMethod + bit-exact pixel preservation explanation).
+  - Section 3: "Supported File Formats & Technical Processing Matrix" (Feature comparison table covering JPEG APP1, PNG eXIf chunks, WebP RIFF containers, and HEIC local client conversion).
+  - Section 4: "Batch Photo Geotagging" (Multi-file workflow, in-memory concurrency, client-side ZIP packaging, link to `/blog/how-to-bulk-geotag-photos`).
+  - Section 5: "Why Choose FreeGeoTagger?" (Feature grid highlighting 100% privacy, zero uploads, EXIF verification loop, and complete `ToolComparisonTable`).
+  - Section 6: "Photo Geotagging vs. GPS Location Detection" (Conceptual difference between adding coordinates and reading existing EXIF data, linking directly to `/gps-finder`).
+  - Section 7: "100% Client-Side Privacy & In-Browser Processing" (Technical guarantee of zero server image uploads, offline capability, and zero retention).
+  - Section 8: "Common Real-World Use Cases" (Targeted cards for Real Estate Listings, Google Business Profile SEO, Professional Photography, Field Surveying, Travel & Journalism, and Mobile Photographers).
+  - Section 9: "Helpful Guides & Geotagging Resources" (Rich internal contextual link hubs to tutorials and companion tools).
+  - Section 10: "Frequently Asked Questions" (12 comprehensive FAQs matching Section 26 with expandable accordion UI).
+- Synchronized static prerender content in `script/generate-seo-pages.ts` inside `<main id="static-seo-content">` ensuring search crawlers and JavaScript-disabled visitors receive the full 1,727-word content payload.
+- Injected `FAQPage` JSON-LD schema with all 12 questions and answers on the homepage.
+
+---
+
 ## [Phase 7: Nominatim Geocoder Hardening & Multi-Provider Architecture] - 2026-09-11
 
 ### Added

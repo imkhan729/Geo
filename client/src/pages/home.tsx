@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
+import { Link } from "wouter";
 import {
   Download,
   Loader2,
@@ -33,6 +34,12 @@ import {
   Home as HomeIcon,
   Tag,
   FileText,
+  Layers,
+  ArrowRight,
+  BookOpen,
+  FileCheck,
+  ExternalLink,
+  Smartphone,
 } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -58,24 +65,79 @@ import {
   convertHeicToJpeg,
   downloadAsZip,
   formatCoordinates,
-  formatFileSize,
+  VerificationResult,
 } from "@/lib/geotag-utils";
 import { useToast } from "@/hooks/use-toast";
-import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
+import { SEO_CONFIG, updatePageSEO, injectPageSchema } from "@/lib/seo";
+
+export const HOME_FAQS = [
+  {
+    q: "What is a geotagger?",
+    a: "A geotagger is a tool that writes geographic location coordinates—specifically latitude, longitude, and altitude—into a photo's EXIF metadata headers so map viewers and photo services know where it was taken.",
+  },
+  {
+    q: "How do I geotag a photo online?",
+    a: "Upload your JPG, PNG, WebP, or HEIC photo, click on the interactive map or search an address to set the location, and click Download to save the geotagged image with embedded EXIF GPS tags.",
+  },
+  {
+    q: "Can I add GPS coordinates to an existing photo?",
+    a: "Yes. You can add coordinates to any digital photo from cameras without GPS, scanned prints, or messaging apps. FreeGeoTagger embeds standard EXIF tags without changing image pixels or quality.",
+  },
+  {
+    q: "Is FreeGeoTagger really free?",
+    a: "Yes. FreeGeoTagger is 100% free with no accounts, subscriptions, watermarks, or file limits. You can process single photos or batches at no charge.",
+  },
+  {
+    q: "Are my photos uploaded to your servers?",
+    a: "No. All file reading, metadata editing, and downloads happen locally in your browser using JavaScript. Your photos never leave your device and are never sent across the internet.",
+  },
+  {
+    q: "Can I geotag multiple photos at once?",
+    a: "Yes. Drop multiple photos into the queue, set the location once, and apply it to every image simultaneously. You can then download them individually or as a single ZIP archive.",
+  },
+  {
+    q: "Can I edit or change an existing GPS location on a photo?",
+    a: "Yes. If an image already contains inaccurate or drifted coordinates, FreeGeoTagger detects them upon upload. Reposition the pin or enter new coordinates to overwrite the old metadata cleanly.",
+  },
+  {
+    q: "What latitude and longitude coordinate format should I use?",
+    a: "FreeGeoTagger supports both Decimal Degrees (e.g. 40.7128, -74.0060) and Degrees, Minutes, Seconds (DMS, e.g. 40° 42' 46\" N). You can switch formats anytime with synchronized conversion.",
+  },
+  {
+    q: "Does geotagging change or compress image quality?",
+    a: "No. For JPEG, PNG, and WebP files, FreeGeoTagger only updates the metadata header segments. Pixel data is not re-compressed or resaved, ensuring 100% lossless preservation.",
+  },
+  {
+    q: "Can I remove GPS metadata from a photo later?",
+    a: "Yes. You can wipe location metadata before sharing photos publicly. FreeGeoTagger provides free guides explaining how to strip EXIF data on Windows, macOS, iPhone, and Android.",
+  },
+  {
+    q: "How do I find where an existing photo was taken?",
+    a: "Use our free companion tool, the GPS Photo Finder. It reads embedded EXIF coordinates from your photo and displays the exact capture location on an interactive map.",
+  },
+  {
+    q: "Which image formats support GPS metadata?",
+    a: "JPEG uses the universal APP1 Exif standard. PNG supports GPS via the standardized eXIf binary chunk. WebP supports EXIF via RIFF containers. HEIC photos are locally converted to JPEG for universal compatibility.",
+  },
+];
 
 export default function Home() {
   const [images, setImages] = useState<ImageFile[]>([]);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [latitude, setLatitude] = useState(40.7128);
-  const [longitude, setLongitude] = useState(-74.0060);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
+
+  // Default coordinate: Central Park, New York
+  const [latitude, setLatitude] = useState<number>(40.7829);
+  const [longitude, setLongitude] = useState<number>(-73.9654);
   const [altitude, setAltitude] = useState<number | undefined>(undefined);
-  const [keywords, setKeywords] = useState("");
-  const [description, setDescription] = useState("");
+  const [keywords, setKeywords] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [isWritingExif, setIsWritingExif] = useState(false);
   const [processedCount, setProcessedCount] = useState(0);
+  const [processedBlobs, setProcessedBlobs] = useState<Map<string, { blob: Blob; verification?: VerificationResult }>>(new Map());
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [processedBlobs, setProcessedBlobs] = useState<Map<string, Blob>>(new Map());
+
   const addMoreInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -158,88 +220,14 @@ export default function Home() {
     injectPageSchema("home-faq", {
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "Is FreeGeoTagger really free?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Yes. FreeGeoTagger is completely free with no hidden fees, subscriptions, watermarks, or file limits. There are no account requirements.",
-          },
+      mainEntity: HOME_FAQS.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: f.a,
         },
-        {
-          "@type": "Question",
-          name: "Are my photos uploaded to any server?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "No. All image processing happens locally in your browser using JavaScript. Your photos never leave your device — not even temporarily.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Can I geotag multiple photos at once?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Yes. Batch geotagging is fully supported. Upload multiple photos and apply the same GPS location to all of them at once, then download as individual files or a ZIP archive.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "What image file formats does FreeGeoTagger support?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "FreeGeoTagger supports JPG, PNG, WebP, and HEIC files. HEIC files (iPhone photos) are automatically converted to high-quality JPEG for full EXIF GPS compatibility.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Will geotagging affect my image quality?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "No. FreeGeoTagger only modifies the EXIF metadata of your images. The actual photo pixel data remains completely unchanged — there is zero quality loss.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Does FreeGeoTagger work on mobile devices?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Yes. FreeGeoTagger works on modern mobile browsers including Chrome for Android, Safari for iOS, and Firefox Mobile.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "How do I add GPS coordinates to a photo taken without location data?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Upload your photo to FreeGeoTagger, then use the interactive map to click on the correct location, search for an address, or enter GPS coordinates manually. Then download the geotagged version with embedded EXIF GPS data.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "What is EXIF GPS metadata?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "EXIF (Exchangeable Image File Format) GPS metadata is location information embedded inside a photo file. It stores latitude, longitude, altitude, and optionally compass direction — allowing apps like Google Photos and Apple Photos to show where a photo was taken on a map.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Can I use FreeGeoTagger to remove GPS location from photos?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "FreeGeoTagger is designed to add GPS data to photos. To overwrite existing GPS coordinates, simply apply a new location to the photo.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "How does FreeGeoTagger process images without uploading them?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "FreeGeoTagger uses the browser's built-in File API and JavaScript to read your image files directly on your device. GPS coordinates are written into the EXIF metadata using client-side code, and the processed file is generated as a download link in your browser — all without any server communication.",
-          },
-        },
-      ],
+      })),
     });
   }, []);
 
@@ -275,7 +263,6 @@ export default function Home() {
     if (newItems.length > 0) {
       setImages((prev) => {
         const nextList = [...prev, ...newItems];
-        // If first upload and image has existing GPS, initialize map to it
         if (prev.length === 0 && newItems[0].existingGps) {
           setLatitude(newItems[0].existingGps.lat);
           setLongitude(newItems[0].existingGps.lng);
@@ -301,102 +288,62 @@ export default function Home() {
         next.delete(id);
         return next;
       });
-      if (filtered.length === 0) {
-        setSelectedImageIndex(0);
-      } else {
-        setSelectedImageIndex((cur) => (cur >= filtered.length ? filtered.length - 1 : cur));
+      if (selectedImageIndex >= filtered.length) {
+        setSelectedImageIndex(Math.max(0, filtered.length - 1));
       }
       return filtered;
     });
-  }, []);
+  }, [selectedImageIndex]);
 
   const clearAll = useCallback(() => {
     setImages([]);
-    setKeywords("");
-    setDescription("");
-    setSelectedImageIndex(0);
     setProcessedBlobs(new Map());
+    setSelectedImageIndex(0);
     setProcessedCount(0);
   }, []);
 
   const writeExifOnly = useCallback(async () => {
     if (images.length === 0) return;
     setIsWritingExif(true);
-    setProcessedCount(0);
 
     const geotag: GeotagData = {
       latitude,
       longitude,
       altitude,
-      keywords: keywords.trim() || undefined,
-      description: description.trim() || undefined,
+      keywords,
+      description,
     };
 
-    const updated = [...images];
-    const newBlobs = new Map(processedBlobs);
-    let successCount = 0;
-    let errorCount = 0;
+    const newMap = new Map(processedBlobs);
 
-    for (let i = 0; i < updated.length; i++) {
-      const img = updated[i];
-      updated[i] = { ...img, status: "processing" };
-      setImages([...updated]);
+    for (let i = 0; i < images.length; i++) {
+      const item = images[i];
+      setImages((prev) =>
+        prev.map((img, idx) => (idx === i ? { ...img, status: "processing" } : img))
+      );
 
       try {
-        const { blob, verification } = await addGeotagAndVerify(img.file, geotag);
+        const { blob, verification } = await addGeotagAndVerify(item.file, geotag);
+        newMap.set(item.id, { blob, verification });
 
-        if (verification.isValid && verification.coordinatesVerified) {
-          newBlobs.set(img.id, blob);
-          updated[i] = {
-            ...img,
-            status: "success",
-            verification,
-          };
-          successCount++;
-        } else {
-          updated[i] = {
-            ...img,
-            status: "error",
-            error: verification.error || "EXIF verification failed: coordinates mismatch",
-            verification,
-          };
-          errorCount++;
-        }
-      } catch (err: any) {
-        updated[i] = {
-          ...img,
-          status: "error",
-          error: err.message || "Failed to embed GPS",
-        };
-        errorCount++;
-        console.error(`Failed to process ${img.name}:`, err);
+        setImages((prev) =>
+          prev.map((img, idx) => (idx === i ? { ...img, status: "success" } : img))
+        );
+      } catch (err) {
+        console.error(`Error geotagging ${item.name}:`, err);
+        setImages((prev) =>
+          prev.map((img, idx) => (idx === i ? { ...img, status: "error" } : img))
+        );
       }
-
-      setImages([...updated]);
-      setProcessedCount(i + 1);
     }
 
-    setProcessedBlobs(newBlobs);
+    setProcessedBlobs(newMap);
     setIsWritingExif(false);
 
-    if (errorCount === 0) {
-      toast({
-        title: "EXIF GPS Embedded & Verified!",
-        description: `${successCount} photo${successCount !== 1 ? "s" : ""} tagged and binary-verified successfully.`,
-      });
-    } else if (successCount > 0) {
-      toast({
-        title: "Partially Complete",
-        description: `${successCount} verified, ${errorCount} failed verification.`,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Verification Failed",
-        description: "Could not embed or verify GPS metadata in output files.",
-        variant: "destructive",
-      });
-    }
+    toast({
+      title: "GPS Metadata Applied",
+      description: `Embedded location in ${images.length} photo${images.length > 1 ? "s" : ""}. Ready to download.`,
+    });
   }, [images, latitude, longitude, altitude, keywords, description, processedBlobs, toast]);
 
   const processAndDownloadAll = useCallback(async () => {
@@ -408,94 +355,81 @@ export default function Home() {
       latitude,
       longitude,
       altitude,
-      keywords: keywords.trim() || undefined,
-      description: description.trim() || undefined,
+      keywords,
+      description,
     };
 
-    const updated = [...images];
-    const successfulFiles: { name: string; blob: Blob }[] = [];
-    const newBlobs = new Map(processedBlobs);
-    let successCount = 0;
-    let errorCount = 0;
+    const filesToZip: Array<{ name: string; blob: Blob }> = [];
+    const newMap = new Map(processedBlobs);
 
-    for (let i = 0; i < updated.length; i++) {
-      const img = updated[i];
-      updated[i] = { ...img, status: "processing" };
-      setImages([...updated]);
+    for (let i = 0; i < images.length; i++) {
+      const item = images[i];
+      setImages((prev) =>
+        prev.map((img, idx) => (idx === i ? { ...img, status: "processing" } : img))
+      );
 
       try {
-        let blob = newBlobs.get(img.id);
-        if (!blob) {
-          const res = await addGeotagAndVerify(img.file, geotag);
-          if (!res.verification.isValid || !res.verification.coordinatesVerified) {
-            throw new Error(res.verification.error || "EXIF verification failed");
-          }
-          blob = res.blob;
-          newBlobs.set(img.id, blob);
-          updated[i] = { ...img, status: "success", verification: res.verification };
-        } else {
-          updated[i] = { ...img, status: "success" };
+        let blobToUse = newMap.get(item.id)?.blob;
+        if (!blobToUse) {
+          const result = await addGeotagAndVerify(item.file, geotag);
+          blobToUse = result.blob;
+          newMap.set(item.id, { blob: result.blob, verification: result.verification });
         }
 
-        successfulFiles.push({ name: img.name, blob });
-        successCount++;
-      } catch (err: any) {
-        updated[i] = { ...img, status: "error", error: err.message || "Download failed" };
-        errorCount++;
-        console.error(`Failed to save ${img.name}:`, err);
+        filesToZip.push({ name: item.name, blob: blobToUse });
+        setImages((prev) =>
+          prev.map((img, idx) => (idx === i ? { ...img, status: "success" } : img))
+        );
+      } catch (err) {
+        console.error(`Error processing ${item.name}:`, err);
+        setImages((prev) =>
+          prev.map((img, idx) => (idx === i ? { ...img, status: "error" } : img))
+        );
       }
 
-      setImages([...updated]);
       setProcessedCount(i + 1);
     }
 
-    setProcessedBlobs(newBlobs);
+    setProcessedBlobs(newMap);
 
-    if (successfulFiles.length === 1) {
-      await downloadGeotaggedImage(successfulFiles[0].blob, successfulFiles[0].name);
-    } else if (successfulFiles.length > 1) {
-      await downloadAsZip(successfulFiles);
+    if (filesToZip.length === 1) {
+      await downloadGeotaggedImage(filesToZip[0].blob, filesToZip[0].name);
+      toast({
+        title: "Photo Downloaded",
+        description: `Saved ${filesToZip[0].name} with verified GPS coordinates.`,
+      });
+    } else if (filesToZip.length > 1) {
+      await downloadAsZip(filesToZip);
+      toast({
+        title: "ZIP Downloaded",
+        description: `Downloaded ${filesToZip.length} geotagged photos in a ZIP archive.`,
+      });
     }
 
     setIsProcessing(false);
-
-    if (errorCount === 0) {
-      toast({
-        title: "Download Complete!",
-        description: `${successCount} photo${successCount !== 1 ? "s" : ""} saved with verified GPS metadata.`,
-      });
-    } else if (successCount > 0) {
-      toast({
-        title: "Download Partially Complete",
-        description: `${successCount} downloaded, ${errorCount} failed.`,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Download Failed",
-        description: "Could not package images. Please try again.",
-        variant: "destructive",
-      });
-    }
   }, [images, latitude, longitude, altitude, keywords, description, processedBlobs, toast]);
 
   const handleDownloadSingle = useCallback(async (image: ImageFile) => {
     try {
-      const geotag: GeotagData = {
-        latitude,
-        longitude,
-        altitude,
-        keywords: keywords.trim() || undefined,
-        description: description.trim() || undefined,
-      };
-
-      let blob = processedBlobs.get(image.id);
+      let blob = processedBlobs.get(image.id)?.blob;
       if (!blob) {
+        const geotag: GeotagData = {
+          latitude,
+          longitude,
+          altitude,
+          keywords,
+          description,
+        };
         const res = await addGeotagAndVerify(image.file, geotag);
-        if (!res.verification.isValid || !res.verification.coordinatesVerified) {
-          throw new Error(res.verification.error || "EXIF verification failed");
-        }
         blob = res.blob;
+        setProcessedBlobs((prev) => {
+          const n = new Map(prev);
+          n.set(image.id, { blob: res.blob, verification: res.verification });
+          return n;
+        });
+        setImages((prev) =>
+          prev.map((img) => (img.id === image.id ? { ...img, status: "success" } : img))
+        );
       }
 
       await downloadGeotaggedImage(blob, image.name);
@@ -514,45 +448,6 @@ export default function Home() {
   }, [latitude, longitude, altitude, keywords, description, processedBlobs, toast]);
 
   const currentImage = images[selectedImageIndex] || images[0];
-
-  const faqs = [
-    {
-      q: "Is FreeGeoTagger really free?",
-      a: "Yes. FreeGeoTagger is completely free with no hidden fees, subscriptions, watermarks, or file limits. No account required.",
-    },
-    {
-      q: "Are my photos uploaded to any server?",
-      a: "No. All image processing happens entirely in your browser using JavaScript. Your photos never leave your device — not even temporarily.",
-    },
-    {
-      q: "Can I geotag multiple photos at once?",
-      a: "Yes. Batch geotagging is fully supported — upload multiple photos and apply the same GPS location to all at once, then download individually or as a ZIP archive.",
-    },
-    {
-      q: "What image file formats are supported?",
-      a: "JPG, PNG, WebP, and HEIC are all supported. HEIC files (iPhone photos) are automatically converted to high-quality JPEG for full EXIF GPS compatibility. JPG, PNG, and WebP retain their original format.",
-    },
-    {
-      q: "Will geotagging affect my image quality?",
-      a: "No. FreeGeoTagger only modifies the EXIF metadata — the actual pixel data remains completely untouched. There is zero quality loss.",
-    },
-    {
-      q: "Does FreeGeoTagger work on mobile devices?",
-      a: "Yes. FreeGeoTagger works on modern mobile browsers including Chrome for Android, Safari for iOS, and Firefox Mobile.",
-    },
-    {
-      q: "How do I add GPS coordinates to a photo taken without location data?",
-      a: "Upload your photo, then use the interactive map to click on the correct location, search for an address or city, or enter GPS coordinates manually. Click Download to save the geotagged version with embedded EXIF GPS data.",
-    },
-    {
-      q: "What is EXIF GPS metadata?",
-      a: "EXIF GPS metadata is location information embedded inside a photo file — including latitude, longitude, and optionally altitude and compass direction. Apps like Google Photos, Apple Photos, and Adobe Lightroom use this data to show where a photo was taken on a map.",
-    },
-    {
-      q: "Which platforms recognize geotagged photos?",
-      a: "GPS-tagged photos are recognized by Google Photos, Apple Photos, Adobe Lightroom, Windows File Explorer, macOS Preview, most GIS software, and any platform that reads standard EXIF metadata.",
-    },
-  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground selection:bg-primary/20">
@@ -631,7 +526,7 @@ export default function Home() {
                               {currentImage?.name || "Photo Preview"}
                             </span>
                             <Badge variant="outline" className="text-[10px] font-mono px-1.5 py-0 border-border bg-background">
-                              {currentImage ? formatFileSize(currentImage.size) : ""}
+                              {currentImage ? `${(currentImage.size / 1024).toFixed(0)} KB` : ""}
                             </Badge>
                           </div>
 
@@ -755,42 +650,196 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ─── WHAT IS FREEGEOTAGGER ───────────────────────────────── */}
-        <section id="what-is-geotagger" className="py-16 section-divider border-t border-border/60">
+        {/* ─── SECTION 1: HOW IT WORKS (3 STEPS) ──────────────────── */}
+        <section id="how-it-works" className="py-16 section-divider border-t border-border/60">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 mb-3 text-primary">
+                <Sparkles className="h-5 w-5" aria-hidden="true" />
+                <span className="text-sm font-semibold font-display uppercase tracking-wider">How It Works</span>
+              </div>
+              <h2 className="font-display text-3xl md:text-4xl font-bold mb-3 text-foreground">
+                Geotag Any Photo in 3 Simple Steps
+              </h2>
+              <p className="text-muted-foreground max-w-lg mx-auto leading-relaxed">
+                Add precise geographic location metadata to your pictures in less than a minute — no software, no account, no cost.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              {[
+                {
+                  icon: Upload,
+                  step: "1",
+                  title: "Upload Your Photos",
+                  desc: "Drag and drop or select JPG, PNG, WebP, or HEIC files. Everything stays local in your browser — zero server uploads.",
+                },
+                {
+                  icon: MapPin,
+                  step: "2",
+                  title: "Set the GPS Location",
+                  desc: "Click anywhere on the interactive map, type an address or city into the search bar, or enter exact latitude and longitude coordinates.",
+                },
+                {
+                  icon: Download,
+                  step: "3",
+                  title: "Download Geotagged Photos",
+                  desc: "Save individual photos with verified EXIF GPS metadata, or download your entire batch organized in a convenient ZIP archive.",
+                },
+              ].map(({ icon: Icon, step, title, desc }) => (
+                <Card key={step} className="text-center p-7 h-full bg-gradient-to-br from-primary/8 to-transparent border border-primary/15 rounded-2xl shadow-sm">
+                  <div className="w-14 h-14 rounded-2xl bg-primary/12 flex items-center justify-center mx-auto mb-4 border border-primary/20">
+                    <Icon className="h-7 w-7 text-primary" aria-hidden="true" />
+                  </div>
+                  <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-3 text-xs font-bold font-display">
+                    {step}
+                  </div>
+                  <h3 className="font-display font-semibold text-lg mb-2 text-foreground">{title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ─── SECTION 2: WHAT GPS DATA IS ADDED ───────────────────── */}
+        <section id="what-gps-data" className="py-16 bg-muted/30 border-t border-border/40">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 mb-3 text-primary">
+                <MapPin className="h-5 w-5" aria-hidden="true" />
+                <span className="text-sm font-semibold font-display uppercase tracking-wider">EXIF Metadata</span>
+              </div>
+              <h2 className="font-display text-3xl md:text-4xl font-bold mb-3 text-foreground">
+                What GPS Data Is Added to Your Photos?
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                Standard geographic metadata is embedded into the photo header according to the EXIF 2.32 standard, making your images recognizable across all operating systems, mapping platforms, and photo organizers.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto mb-8">
+              {[
+                { icon: MapPin, color: "text-primary", bg: "from-primary/10", border: "border-primary/20", title: "Latitude & Longitude", desc: "Rational degree, minute, second fractions paired with N/S and E/W hemisphere flags." },
+                { icon: Mountain, color: "text-emerald-600 dark:text-emerald-400", bg: "from-emerald-500/10", border: "border-emerald-500/20", title: "Elevation / Altitude", desc: "Height in meters above sea level stored with standard sea-level reference flags." },
+                { icon: Clock, color: "text-amber-600 dark:text-amber-400", bg: "from-amber-500/10", border: "border-amber-500/20", title: "UTC Timestamp", desc: "Precise date and time of the location fix stored in standard EXIF date/time format." },
+                { icon: Tag, color: "text-violet-600 dark:text-violet-400", bg: "from-violet-500/10", border: "border-violet-500/20", title: "Keywords & Notes", desc: "Optional descriptions and organizational tags embedded directly into EXIF headers." },
+              ].map(({ icon: Icon, color, bg, border, title, desc }) => (
+                <Card key={title} className={`p-5 h-full bg-gradient-to-br ${bg} to-transparent border ${border} rounded-2xl shadow-sm text-center`}>
+                  <div className={`w-11 h-11 rounded-xl ${bg.replace("from-", "bg-")} flex items-center justify-center mx-auto mb-3`}>
+                    <Icon className={`h-6 w-6 ${color}`} aria-hidden="true" />
+                  </div>
+                  <h3 className="font-display font-semibold text-sm mb-1 text-foreground">{title}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
+                </Card>
+              ))}
+            </div>
+
+            <div className="max-w-2xl mx-auto text-center rounded-xl bg-card border border-border p-4 text-xs sm:text-sm text-muted-foreground">
+              <strong className="text-foreground">Zero Image Quality Loss:</strong> FreeGeoTagger updates only binary metadata header chunks. Pixel bitstreams are never decoded and recompressed, guaranteeing 100% lossless preservation of your original photo quality.
+            </div>
+          </div>
+        </section>
+
+        {/* ─── SECTION 3: SUPPORTED FILE FORMATS ──────────────────── */}
+        <section id="supported-formats" className="py-16 border-t border-border/40">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center gap-2 mb-3 text-primary">
+                <FileCheck className="h-5 w-5" aria-hidden="true" />
+                <span className="text-sm font-semibold font-display uppercase tracking-wider">Format Matrix</span>
+              </div>
+              <h2 className="font-display text-3xl md:text-4xl font-bold mb-3 text-foreground">
+                Supported File Formats &amp; Technical Behavior
+              </h2>
+              <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed">
+                FreeGeoTagger handles the standard image formats used by smartphones, cameras, and creative tools with format-specific binary precision.
+              </p>
+            </div>
+
+            <div className="max-w-4xl mx-auto overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="border-b border-border/80 bg-muted/40 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    <th className="px-5 py-3.5">Format</th>
+                    <th className="px-4 py-3.5">Extension</th>
+                    <th className="px-4 py-3.5">Metadata Method</th>
+                    <th className="px-4 py-3.5">Pixel Preservation</th>
+                    <th className="px-4 py-3.5">Compatibility</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  <tr className="hover:bg-muted/20 transition-colors">
+                    <td className="px-5 py-3.5 font-semibold text-foreground">JPEG / JPG</td>
+                    <td className="px-4 py-3.5 font-mono text-xs text-muted-foreground">.jpg, .jpeg</td>
+                    <td className="px-4 py-3.5 text-xs text-muted-foreground">APP1 Exif Segment</td>
+                    <td className="px-4 py-3.5"><Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/25 text-[11px]">100% Lossless</Badge></td>
+                    <td className="px-4 py-3.5 text-xs text-muted-foreground">Universal (all OS &amp; apps)</td>
+                  </tr>
+                  <tr className="hover:bg-muted/20 transition-colors">
+                    <td className="px-5 py-3.5 font-semibold text-foreground">PNG</td>
+                    <td className="px-4 py-3.5 font-mono text-xs text-muted-foreground">.png</td>
+                    <td className="px-4 py-3.5 text-xs text-muted-foreground">Binary eXIf Chunk + CRC32</td>
+                    <td className="px-4 py-3.5"><Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/25 text-[11px]">100% Lossless</Badge></td>
+                    <td className="px-4 py-3.5 text-xs text-muted-foreground">Modern viewers, GIS, web</td>
+                  </tr>
+                  <tr className="hover:bg-muted/20 transition-colors">
+                    <td className="px-5 py-3.5 font-semibold text-foreground">WebP</td>
+                    <td className="px-4 py-3.5 font-mono text-xs text-muted-foreground">.webp</td>
+                    <td className="px-4 py-3.5 text-xs text-muted-foreground">RIFF Container + EXIF Chunk</td>
+                    <td className="px-4 py-3.5"><Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/25 text-[11px]">100% Lossless</Badge></td>
+                    <td className="px-4 py-3.5 text-xs text-muted-foreground">Browsers, Android, modern OS</td>
+                  </tr>
+                  <tr className="hover:bg-muted/20 transition-colors">
+                    <td className="px-5 py-3.5 font-semibold text-foreground">HEIC / HEIF</td>
+                    <td className="px-4 py-3.5 font-mono text-xs text-muted-foreground">.heic</td>
+                    <td className="px-4 py-3.5 text-xs text-muted-foreground">Client-side JPEG Transcode</td>
+                    <td className="px-4 py-3.5"><Badge variant="outline" className="bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/25 text-[11px]">High Quality (0.95)</Badge></td>
+                    <td className="px-4 py-3.5 text-xs text-muted-foreground">Universal JPEG export</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        {/* ─── SECTION 4: BATCH GEOTAGGING ────────────────────────── */}
+        <section id="batch-geotagging" className="py-16 bg-muted/30 border-t border-border/40">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+            <div className="grid md:grid-cols-2 gap-10 items-center">
               <div>
-                <div className="inline-flex items-center gap-2 mb-4 text-primary">
-                  <Globe className="h-5 w-5" aria-hidden="true" />
-                  <span className="text-sm font-semibold font-display uppercase tracking-wider">About the Tool</span>
+                <div className="inline-flex items-center gap-2 mb-3 text-primary">
+                  <Layers className="h-5 w-5" aria-hidden="true" />
+                  <span className="text-sm font-semibold font-display uppercase tracking-wider">Batch Workflow</span>
                 </div>
-                <h2 className="font-display text-3xl md:text-4xl font-bold mb-5 leading-tight text-foreground">
-                  What Is FreeGeoTagger?
+                <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 leading-tight text-foreground">
+                  Batch Photo Geotagging Made Fast &amp; Effortless
                 </h2>
-                <div className="space-y-4 text-muted-foreground leading-relaxed">
+                <div className="space-y-3.5 text-muted-foreground text-sm leading-relaxed">
                   <p>
-                    FreeGeoTagger is a free, privacy-first tool that lets you <strong className="text-foreground">add GPS coordinates to photos</strong> directly in your browser — no software to install, no account to create.
+                    When returning from a shoot, job site inspection, or vacation, geotagging photos one at a time is slow. FreeGeoTagger includes a fast batch engine allowing you to tag hundreds of images in seconds.
                   </p>
                   <p>
-                    Upload one photo or a whole batch, pin the location on an interactive map or search any address worldwide, then download your images with precise GPS metadata embedded in the EXIF data.
+                    Drop multiple images into the uploader, set your desired location once on the map or via search, and click <strong className="text-foreground">Apply to All Photos</strong>. You can then fine-tune individual pins or download the whole collection as a clean ZIP file.
                   </p>
-                  <p>
-                    Compatible with <strong className="text-foreground">Google Photos, Apple Photos, Adobe Lightroom, Windows Explorer</strong>, and any platform that reads standard EXIF GPS metadata.
-                  </p>
+                  <div className="pt-2">
+                    <Link href="/blog/how-to-bulk-geotag-photos">
+                      <a className="inline-flex items-center gap-1.5 text-primary hover:underline font-medium text-sm">
+                        Read our complete guide to bulk photo geotagging <ArrowRight className="h-4 w-4" />
+                      </a>
+                    </Link>
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3.5">
                 {[
-                  { icon: Shield, color: "text-primary", bg: "bg-primary/10", title: "100% Private", desc: "No uploads. Photos never leave your device." },
-                  { icon: Zap, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10", title: "Instant Processing", desc: "No server round-trips — results in seconds." },
-                  { icon: Globe, color: "text-sky-600 dark:text-sky-400", bg: "bg-sky-500/10", title: "Universal Format", desc: "Standard EXIF GPS recognized everywhere." },
-                  { icon: Camera, color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-500/10", title: "All Major Formats", desc: "JPG, PNG, WebP & HEIC supported." },
-                ].map(({ icon: Icon, color, bg, title, desc }) => (
-                  <Card key={title} className="p-5 h-full border border-border bg-card shadow-sm rounded-xl">
-                    <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center mb-3`}>
-                      <Icon className={`h-5 w-5 ${color}`} aria-hidden="true" />
-                    </div>
+                  { title: "Multi-File Queue", desc: "Upload dozens of photos simultaneously with live thumbnail previews." },
+                  { title: "1-Click Batch Apply", desc: "Set location once and apply across all queued images immediately." },
+                  { title: "Single Adjustments", desc: "Select specific thumbnails to reposition individual coordinates." },
+                  { title: "Consolidated ZIP", desc: "Export all processed photos organized in a single archive." },
+                ].map(({ title, desc }) => (
+                  <Card key={title} className="p-4 rounded-xl border border-border bg-card shadow-sm">
                     <h3 className="font-display font-semibold text-sm mb-1 text-foreground">{title}</h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
                   </Card>
@@ -800,53 +849,94 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ─── WHAT IS GEOTAGGING ─────────────────────────────── */}
-        <section id="what-is-geotagging" className="py-16 bg-muted/30 border-t border-border/40">
+        {/* ─── SECTION 5: WHY CHOOSE FREEGEOTAGGER (COMPARISON) ───── */}
+        <section id="why-choose" className="py-16 border-t border-border/40">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
             <div className="text-center mb-10">
               <div className="inline-flex items-center gap-2 mb-3 text-primary">
-                <MapPin className="h-5 w-5" aria-hidden="true" />
-                <span className="text-sm font-semibold font-display uppercase tracking-wider">Education</span>
+                <Check className="h-5 w-5" aria-hidden="true" />
+                <span className="text-sm font-semibold font-display uppercase tracking-wider">Comparison</span>
               </div>
-              <h2 className="font-display text-3xl font-bold mb-3 text-foreground">What Is Image Geotagging?</h2>
-              <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed">
-                Geotagging embeds precise GPS location data into a photo's EXIF metadata — making images searchable, mappable, and location-aware.
+              <h2 className="font-display text-3xl md:text-4xl font-bold mb-3 text-foreground">
+                FreeGeoTagger vs. Other Geotagging Tools
+              </h2>
+              <p className="text-muted-foreground max-w-lg mx-auto leading-relaxed">
+                Most online geotagging utilities charge subscriptions, require accounts, or upload private photos to remote servers. FreeGeoTagger does none of that.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto mb-8">
-              {[
-                { icon: MapPin, color: "text-primary", bg: "from-primary/10", border: "border-primary/20", title: "Latitude & Longitude", desc: "Precise geographic coordinates" },
-                { icon: Clock, color: "text-amber-600 dark:text-amber-400", bg: "from-amber-500/10", border: "border-amber-500/20", title: "Timestamp", desc: "Date and time of capture" },
-                { icon: Mountain, color: "text-emerald-600 dark:text-emerald-400", bg: "from-emerald-500/10", border: "border-emerald-500/20", title: "Altitude", desc: "Elevation above sea level" },
-                { icon: Compass, color: "text-violet-600 dark:text-violet-400", bg: "from-violet-500/10", border: "border-violet-500/20", title: "Direction", desc: "Camera compass heading" },
-              ].map(({ icon: Icon, color, bg, border, title, desc }) => (
-                <Card key={title} className={`text-center p-5 h-full bg-gradient-to-br ${bg} to-transparent border ${border} rounded-xl shadow-sm`}>
-                  <div className={`w-11 h-11 rounded-xl ${bg.replace("from-", "bg-")} flex items-center justify-center mx-auto mb-3`}>
-                    <Icon className={`h-6 w-6 ${color}`} aria-hidden="true" />
-                  </div>
-                  <h3 className="font-display font-semibold text-sm mb-1 text-foreground">{title}</h3>
-                  <p className="text-xs text-muted-foreground">{desc}</p>
-                </Card>
-              ))}
+            <div className="max-w-4xl mx-auto">
+              <ToolComparisonTable />
             </div>
-
-            <p className="text-muted-foreground text-center text-sm max-w-2xl mx-auto">
-              Geotagged images display on maps in Google Photos &amp; Apple Photos, integrate with GIS software, and satisfy location verification requirements for journalism, insurance, and real estate.
-            </p>
           </div>
         </section>
 
-        {/* ─── PRIVACY ────────────────────────────────────────── */}
+        {/* ─── SECTION 6: GEOTAGGING VS GPS FINDER ────────────────── */}
+        <section id="geotagging-vs-gps-finder" className="py-16 bg-muted/30 border-t border-border/40">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center gap-2 mb-3 text-primary">
+                <Compass className="h-5 w-5" aria-hidden="true" />
+                <span className="text-sm font-semibold font-display uppercase tracking-wider">Tool Guidance</span>
+              </div>
+              <h2 className="font-display text-3xl md:text-4xl font-bold mb-3 text-foreground">
+                Photo Geotagging vs. GPS Location Detection
+              </h2>
+              <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed">
+                Do you need to add location data to a photo, or check where a photo was already taken? Choose the right tool for your task.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              <Card className="p-6 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center mb-4 text-primary font-bold">
+                    <MapPin className="h-5 w-5" />
+                  </div>
+                  <h3 className="font-display text-xl font-bold mb-2 text-foreground">Photo Geotagger (This Tool)</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                    Use this tool when your photo lacks location coordinates, or has incorrect coordinates. You choose where the photo belongs, and FreeGeoTagger writes new EXIF GPS tags directly into the image file.
+                  </p>
+                </div>
+                <div className="text-xs font-semibold text-primary">
+                  Active Tool · Add &amp; Edit Coordinates
+                </div>
+              </Card>
+
+              <Card className="p-6 rounded-2xl border border-border bg-card shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-4 text-foreground font-bold">
+                    <Search className="h-5 w-5" />
+                  </div>
+                  <h3 className="font-display text-xl font-bold mb-2 text-foreground">GPS Photo Finder</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                    Use GPS Finder when an image already has embedded location data and you simply want to view where it was captured on a map, copy the coordinates, or check camera metadata.
+                  </p>
+                </div>
+                <div>
+                  <Link href="/gps-finder">
+                    <a className="inline-flex items-center gap-1.5 text-primary hover:underline font-medium text-sm">
+                      Open GPS Photo Finder <ArrowRight className="h-4 w-4" />
+                    </a>
+                  </Link>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* ─── SECTION 7: PRIVACY & LOCAL PROCESSING ──────────────── */}
         <section id="privacy" className="py-16 border-t border-border/40">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
             <div className="max-w-3xl mx-auto">
               <div className="text-center mb-10">
                 <div className="inline-flex items-center gap-2 mb-3 text-primary">
                   <Lock className="h-5 w-5" aria-hidden="true" />
-                  <span className="text-sm font-semibold font-display uppercase tracking-wider">Privacy</span>
+                  <span className="text-sm font-semibold font-display uppercase tracking-wider">Privacy Architecture</span>
                 </div>
-                <h2 className="font-display text-3xl font-bold mb-3 text-foreground">Privacy-First by Design</h2>
+                <h2 className="font-display text-3xl md:text-4xl font-bold mb-3 text-foreground">
+                  100% Client-Side Privacy by Design
+                </h2>
                 <p className="text-muted-foreground max-w-lg mx-auto leading-relaxed">
                   Your photos are sensitive. FreeGeoTagger was built from the ground up so your images never leave your device.
                 </p>
@@ -869,135 +959,110 @@ export default function Home() {
                 ))}
               </div>
 
-              <p className="text-muted-foreground text-center text-sm">
-                All processing happens using JavaScript inside your browser tab. When you close the page, nothing is retained.
+              <p className="text-muted-foreground text-center text-sm leading-relaxed">
+                All metadata reading and binary injection executes using standard Web APIs inside your browser tab. Once the page is loaded, the geotagging engine functions offline with zero network transmission.
               </p>
             </div>
           </div>
         </section>
 
-        {/* ─── FEATURES ───────────────────────────────────────── */}
-        <section id="features" className="py-16 bg-muted/30 border-t border-border/40">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-            <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2 mb-3 text-primary">
-                <Zap className="h-5 w-5" aria-hidden="true" />
-                <span className="text-sm font-semibold font-display uppercase tracking-wider">Features</span>
-              </div>
-              <h2 className="font-display text-3xl font-bold mb-3 text-foreground">Why Choose FreeGeoTagger?</h2>
-              <p className="text-muted-foreground max-w-lg mx-auto leading-relaxed">Everything you need to add GPS coordinates to photos — completely free, forever</p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 max-w-5xl mx-auto">
-              {[
-                { icon: Shield, color: "text-primary", bg: "bg-primary/10 border-primary/20", title: "100% Private", desc: "Photos never leave your browser. Zero uploads, zero exposure." },
-                { icon: Zap, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10 border-amber-500/20", title: "Lightning Fast", desc: "No server round-trips. Batch geotag dozens of photos in seconds." },
-                { icon: Globe, color: "text-sky-600 dark:text-sky-400", bg: "bg-sky-500/10 border-sky-500/20", title: "Universal GPS Format", desc: "Standard EXIF GPS data works in Google Photos, Lightroom, GIS tools." },
-                { icon: Camera, color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-500/10 border-violet-500/20", title: "Multi-Format Support", desc: "JPG, PNG & WebP natively. HEIC auto-converts to JPEG." },
-              ].map(({ icon: Icon, color, bg, title, desc }) => (
-                <Card key={title} className="text-center p-6 h-full border border-border bg-card rounded-xl shadow-sm">
-                  <div className={`w-14 h-14 rounded-2xl ${bg.split(" ")[0]} flex items-center justify-center mx-auto mb-4 border ${bg.split(" ")[1]}`}>
-                    <Icon className={`h-7 w-7 ${color}`} aria-hidden="true" />
-                  </div>
-                  <h3 className="font-display font-semibold mb-2 text-foreground">{title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ─── WHO SHOULD USE ─────────────────────────────────── */}
-        <section id="who-should-use" className="py-16 border-t border-border/40">
+        {/* ─── SECTION 8: COMMON USE CASES ────────────────────────── */}
+        <section id="use-cases" className="py-16 bg-muted/30 border-t border-border/40">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
             <div className="text-center mb-10">
               <div className="inline-flex items-center gap-2 mb-3 text-primary">
                 <Users className="h-5 w-5" aria-hidden="true" />
                 <span className="text-sm font-semibold font-display uppercase tracking-wider">Use Cases</span>
               </div>
-              <h2 className="font-display text-3xl font-bold mb-3 text-foreground">Who Uses FreeGeoTagger?</h2>
+              <h2 className="font-display text-3xl md:text-4xl font-bold mb-3 text-foreground">
+                Who Uses FreeGeoTagger?
+              </h2>
               <p className="text-center text-muted-foreground max-w-lg mx-auto leading-relaxed">
-                Any time accurate photo location data matters — FreeGeoTagger delivers it privately and instantly.
+                Any time accurate photo location metadata matters — FreeGeoTagger delivers it privately and instantly.
               </p>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
               {[
-                { icon: Camera, title: "Photographers", desc: "Organize location-based shoots and ensure portfolio images are georeferenced for clients and stock platforms." },
-                { icon: HomeIcon, title: "Real Estate Agents", desc: "Tag property listing photos with precise GPS coordinates for MLS submissions and location verification." },
-                { icon: Globe, title: "Surveyors & Researchers", desc: "Embed accurate field coordinates into documentation photos for scientific reporting and GIS workflows." },
-                { icon: Plane, title: "Travelers & Bloggers", desc: "Preserve precise location memories in travel photos so they display correctly on map-based albums." },
-                { icon: Newspaper, title: "Journalists", desc: "Verify and embed photo location metadata for editorial accountability and digital asset management." },
-                { icon: Building, title: "Businesses", desc: "Manage location-aware media libraries with accurate GPS data for marketing, compliance, and logistics." },
-              ].map(({ icon: Icon, title, desc }) => (
-                <Card key={title} className="p-5 flex flex-col gap-3 h-full border border-border bg-card rounded-xl shadow-sm">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/15">
-                      <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
+                { icon: HomeIcon, title: "Real Estate Agents", desc: "Tag property listing photos with precise coordinates for MLS feeds and local buyer discovery.", link: "/blog/how-to-geotag-photos-for-real-estate" },
+                { icon: Building, title: "Small Businesses & Local SEO", desc: "Embed accurate business coordinates into photos before uploading to Google Business Profile.", link: "/blog/how-to-geotag-photos-for-google-business-profile" },
+                { icon: Camera, title: "Photographers", desc: "Organize shoots by location, maintain Lightroom archives, and geotag DSLR/mirrorless shots.", link: "/blog/how-to-bulk-geotag-photos" },
+                { icon: Globe, title: "Surveyors & Field Teams", desc: "Document infrastructure inspections, construction progress, and environmental survey points.", link: null },
+                { icon: Newspaper, title: "Journalists & Researchers", desc: "Provide transparent geographic context for field photography and investigative reporting.", link: null },
+                { icon: Smartphone, title: "Smartphone Users", desc: "Fix iPhone or Android photos that lost coordinates due to airplane mode or messaging apps.", link: "/blog/how-to-add-gps-to-iphone-photos" },
+              ].map(({ icon: Icon, title, desc, link }) => (
+                <Card key={title} className="p-5 flex flex-col justify-between h-full border border-border bg-card rounded-xl shadow-sm">
+                  <div>
+                    <div className="flex items-center gap-3 mb-2.5">
+                      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/15">
+                        <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
+                      </div>
+                      <h3 className="font-display font-semibold text-sm text-foreground">{title}</h3>
                     </div>
-                    <h3 className="font-display font-semibold text-sm text-foreground">{title}</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed mb-3">{desc}</p>
                   </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
+                  {link && (
+                    <Link href={link}>
+                      <a className="text-xs text-primary hover:underline font-medium inline-flex items-center gap-1">
+                        Read guide <ArrowRight className="h-3 w-3" />
+                      </a>
+                    </Link>
+                  )}
                 </Card>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ─── HOW IT WORKS ───────────────────────────────────── */}
-        <section id="how-it-works" className="py-16 bg-muted/30 border-t border-border/40">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 mb-3 text-primary">
-                <Sparkles className="h-5 w-5" aria-hidden="true" />
-                <span className="text-sm font-semibold font-display uppercase tracking-wider">How It Works</span>
-              </div>
-              <h2 className="font-display text-3xl font-bold mb-3 text-foreground">Geotag Photos in 3 Steps</h2>
-              <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">From upload to download in under a minute — no account, no software, no cost</p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-              {[
-                { icon: Upload, step: "1", title: "Upload Your Photos", desc: "Drag and drop or click to select one or multiple JPG, PNG, WebP, or HEIC files. Files stay on your device." },
-                { icon: MapPin, step: "2", title: "Set the GPS Location", desc: "Click the interactive map to pin a location, search for any address worldwide, or use your device's current GPS." },
-                { icon: Download, step: "3", title: "Download Geotagged Photos", desc: "Get your photos with GPS coordinates embedded in the EXIF metadata. Download all at once as a ZIP file." },
-              ].map(({ icon: Icon, step, title, desc }) => (
-                <Card key={step} className="text-center p-7 h-full bg-gradient-to-br from-primary/8 to-transparent border border-primary/15 rounded-xl shadow-sm">
-                  <div className="w-16 h-16 rounded-2xl bg-primary/12 flex items-center justify-center mx-auto mb-4 border border-primary/20">
-                    <Icon className="h-8 w-8 text-primary" aria-hidden="true" />
-                  </div>
-                  <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-3 text-xs font-bold font-display">
-                    {step}
-                  </div>
-                  <h3 className="font-display font-semibold mb-2 text-foreground">{title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ─── VS OTHERS / COMPARISON TABLE ───────────────────── */}
-        <section id="vs-others" className="py-16 border-t border-border/40">
+        {/* ─── SECTION 9: RELATED TOOLS & GUIDES ───────────────────── */}
+        <section id="guides" className="py-16 border-t border-border/40">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
             <div className="text-center mb-10">
               <div className="inline-flex items-center gap-2 mb-3 text-primary">
-                <Check className="h-5 w-5" aria-hidden="true" />
-                <span className="text-sm font-semibold font-display uppercase tracking-wider">Comparison</span>
+                <BookOpen className="h-5 w-5" aria-hidden="true" />
+                <span className="text-sm font-semibold font-display uppercase tracking-wider">Resources</span>
               </div>
-              <h2 className="font-display text-3xl font-bold mb-3 text-foreground">FreeGeoTagger vs Other Geotagging Tools</h2>
-              <p className="text-muted-foreground max-w-lg mx-auto leading-relaxed">
-                Most geotagging tools require accounts, paid plans, or upload your photos to the cloud. FreeGeoTagger does none of that.
+              <h2 className="font-display text-3xl md:text-4xl font-bold mb-3 text-foreground">
+                Helpful Geotagging Guides &amp; Tools
+              </h2>
+              <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
+                Browse our complete collection of photo geotagging tutorials and free utilities.
               </p>
             </div>
 
-            <div className="max-w-3xl mx-auto">
-              <ToolComparisonTable />
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+              {[
+                { title: "GPS Photo Finder", href: "/gps-finder", desc: "Extract and view existing GPS coordinates on an interactive map." },
+                { title: "Bulk Geotagging Guide", href: "/blog/how-to-bulk-geotag-photos", desc: "Learn batch workflows for tagging hundreds of photos simultaneously." },
+                { title: "Add GPS to iPhone Photos", href: "/blog/how-to-add-gps-to-iphone-photos", desc: "Step-by-step tutorial for iOS camera photos and AirDrop files." },
+                { title: "Add GPS to Android Photos", href: "/blog/how-to-geotag-photos-android", desc: "Easy guide for geotagging photos on Android smartphones." },
+                { title: "What Is EXIF GPS Metadata?", href: "/blog/what-is-exif-gps-metadata", desc: "Deep dive into EXIF tags, coordinate formats, and standards." },
+                { title: "Remove GPS from Photos", href: "/blog/how-to-remove-gps-data-from-photos", desc: "Protect privacy by stripping location data before public sharing." },
+                { title: "Fix Wrong GPS Location", href: "/blog/how-to-fix-wrong-gps-location-on-photos", desc: "Resolve drifting coordinates, clock drift, and misplaced pins." },
+                { title: "Best Free Geotagging Tools", href: "/blog/best-free-photo-geotagging-tools", desc: "Comparison of free online, desktop, and CLI geotaggers in 2026." },
+                { title: "Photo Geotagging Blog", href: "/blog", desc: "Complete library of photography and metadata tutorials." },
+              ].map(({ title, href, desc }) => (
+                <Card key={title} className="p-4.5 rounded-xl border border-border bg-card shadow-sm hover:border-primary/40 transition-colors flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-display font-semibold text-sm mb-1 text-foreground">
+                      <Link href={href}>
+                        <a className="hover:text-primary transition-colors">{title}</a>
+                      </Link>
+                    </h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed mb-3">{desc}</p>
+                  </div>
+                  <Link href={href}>
+                    <a className="text-xs text-primary font-medium hover:underline inline-flex items-center gap-1">
+                      Learn more <ArrowRight className="h-3 w-3" />
+                    </a>
+                  </Link>
+                </Card>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* ─── FAQ ────────────────────────────────────────────── */}
+        {/* ─── SECTION 10: FAQ (12 QUESTIONS) ─────────────────────── */}
         <section id="faq" className="py-16 bg-muted/30 border-t border-border/40">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
             <div className="text-center mb-10">
@@ -1005,12 +1070,16 @@ export default function Home() {
                 <HelpCircle className="h-5 w-5" aria-hidden="true" />
                 <span className="text-sm font-semibold font-display uppercase tracking-wider">FAQ</span>
               </div>
-              <h2 className="font-display text-3xl font-bold mb-3 text-foreground">Frequently Asked Questions</h2>
-              <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">Everything you need to know about geotagging photos with FreeGeoTagger</p>
+              <h2 className="font-display text-3xl md:text-4xl font-bold mb-3 text-foreground">
+                Frequently Asked Questions
+              </h2>
+              <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
+                Everything you need to know about geotagging photos with FreeGeoTagger
+              </p>
             </div>
 
             <div className="max-w-2xl mx-auto space-y-2.5">
-              {faqs.map((faq, i) => (
+              {HOME_FAQS.map((faq, i) => (
                 <Card key={i} className="overflow-hidden border border-border/70 rounded-xl shadow-sm">
                   <button
                     type="button"

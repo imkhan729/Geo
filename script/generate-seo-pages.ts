@@ -80,15 +80,54 @@ const PAGES_DIR = "client/src/pages";
 
 // ── Homepage FAQ (mirrors the in-app FAQ so crawlers see the same content) ──
 const homeFaqs: Array<{ q: string; a: string }> = [
-  { q: "Is FreeGeoTagger really free?", a: "Yes. FreeGeoTagger is completely free with no hidden fees, subscriptions, watermarks, or file limits, and no account is required." },
-  { q: "Are my photos uploaded to any server?", a: "No. All image processing happens entirely in your browser using JavaScript. Your photos never leave your device — not even temporarily." },
-  { q: "Can I geotag multiple photos at once?", a: "Yes. Batch geotagging is fully supported — upload multiple photos and apply the same GPS location to all at once, then download individually or as a ZIP archive." },
-  { q: "What image file formats are supported?", a: "JPG, PNG, WebP, and HEIC are all supported. HEIC files (iPhone photos) are automatically converted to high-quality JPEG for full EXIF GPS compatibility." },
-  { q: "Will geotagging affect my image quality?", a: "No. FreeGeoTagger only modifies the EXIF metadata — the actual pixel data remains completely untouched. There is zero quality loss." },
-  { q: "Does FreeGeoTagger work on mobile devices?", a: "Yes. It works on modern mobile browsers including Chrome for Android, Safari for iOS, and Firefox Mobile." },
-  { q: "How do I add GPS coordinates to a photo taken without location data?", a: "Upload your photo, then use the interactive map to click on the correct location, search for an address or city, or enter GPS coordinates manually. Click Download to save the geotagged version with embedded EXIF GPS data." },
-  { q: "What is EXIF GPS metadata?", a: "EXIF GPS metadata is location information embedded inside a photo file — including latitude, longitude, and optionally altitude and compass direction. Apps like Google Photos, Apple Photos, and Adobe Lightroom use this data to show where a photo was taken on a map." },
-  { q: "Which platforms recognize geotagged photos?", a: "GPS-tagged photos are recognized by Google Photos, Apple Photos, Adobe Lightroom, Windows File Explorer, macOS Preview, most GIS software, and any platform that reads standard EXIF metadata." },
+  {
+    q: "What is a geotagger?",
+    a: "A geotagger is a tool that writes geographic location coordinates—specifically latitude, longitude, and altitude—into a photo's EXIF metadata headers so map viewers and photo services know where it was taken.",
+  },
+  {
+    q: "How do I geotag a photo online?",
+    a: "Upload your JPG, PNG, WebP, or HEIC photo, click on the interactive map or search an address to set the location, and click Download to save the geotagged image with embedded EXIF GPS tags.",
+  },
+  {
+    q: "Can I add GPS coordinates to an existing photo?",
+    a: "Yes. You can add coordinates to any digital photo from cameras without GPS, scanned prints, or messaging apps. FreeGeoTagger embeds standard EXIF tags without changing image pixels or quality.",
+  },
+  {
+    q: "Is FreeGeoTagger really free?",
+    a: "Yes. FreeGeoTagger is 100% free with no accounts, subscriptions, watermarks, or file limits. You can process single photos or batches at no charge.",
+  },
+  {
+    q: "Are my photos uploaded to your servers?",
+    a: "No. All file reading, metadata editing, and downloads happen locally in your browser using JavaScript. Your photos never leave your device and are never sent across the internet.",
+  },
+  {
+    q: "Can I geotag multiple photos at once?",
+    a: "Yes. Drop multiple photos into the queue, set the location once, and apply it to every image simultaneously. You can then download them individually or as a single ZIP archive.",
+  },
+  {
+    q: "Can I edit or change an existing GPS location on a photo?",
+    a: "Yes. If an image already contains inaccurate or drifted coordinates, FreeGeoTagger detects them upon upload. Reposition the pin or enter new coordinates to overwrite the old metadata cleanly.",
+  },
+  {
+    q: "What latitude and longitude coordinate format should I use?",
+    a: "FreeGeoTagger supports both Decimal Degrees (e.g. 40.7128, -74.0060) and Degrees, Minutes, Seconds (DMS, e.g. 40° 42' 46\" N). You can switch formats anytime with synchronized conversion.",
+  },
+  {
+    q: "Does geotagging change or compress image quality?",
+    a: "No. For JPEG, PNG, and WebP files, FreeGeoTagger only updates the metadata header segments. Pixel data is not re-compressed or resaved, ensuring 100% lossless preservation.",
+  },
+  {
+    q: "Can I remove GPS metadata from a photo later?",
+    a: "Yes. You can wipe location metadata before sharing photos publicly. FreeGeoTagger provides free guides explaining how to strip EXIF data on Windows, macOS, iPhone, and Android.",
+  },
+  {
+    q: "How do I find where an existing photo was taken?",
+    a: "Use our free companion tool, the GPS Photo Finder. It reads embedded EXIF coordinates from your photo and displays the exact capture location on an interactive map.",
+  },
+  {
+    q: "Which image formats support GPS metadata?",
+    a: "JPEG uses the universal APP1 Exif standard. PNG supports GPS via the standardized eXIf binary chunk. WebP supports EXIF via RIFF containers. HEIC photos are locally converted to JPEG for universal compatibility.",
+  },
 ];
 
 const gpsFinderFaqs: Array<{ q: string; a: string }> = [
@@ -103,78 +142,193 @@ const gpsFinderFaqs: Array<{ q: string; a: string }> = [
 // ── Rich homepage content (mirrors the in-app landing page sections) ──
 const homeContentHtml = `
 <h1>Free Geotagger — Add GPS Location to Photos Online</h1>
-<p>FreeGeoTagger is a free, privacy-first tool that lets you <strong>add GPS coordinates to photos</strong> directly in your browser — no software to install and no account to create. Upload one photo or a whole batch, pin the location on an interactive map or search any address worldwide, then download your images with precise GPS metadata embedded in the EXIF data.</p>
-<p>Your files never leave your device. All processing happens locally in your browser tab, so geotagging is completely private and works in seconds. The output uses standard EXIF GPS metadata that is recognized by <strong>Google Photos, Apple Photos, Adobe Lightroom, Windows Explorer</strong>, and any platform that reads location data.</p>
-
-<h2>What Is Image Geotagging?</h2>
-<p>Geotagging embeds precise GPS location data into a photo's EXIF metadata — making images searchable, mappable, and location-aware. A geotagged photo can store several location fields:</p>
-<ul>
-<li><strong>Latitude &amp; Longitude</strong> — the precise geographic coordinates of where the photo was taken.</li>
-<li><strong>Timestamp</strong> — the date and time of capture.</li>
-<li><strong>Altitude</strong> — elevation above sea level.</li>
-<li><strong>Direction</strong> — the camera's compass heading at the moment of the shot.</li>
-</ul>
-<p>Geotagged images display on maps in Google Photos and Apple Photos, integrate with GIS software, and satisfy location-verification requirements for journalism, insurance, and real estate.</p>
-
-<h2>Why Choose FreeGeoTagger?</h2>
-<ul>
-<li><strong>100% Private</strong> — photos never leave your browser. Zero uploads, zero exposure.</li>
-<li><strong>Lightning Fast</strong> — no server round-trips. Batch geotag dozens of photos in seconds.</li>
-<li><strong>Universal GPS Format</strong> — standard EXIF GPS data works in Google Photos, Lightroom, and GIS tools.</li>
-<li><strong>Multi-Format Support</strong> — JPG, PNG, and WebP natively; HEIC auto-converts to JPEG.</li>
-<li><strong>No account, no cost, no watermarks</strong> — free forever, with no file limits.</li>
-</ul>
-
-<h2>Privacy-First by Design</h2>
-<p>Your photos are sensitive, so FreeGeoTagger was built from the ground up so your images never leave your device. There are no image uploads, no cloud storage, no tracking of your images, and no account needed. All processing happens using JavaScript inside your browser tab — when you close the page, nothing is retained.</p>
-
-<h2>Who Uses FreeGeoTagger?</h2>
-<ul>
-<li><strong>Photographers</strong> — organize location-based shoots and keep portfolio images georeferenced for clients and stock platforms.</li>
-<li><strong>Real estate agents</strong> — tag listing photos with precise GPS coordinates for MLS submissions and location verification.</li>
-<li><strong>Surveyors &amp; researchers</strong> — embed accurate field coordinates into documentation photos for reporting and GIS workflows.</li>
-<li><strong>Travelers &amp; bloggers</strong> — preserve precise location memories so photos display correctly on map-based albums.</li>
-<li><strong>Journalists</strong> — verify and embed photo location metadata for editorial accountability.</li>
-<li><strong>Businesses</strong> — manage location-aware media libraries with accurate GPS data for marketing and compliance.</li>
-</ul>
+<p>FreeGeoTagger is a free, privacy-first web application to <strong>add GPS coordinates to photos</strong> directly in your browser — no software to install, no account required, and zero file uploads. Upload a single photo or a whole batch, select a location on the interactive map or search any address worldwide, and download your images with verified GPS metadata embedded in standard EXIF headers.</p>
+<p>Your photos never leave your device. All image parsing, EXIF metadata editing, and file downloads execute locally in your browser using modern client-side JavaScript. Your images are never transmitted to any server, keeping personal memories, client projects, and location details 100% private.</p>
 
 <h2>How to Geotag Photos in 3 Steps</h2>
+<p>Adding GPS coordinates to any photo takes less than a minute:</p>
 <ol>
-<li><strong>Upload your photos.</strong> Drag and drop or click to select one or multiple JPG, PNG, WebP, or HEIC files. Files stay on your device.</li>
-<li><strong>Set the GPS location.</strong> Click the interactive map to pin a location, search for any address worldwide, or use your device's current GPS.</li>
-<li><strong>Download geotagged photos.</strong> Get your photos with GPS coordinates embedded in the EXIF metadata. Download all at once as a ZIP file.</li>
+<li><strong>Upload your photos</strong> — Drag and drop your JPG, PNG, WebP, or HEIC images into the dropzone, or click to browse files from your computer or phone. Files remain private on your device.</li>
+<li><strong>Set the GPS location</strong> — Click the interactive map to position the pin, type an address or city into the search bar, or enter exact latitude and longitude in decimal degrees or DMS format.</li>
+<li><strong>Download geotagged photos</strong> — Save individual images with verified EXIF GPS metadata, or download your entire batch organized in a convenient ZIP archive.</li>
 </ol>
 
-<h2>FreeGeoTagger vs Other Geotagging Tools</h2>
-<p>Most geotagging tools require accounts, paid plans, or upload your photos to the cloud. FreeGeoTagger does none of that.</p>
+<h2>What GPS Data Is Added to Your Photos?</h2>
+<p>When you geotag an image, standard geographic metadata is written into the file header according to the EXIF 2.32 specification. This ensures full compatibility with Google Photos, Apple Photos, Adobe Lightroom, Windows Explorer, macOS Preview, and GIS platforms.</p>
+<p>The following technical metadata fields are embedded into each photo:</p>
+<ul>
+<li><strong>GPSLatitude &amp; GPSLatitudeRef</strong> — Degrees, minutes, and seconds stored as rational numbers, paired with a North (N) or South (S) hemisphere flag.</li>
+<li><strong>GPSLongitude &amp; GPSLongitudeRef</strong> — Rational degrees, minutes, and seconds, paired with an East (E) or West (W) hemisphere flag.</li>
+<li><strong>GPSAltitude &amp; GPSAltitudeRef</strong> — Elevation in meters above sea level stored as a rational fraction, with sea level reference flags.</li>
+<li><strong>GPSDateStamp &amp; GPSTimeStamp</strong> — UTC date and time of the location fix in standard EXIF format.</li>
+<li><strong>Keywords &amp; Description</strong> — Optional descriptive tags embedded into EXIF and IPTC fields for digital asset management.</li>
+</ul>
+<p>FreeGeoTagger writes this metadata without recompressing pixel coefficients. For JPEG, PNG, and WebP photos, pixel data remains unchanged down to the byte, ensuring <strong>zero loss of image quality</strong>.</p>
+
+<h2>Supported File Formats &amp; Technical Processing Matrix</h2>
+<p>FreeGeoTagger supports the primary image formats used by smartphones, digital cameras, and creative workflows:</p>
 <table>
 <thead>
-<tr><th>Feature</th><th>FreeGeoTagger</th><th>Desktop Software</th><th>Cloud Tools</th></tr>
+<tr>
+<th>Format</th>
+<th>Extension</th>
+<th>Metadata Method</th>
+<th>Pixel Preservation</th>
+<th>Compatibility</th>
+</tr>
 </thead>
 <tbody>
-<tr><td>Free to use</td><td>Yes</td><td>Sometimes</td><td>Rarely</td></tr>
-<tr><td>No account required</td><td>Yes</td><td>Yes</td><td>No</td></tr>
-<tr><td>No file uploads</td><td>Yes</td><td>Yes</td><td>No</td></tr>
-<tr><td>Works in browser</td><td>Yes</td><td>No</td><td>Yes</td></tr>
-<tr><td>Batch geotagging</td><td>Yes</td><td>Yes</td><td>Limited</td></tr>
-<tr><td>HEIC support</td><td>Yes</td><td>Limited</td><td>Limited</td></tr>
-<tr><td>Zero quality loss</td><td>Yes</td><td>Yes</td><td>Varies</td></tr>
+<tr>
+<td><strong>JPEG / JPG</strong></td>
+<td>.jpg, .jpeg</td>
+<td>APP1 Exif Segment</td>
+<td>100% Lossless (DCT intact)</td>
+<td>Universal (all OS &amp; apps)</td>
+</tr>
+<tr>
+<td><strong>PNG</strong></td>
+<td>.png</td>
+<td>Binary eXIf Chunk + CRC32</td>
+<td>100% Lossless (IDAT intact)</td>
+<td>Modern viewers, GIS, web</td>
+</tr>
+<tr>
+<td><strong>WebP</strong></td>
+<td>.webp</td>
+<td>RIFF Container + EXIF Chunk</td>
+<td>100% Lossless (VP8 intact)</td>
+<td>Browsers, Android, modern OS</td>
+</tr>
+<tr>
+<td><strong>HEIC / HEIF</strong></td>
+<td>.heic</td>
+<td>Client-side JPEG Transcode</td>
+<td>High Quality (0.95 factor)</td>
+<td>Universal JPEG export</td>
+</tr>
+</tbody>
+</table>
+<p>Files up to 20MB are supported. Every photo is automatically re-read after metadata injection to verify coordinate precision before download.</p>
+
+<h2>Batch Photo Geotagging — Process Multiple Images at Once</h2>
+<p>When working with photos from an event, real estate shoot, job site, or vacation, tagging images one by one is inefficient. FreeGeoTagger includes a fast batch geotagging workflow:</p>
+<ul>
+<li><strong>Multi-File Queue</strong> — Add dozens of photos at once. Review thumbnails and quickly see which images already contain GPS coordinates.</li>
+<li><strong>One-Click Location Apply</strong> — Place the map marker once and apply those coordinates across every queued photo simultaneously.</li>
+<li><strong>Individual Adjustments</strong> — Click any photo in the queue to fine-tune its position independently when needed.</li>
+<li><strong>Consolidated ZIP Download</strong> — Export all geotagged photos in a single ZIP file with original filenames preserved.</li>
+</ul>
+
+<h2>Why Choose FreeGeoTagger?</h2>
+<p>Unlike other services that require subscriptions, force account creation, or upload private photos to remote cloud servers, FreeGeoTagger is built for speed, privacy, and simplicity.</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>FreeGeoTagger</th>
+<th>Desktop Software (ExifTool / Lightroom)</th>
+<th>Cloud Geotagging Sites</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cost</td>
+<td>100% Free Forever</td>
+<td>Free (CLI) or $10–$50/mo</td>
+<td>Freemium / Monthly fee</td>
+</tr>
+<tr>
+<td>Account Required</td>
+<td>No — Instant access</td>
+<td>Varies by software</td>
+<td>Yes (Mandatory signup)</td>
+</tr>
+<tr>
+<td>File Privacy</td>
+<td>100% In-Browser Local</td>
+<td>Local on machine</td>
+<td>Uploaded to third-party server</td>
+</tr>
+<tr>
+<td>Software Installation</td>
+<td>None (Runs in browser)</td>
+<td>Requires installation</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Interactive Map Picker</td>
+<td>Yes (Leaflet + OSM)</td>
+<td>Varies (None in CLI)</td>
+<td>Sometimes</td>
+</tr>
+<tr>
+<td>Batch Geotagging</td>
+<td>Yes with ZIP export</td>
+<td>Yes</td>
+<td>Often paywalled</td>
+</tr>
+<tr>
+<td>Mobile Support</td>
+<td>Full Chrome/Safari support</td>
+<td>Desktop only</td>
+<td>Mobile-unfriendly</td>
+</tr>
+<tr>
+<td>Quality Preservation</td>
+<td>Zero re-compression</td>
+<td>Lossless</td>
+<td>Often re-compresses photos</td>
+</tr>
 </tbody>
 </table>
 
+<h2>Photo Geotagging vs. GPS Location Detection</h2>
+<p>It is helpful to understand the difference between <em>geotagging a photo</em> and <em>finding GPS coordinates in an existing photo</em>:</p>
+<ul>
+<li><strong>Geotagging (This Tool)</strong> — Used when a photo lacks location metadata or has incorrect coordinates. You choose the location on the map or search an address, and FreeGeoTagger writes those coordinates into the image's EXIF data.</li>
+<li><strong>GPS Location Detection (GPS Finder)</strong> — Used when a photo already contains GPS data and you want to see where it was taken. Our free <a href="/gps-finder">GPS Photo Finder</a> reads embedded EXIF data and plots the coordinates on a map without modifying the file.</li>
+</ul>
+<p>If you inspect an image in GPS Finder and find no location data, you can open FreeGeoTagger with one click to pin and add the coordinates.</p>
+
+<h2>100% Client-Side Privacy &amp; In-Browser Processing</h2>
+<p>Photo location data is sensitive. An image can expose a home address, school, private property, or travel location. Sending photos to remote servers introduces unnecessary privacy risks.</p>
+<p>FreeGeoTagger follows a strict <strong>zero-upload architecture</strong>:</p>
+<ul>
+<li><strong>Local File Handling</strong> — Images are loaded into memory using HTML5 FileReader and ArrayBuffer APIs.</li>
+<li><strong>In-Memory Processing</strong> — Metadata is decoded and written directly in browser memory without network transfers.</li>
+<li><strong>Local File Creation</strong> — Processed files and ZIP archives are generated locally via browser Object URLs.</li>
+<li><strong>Offline Functionality</strong> — Once loaded, the metadata engine continues working even without an internet connection.</li>
+<li><strong>Zero Retention</strong> — Closing or refreshing the browser tab clears all image data from memory immediately.</li>
+</ul>
+
+<h2>Common Real-World Use Cases</h2>
+<p>Accurate GPS metadata is essential across many personal and commercial applications:</p>
+<ul>
+<li><strong>Real Estate Agents &amp; Appraisers</strong> — Ensure listing photos have accurate location tags for MLS feeds, virtual tours, and local discovery. Read our guide on <a href="/blog/how-to-geotag-photos-for-real-estate">geotagging photos for real estate</a>.</li>
+<li><strong>Small Businesses &amp; Local SEO</strong> — Add business location coordinates to photos before uploading to Google Business Profile. Learn more in our tutorial on <a href="/blog/how-to-geotag-photos-for-google-business-profile">geotagging for Google Business Profile</a>.</li>
+<li><strong>Landscape &amp; Travel Photographers</strong> — Catalog shoots by location, maintain accurate Lightroom archives, and map journeys. See our guide on <a href="/blog/how-to-bulk-geotag-photos">how to bulk geotag photos</a>.</li>
+<li><strong>Surveyors &amp; Field Inspectors</strong> — Document job site progress, infrastructure inspections, and environmental samples with verified coordinates.</li>
+<li><strong>Journalists &amp; Researchers</strong> — Provide transparent geographic context for documentary photography and reporting.</li>
+<li><strong>Smartphone Users</strong> — Fix photos taken with location disabled or stripped by messaging apps. Walkthroughs available for <a href="/blog/how-to-add-gps-to-iphone-photos">iPhone photos</a> and <a href="/blog/how-to-geotag-photos-android">Android photos</a>.</li>
+</ul>
+
+<h2>Helpful Guides &amp; Geotagging Resources</h2>
+<p>Browse our complete collection of photo geotagging tutorials and resources:</p>
+<ul>
+<li><a href="/gps-finder">GPS Photo Finder</a> — Extract and view existing GPS coordinates on an interactive map.</li>
+<li><a href="/blog/how-to-bulk-geotag-photos">How to Bulk Geotag Photos</a> — Efficient batch workflows for large photo collections.</li>
+<li><a href="/blog/how-to-add-gps-to-iphone-photos">How to Add GPS to iPhone Photos</a> — Guide for iPhone camera settings and photo transfers.</li>
+<li><a href="/blog/how-to-geotag-photos-android">How to Add GPS to Android Photos</a> — Step-by-step instructions for Android devices.</li>
+<li><a href="/blog/what-is-exif-gps-metadata">What Is EXIF GPS Metadata?</a> — Deep dive into EXIF tags, coordinate formats, and standards.</li>
+<li><a href="/blog/how-to-remove-gps-data-from-photos">How to Remove GPS Data from Photos</a> — Strip location metadata before sharing photos publicly.</li>
+<li><a href="/blog/how-to-fix-wrong-gps-location-on-photos">How to Fix Wrong GPS Location on Photos</a> — Correct drifting coordinates and misplaced map pins.</li>
+<li><a href="/blog/best-free-photo-geotagging-tools">Best Free Photo Geotagging Tools in 2026</a> — Comparison of online, desktop, and CLI tools.</li>
+<li><a href="/about">About FreeGeoTagger</a> — Learn about our mission and client-side processing technology.</li>
+<li><a href="/privacy">Privacy Policy</a> — Review our complete data handling practices and privacy guarantees.</li>
+</ul>
+
 <h2>Frequently Asked Questions</h2>
 ${homeFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</p>`).join("\n")}
-
-<h2>Explore FreeGeoTagger</h2>
-<nav aria-label="Site pages"><ul>
-<li><a href="/gps-finder">GPS Finder — Extract GPS from a Photo</a></li>
-<li><a href="/blog">Photo Geotagging Blog</a></li>
-<li><a href="/blog/how-to-add-gps-to-iphone-photos">How to Add GPS to iPhone Photos</a></li>
-<li><a href="/blog/how-to-geotag-photos-android">How to Add GPS to Android Photos</a></li>
-<li><a href="/blog/what-is-exif-gps-metadata">What Is EXIF GPS Metadata</a></li>
-<li><a href="/about">About FreeGeoTagger</a></li>
-<li><a href="/privacy">Privacy Policy</a></li>
-</ul></nav>
 `.trim();
 
 const routes: RouteMeta[] = [
