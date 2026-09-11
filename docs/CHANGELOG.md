@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Phase 2: Architecture Decision + Safe Refactor Plan] - 2026-09-11
+
+### Added
+- Comprehensive architecture decisions documented in `docs/ARCHITECTURE.md`.
+- Evaluated framework options (Next.js App Router vs In-Place Vite + React + TS + Static Prerender) and formalized the decision to improve in place, eliminating framework churn risk, preserving zero-server hosting on Hostinger Apache, and safeguarding organic search rankings.
+- Defined explicit Server vs Client boundaries, local image processing boundaries, and memory management rules (`URL.createObjectURL` / `URL.revokeObjectURL`).
+- Designed map and geocoder provider abstraction contracts (`GeocoderProvider` and `MapPickerAdapter` interfaces).
+- Defined telemetry and analytics boundaries ensuring strict data minimization under Google Consent Mode v2.
+- Designed future zero-CLS `AdSlot` architecture and established strict restricted tool zones for Phase 16 monetization readiness.
+- Formalized the 20-phase sequential refactor roadmap from Design System (Phase 3) through Post-Launch Monitoring (Phase 20).
+
+---
+
 ## [Phase 1: Repository + Production Audit] - 2026-09-11
 
 ### Added
