@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   Eye, FileImage, Copy, Check, Globe, MapPin, Upload,
   Shield, Zap, Camera, Search, Info, ChevronDown,
@@ -19,9 +19,11 @@ import {
   formatFileSize,
   ExtractedPhotoDetails
 } from "@/lib/geotag-utils";
-import { LeafletMap } from "@/components/tool/leaflet-map";
+import { MapSkeleton } from "@/components/tool/map-skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { updatePageSEO, SEO_CONFIG, injectPageSchema } from "@/lib/seo";
+
+const LazyLeafletMap = React.lazy(() => import("@/components/tool/leaflet-map"));
 
 const ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".heic"];
 
@@ -592,13 +594,15 @@ export default function GpsFinder() {
                     {/* Right Column: Map Preview */}
                     <div className="lg:col-span-7 flex flex-col">
                       <Card className="border-border shadow-sm flex-1 flex flex-col overflow-hidden min-h-[420px] lg:min-h-[500px]" data-testid="map-finder">
-                        <LeafletMap
-                          latitude={inspection.meta.gps.lat}
-                          longitude={inspection.meta.gps.lng}
-                          readOnly={true}
-                          zoom={15}
-                          className="h-full w-full"
-                        />
+                        <React.Suspense fallback={<MapSkeleton className="h-full w-full min-h-[420px]" />}>
+                          <LazyLeafletMap
+                            latitude={inspection.meta.gps.lat}
+                            longitude={inspection.meta.gps.lng}
+                            readOnly={true}
+                            zoom={15}
+                            className="h-full w-full"
+                          />
+                        </React.Suspense>
                       </Card>
                     </div>
                   </div>

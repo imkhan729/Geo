@@ -50,8 +50,10 @@ import { ToolComparisonTable } from "@/components/tool-comparison-table";
 import { Dropzone } from "@/components/tool/dropzone";
 import { FileQueue } from "@/components/tool/file-queue";
 import { CoordinatePanel } from "@/components/tool/coordinate-panel";
-import { LeafletMap } from "@/components/tool/leaflet-map";
+import { MapSkeleton } from "@/components/tool/map-skeleton";
 import { BatchActions } from "@/components/tool/batch-actions";
+
+const LazyLeafletMap = React.lazy(() => import("@/components/tool/leaflet-map"));
 
 import {
   ImageFile,
@@ -601,14 +603,16 @@ export default function Home() {
 
                     {/* Right Column: Interactive Leaflet Map */}
                     <div className="lg:col-span-6 space-y-4">
-                      <LeafletMap
-                        latitude={latitude}
-                        longitude={longitude}
-                        onCoordinatesChange={(lat, lng) => {
-                          setLatitude(lat);
-                          setLongitude(lng);
-                        }}
-                      />
+                      <React.Suspense fallback={<MapSkeleton className="h-[320px] sm:h-[400px] w-full" />}>
+                        <LazyLeafletMap
+                          latitude={latitude}
+                          longitude={longitude}
+                          onCoordinatesChange={(lat, lng) => {
+                            setLatitude(lat);
+                            setLongitude(lng);
+                          }}
+                        />
+                      </React.Suspense>
 
                       {/* Coordinates & Metadata Controls */}
                       <CoordinatePanel

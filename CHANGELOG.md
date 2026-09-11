@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Phase 12: Performance Optimization] - 2026-09-11
+
+### Added
+- **Map Lazy-Loading & Zero-Shift Skeleton (`client/src/components/tool/map-skeleton.tsx`)**: Extracted a dedicated `MapSkeleton` placeholder maintaining exact aspect ratio, height, and dimensions as the interactive Leaflet map. Dynamically split `LeafletMap` with `React.lazy` wrapped in `<React.Suspense fallback={<MapSkeleton />}>` in both `client/src/pages/home.tsx` and `client/src/pages/gps-finder.tsx`. Eliminates Leaflet from the initial critical landing bundle, emitting it as an isolated 2.75 KB on-demand chunk.
+- **Performance Budget Measurement & Audit Tool (`script/measure-performance.ts`)**: Implemented automated production asset audit script measuring uncompressed and gzipped sizes, eager vs. lazy JS splitting, critical CSS budgets, HTML size, and CLS zero-shift guardrails. Added `"perf:measure": "tsx script/measure-performance.ts"` to `package.json`.
+- **Verifiable Performance Reports (`PERFORMANCE_BUDGET.md` & `docs/PERFORMANCE_BUDGET.md`)**: Automated generation of performance audit markdown documentation tracking Core Web Vitals targets (LCP <= 2.5s, INP <= 200ms, CLS = 0.00) and asset weight limits.
+
+### Enhanced
+- **Zero CLS Guarantee**: Enforced layout reservation with `#root` `min-height: 100vh` and `MapSkeleton` geometry, maintaining strict `CLS = 0.00`.
+- **System Font Stack Optimization (`client/src/index.css`)**: Configured native system font variables (`--font-sans`, `--font-display`, `--font-mono`) in `:root`, eliminating external font roundtrips, FOIT (Flash of Invisible Text), and FOUT (Flash of Unstyled Text).
+- **Heavy Code Splitting**: Confirmed non-critical libraries (`heic2any` 1.29 MB, `jszip` 94.6 KB, `file-saver` 3.0 KB) remain strictly isolated in on-demand lazy chunks with zero eager critical bundle footprint.
+
+---
+
 ## [Phase 11: Bing + IndexNow] - 2026-09-11
 
 ### Added

@@ -10,6 +10,10 @@
    ============================================================ */
 
 :root {
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
   --button-outline: rgba(0, 0, 0, .10);
   --badge-outline: rgba(0, 0, 0, .05);
   --opaque-button-border-intensity: -8;

@@ -136,3 +136,5 @@ export function LeafletMap({
     </div>
   );
 }
+
+export default LeafletMap;
