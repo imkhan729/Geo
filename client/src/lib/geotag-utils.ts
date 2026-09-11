@@ -1,7 +1,8 @@
-import piexif from "piexifjs";
-import heic2any from "heic2any";
-import { saveAs } from "file-saver";
-import JSZip from "jszip";
+type PiexifModule = typeof import("piexifjs");
+
+async function getPiexif(): Promise<PiexifModule> {
+  return (await import("piexifjs")).default;
+}
 
 export interface GeotagData {
   latitude: number;
@@ -43,6 +44,7 @@ function degToDmsRational(deg: number): [[number, number], [number, number], [nu
 }
 
 export async function convertHeicToJpeg(file: File): Promise<Blob> {
+  const heic2any = (await import("heic2any")).default;
   const result = await heic2any({
     blob: file,
     toType: "image/jpeg",
@@ -70,8 +72,9 @@ export async function readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
   });
 }
 
-export function extractExistingGps(dataUrl: string): { lat: number; lng: number } | null {
+export async function extractExistingGps(dataUrl: string): Promise<{ lat: number; lng: number } | null> {
   try {
+    const piexif = await getPiexif();
     let exifPayload = dataUrl;
 
     if (dataUrl.startsWith("data:image/png")) {
@@ -401,6 +404,7 @@ export async function addGeotagToImage(
   file: File,
   geotag: GeotagData
 ): Promise<Blob> {
+  const piexif = await getPiexif();
   const fileName = file.name.toLowerCase();
   const isHeic = file.type === "image/heic" || fileName.endsWith(".heic");
   const isPng = file.type === "image/png" || fileName.endsWith(".png");
@@ -498,7 +502,8 @@ export async function addGeotagToImage(
   return response.blob();
 }
 
-export function downloadGeotaggedImage(blob: Blob, originalName: string): void {
+export async function downloadGeotaggedImage(blob: Blob, originalName: string): Promise<void> {
+  const { saveAs } = await import("file-saver");
   const extensionMatch = originalName.match(/\.([^/.]+)$/);
   const originalExt = extensionMatch ? extensionMatch[1].toLowerCase() : "jpg";
   const validExt = originalExt === "heic" ? "jpg" : originalExt;
@@ -510,6 +515,8 @@ export function downloadGeotaggedImage(blob: Blob, originalName: string): void {
 }
 
 export async function downloadAsZip(files: { name: string; blob: Blob }[]): Promise<void> {
+  const JSZip = (await import("jszip")).default;
+  const { saveAs } = await import("file-saver");
   const zip = new JSZip();
 
   files.forEach((file) => {

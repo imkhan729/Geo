@@ -11,9 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-import logoImage from "@assets/logo.webp";
 import {
   readFileAsDataUrl,
   extractExistingGps,
@@ -23,6 +20,16 @@ import { useToast } from "@/hooks/use-toast";
 import { updatePageSEO, SEO_CONFIG, injectPageSchema } from "@/lib/seo";
 
 const ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".heic"];
+
+let leafletModule: any = null;
+async function getLeaflet() {
+  if (!leafletModule) {
+    const leafletUrl = "/vendor/leaflet.esm.js";
+    const leaflet = await import(/* @vite-ignore */ leafletUrl);
+    leafletModule = leaflet.default ?? leaflet;
+  }
+  return leafletModule;
+}
 
 interface ExtractedGps {
   lat: number;
@@ -91,33 +98,43 @@ export default function GpsFinder() {
   }, []);
 
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<L.Map | null>(null);
+  const mapInstanceRef = useRef<any>(null);
 
   useEffect(() => {
     if (!mapRef.current || !extractedGps) return;
+    let isCancelled = false;
 
     if (mapInstanceRef.current) {
       mapInstanceRef.current.remove();
     }
 
-    const map = L.map(mapRef.current).setView([extractedGps.lat, extractedGps.lng], 15);
-    mapInstanceRef.current = map;
+    getLeaflet().then((L) => {
+      if (!mapRef.current || isCancelled) return;
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; OpenStreetMap',
-      maxZoom: 19,
-    }).addTo(map);
+      const map = L.map(mapRef.current).setView([extractedGps.lat, extractedGps.lng], 15);
+      mapInstanceRef.current = map;
 
-    const customIcon = L.divIcon({
-      html: `<div style="background:#22c55e;width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4);"></div>`,
-      className: "custom-marker",
-      iconSize: [28, 28],
-      iconAnchor: [14, 28],
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; OpenStreetMap',
+        maxZoom: 19,
+      }).addTo(map);
+
+      const customIcon = L.divIcon({
+        html: `<div style="background:#22c55e;width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4);"></div>`,
+        className: "custom-marker",
+        iconSize: [28, 28],
+        iconAnchor: [14, 28],
+      });
+
+      L.marker([extractedGps.lat, extractedGps.lng], { icon: customIcon }).addTo(map);
+
+      requestAnimationFrame(() => {
+        map.invalidateSize();
+      });
     });
 
-    L.marker([extractedGps.lat, extractedGps.lng], { icon: customIcon }).addTo(map);
-
     return () => {
+      isCancelled = true;
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
@@ -145,7 +162,7 @@ export default function GpsFinder() {
       }
 
       const dataUrl = await readFileAsDataUrl(previewFile);
-      const existingGps = extractExistingGps(dataUrl);
+      const existingGps = await extractExistingGps(dataUrl);
 
       if (existingGps) {
         setExtractedGps({ lat: existingGps.lat, lng: existingGps.lng, fileName: file.name });

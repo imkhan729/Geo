@@ -1,4 +1,4 @@
-import logoImage from "@assets/logo.webp";
+import logoImage from "@assets/logo-202.webp";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useLocation } from "wouter";
 import { useState } from "react";
@@ -40,7 +40,7 @@ export function Header() {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <a href="/" className="hover:opacity-85 transition-opacity flex-shrink-0" data-testid="link-logo">
-                        <img src={logoImage} alt="GeoTagger — Free Photo Geotagging Tool" className="h-[40px] w-auto" width="404" height="140" fetchPriority="high" />
+                        <img src={logoImage} alt="GeoTagger - Free Photo Geotagging Tool" className="h-[40px] w-auto" width="202" height="70" fetchPriority="high" />
                     </a>
 
                     {/* Desktop nav */}

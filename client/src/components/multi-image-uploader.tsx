@@ -64,7 +64,7 @@ export function MultiImageUploader({
 
         const dataUrl = await readFileAsDataUrl(previewFile);
         const existingGps = file.type === "image/jpeg" || file.type === "image/jpg" 
-          ? extractExistingGps(dataUrl) 
+          ? await extractExistingGps(dataUrl) 
           : null;
 
         newImages.push({

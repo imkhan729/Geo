@@ -99,7 +99,8 @@ export async function extractExifData(file: File): Promise<ExifResult> {
     }
 
     const exif = tags.exif || {};
-    const image = tags.file || tags.image || {};
+    const expandedTags = tags as typeof tags & { image?: Record<string, unknown> };
+    const image = tags.file || expandedTags.image || {};
     
     const exifData: ExifData = {
       gps: {

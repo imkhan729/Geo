@@ -15,15 +15,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import type LType from "leaflet";
 
 // Lazy-load Leaflet only when the map is actually needed (after photo upload).
 // This keeps Leaflet (~200 KB) out of the initial JS bundle.
-let _L: typeof LType | null = null;
-async function getL(): Promise<typeof LType> {
+let _L: any = null;
+async function getL() {
   if (!_L) {
-    await import("leaflet/dist/leaflet.css");
-    _L = (await import("leaflet")).default;
+    const leafletUrl = "/vendor/leaflet.esm.js";
+    const leaflet = await import(/* @vite-ignore */ leafletUrl);
+    _L = leaflet.default ?? leaflet;
   }
   return _L;
 }
@@ -47,42 +47,6 @@ import { useToast } from "@/hooks/use-toast";
 import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
 
 const ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".heic"];
-
-/** 3-D tilt effect for .neon-card, .neon-card-amber, .neon-panel elements */
-function useTiltCards(dep?: unknown) {
-  useEffect(() => {
-    const cards = document.querySelectorAll<HTMLElement>('.neon-card:not([data-no-tilt]), .neon-card-amber:not([data-no-tilt]), .neon-panel:not([data-no-tilt])');
-    const handlers: Array<{ el: HTMLElement; move: (e: MouseEvent) => void; leave: () => void }> = [];
-
-    cards.forEach((card) => {
-      const move = (e: MouseEvent) => {
-        const r = card.getBoundingClientRect();
-        const cx = r.left + r.width / 2;
-        const cy = r.top + r.height / 2;
-        const dx = (e.clientX - cx) / (r.width / 2);
-        const dy = (e.clientY - cy) / (r.height / 2);
-        card.style.setProperty('--tilt-x', `${(-dy * 8).toFixed(2)}deg`);
-        card.style.setProperty('--tilt-y', `${(dx * 8).toFixed(2)}deg`);
-      };
-
-      const leave = () => {
-        card.style.setProperty('--tilt-x', '0deg');
-        card.style.setProperty('--tilt-y', '0deg');
-      };
-
-      card.addEventListener('mousemove', move);
-      card.addEventListener('mouseleave', leave);
-      handlers.push({ el: card, move, leave });
-    });
-
-    return () => {
-      handlers.forEach(({ el, move, leave }) => {
-        el.removeEventListener('mousemove', move);
-        el.removeEventListener('mouseleave', leave);
-      });
-    };
-  }, [dep]);
-}
 
 export default function Home() {
   const [mode, setMode] = useState<"landing" | "geotagger">("landing");
@@ -113,13 +77,6 @@ export default function Home() {
         "Zero image quality loss"
       ],
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "ratingCount": "1284",
-        "bestRating": "5",
-        "worstRating": "1"
-      },
       "url": "https://freegeotagger.com",
       "screenshot": "https://freegeotagger.com/og-image.png"
     });
@@ -251,8 +208,8 @@ export default function Home() {
   const { toast } = useToast();
 
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<LType.Map | null>(null);
-  const markerRef = useRef<LType.Marker | null>(null);
+  const mapInstanceRef = useRef<any>(null);
+  const markerRef = useRef<any>(null);
 
   const handleSelectSuggestion = useCallback((suggestion: PlaceSuggestion) => {
     ignoreSearchRef.current = true;
@@ -266,7 +223,7 @@ export default function Home() {
       mapInstanceRef.current.setView([suggestion.lat, suggestion.lng], 13);
 
       // Update marker position
-      mapInstanceRef.current.eachLayer((layer) => {
+      mapInstanceRef.current.eachLayer((layer: any) => {
         if (_L && layer instanceof _L.Marker) {
           layer.setLatLng([suggestion.lat, suggestion.lng]);
         }
@@ -326,10 +283,14 @@ export default function Home() {
         setLongitude(pos.lng);
       });
 
-      map.on("click", (e: LType.LeafletMouseEvent) => {
+      map.on("click", (e: any) => {
         marker.setLatLng([e.latlng.lat, e.latlng.lng]);
         setLatitude(e.latlng.lat);
         setLongitude(e.latlng.lng);
+      });
+
+      requestAnimationFrame(() => {
+        map.invalidateSize();
       });
     });
 
@@ -399,7 +360,7 @@ export default function Home() {
         }
 
         const dataUrl = await readFileAsDataUrl(previewFile);
-        const existingGps = extractExistingGps(dataUrl);
+        const existingGps = await extractExistingGps(dataUrl);
 
         setImages(prev => [...prev, {
           id: generateId(),
@@ -510,7 +471,7 @@ export default function Home() {
     }
 
     if (successfulFiles.length === 1) {
-      downloadGeotaggedImage(successfulFiles[0].blob, successfulFiles[0].name);
+      await downloadGeotaggedImage(successfulFiles[0].blob, successfulFiles[0].name);
     } else if (successfulFiles.length > 1) {
       await downloadAsZip(successfulFiles);
     }
@@ -543,8 +504,6 @@ export default function Home() {
   const existingGpsText = currentImage?.existingGps
     ? `${currentImage.existingGps.lat.toFixed(4)},${currentImage.existingGps.lng.toFixed(4)}`
     : "No existing geotags";
-
-  useTiltCards(mode);
 
   const clearAll = useCallback(() => {
     setImages([]);

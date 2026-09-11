@@ -4,3 +4,6 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+freegeotagger-hostinger-static/
+freegeotagger-hostinger-static.zip
+.claude/

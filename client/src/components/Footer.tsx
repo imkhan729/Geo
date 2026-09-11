@@ -1,4 +1,4 @@
-import logoImage from "@assets/Geo_Tagger_Logo_2.webp-removebg-preview_1768829275162.png";
+import logoImage from "@assets/logo-202.webp";
 import { Link } from "wouter";
 import { Shield, Zap, Globe, MapPin } from "lucide-react";
 
@@ -32,7 +32,7 @@ export function Footer() {
                     {/* Brand column */}
                     <div className="lg:col-span-1">
                         <a href="/" className="inline-block hover:opacity-85 transition-opacity mb-4">
-                            <img src={logoImage} alt="GeoTagger" className="h-[48px] w-auto" />
+                            <img src={logoImage} alt="GeoTagger" className="h-[48px] w-auto" width="202" height="70" loading="lazy" decoding="async" />
                         </a>
                         <p className="text-sm text-muted-foreground leading-relaxed mb-5">
                             A free, privacy-first browser tool for adding GPS coordinates to photos. No uploads. No accounts. No cost.
@@ -83,6 +83,11 @@ export function Footer() {
                                     Blog
                                 </Link>
                             </li>
+                            <li>
+                                <Link href="/about" className="hover:text-foreground transition-colors hover:translate-x-0.5 inline-block">
+                                    About
+                                </Link>
+                            </li>
                         </ul>
                     </div>
 
@@ -116,6 +121,11 @@ export function Footer() {
                             <li>
                                 <Link href="/cookies" className="hover:text-foreground transition-colors hover:translate-x-0.5 inline-block">
                                     Cookie Policy
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/contact" className="hover:text-foreground transition-colors hover:translate-x-0.5 inline-block">
+                                    Contact
                                 </Link>
                             </li>
                         </ul>
