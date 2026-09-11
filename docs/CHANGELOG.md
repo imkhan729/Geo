@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Phase 4: Homepage Core Tool UI] - 2026-09-11
+
+### Added
+- Created `client/src/components/tool/dropzone.tsx`: Modern, accessible drag-and-drop file uploader with keyboard activation (`Enter` / `Space`), format validation (JPG, PNG, WebP, HEIC), 20MB file limit enforcement, and distinct drag-hover visual states.
+- Created `client/src/components/tool/file-queue.tsx`: Interactive photo queue displaying thumbnail previews, human-readable file sizes, format badges, metadata status badges ("Existing GPS Detected" vs "No GPS", "Ready", "Processing", "Verified / Tagged"), active image selection, individual photo removal, and individual photo download.
+- Created `client/src/components/tool/coordinate-panel.tsx`: Comprehensive coordinate control panel featuring Decimal Degrees (DD) $\leftrightarrow$ Degrees, Minutes, Seconds (DMS) two-way synchronized inputs, optional altitude entry (meters), debounced 500ms place search with autocomplete suggestions, opt-in "Use My Location" geolocation detection, "Use Photo's GPS" recall, and one-click coordinate copying with feedback.
+- Created `client/src/components/tool/leaflet-map.tsx`: Dynamic lazy-loaded interactive Leaflet map with custom-styled brand marker, draggable pin syncing coordinates on `dragend`, click-to-reposition, smooth animated panning on coordinate change, and floating coordinate overlay pill.
+- Created `client/src/components/tool/batch-actions.tsx`: Action toolbar with "Apply GPS to Photo / All Photos", "Download Geotagged Photo / All as ZIP", batch progress bar (`role="progressbar"`) with animated percentage and status text, and client-side privacy guarantee.
+- Added coordinate and metadata helpers in `client/src/lib/geotag-utils.ts`: `decimalToDms`, `dmsToDecimal`, `formatCoordinates`, `formatFileSize`, and altitude support in `GeotagData` and `addGeotagToImage`.
+
+### Enhanced & Unified
+- Rebuilt `client/src/pages/home.tsx`: Unified hero and tool presentation above the fold (`Free Geotagger — Add GPS Location to Photos Online`), with one-sentence value proposition and prominent privacy badge, while keeping all below-the-fold educational and SEO content (What is FreeGeoTagger, What is Image Geotagging, Privacy, Features, Use Cases, How It Works, Comparison Table, and FAQ) visible and interactive at all times.
+- Aligned static prerendering H1 in `script/generate-seo-pages.ts` with runtime React H1 (`Free Geotagger — Add GPS Location to Photos Online`) for 100% SERP and crawler consistency.
+- Verified coordinate conversion math with unit tests covering North/South/East/West hemispheres, decimal rational roundtrips, formatters, and edge cases.
+
+---
+
 ## [Phase 3: Design System + Layout Foundation] - 2026-09-11
 
 ### Added

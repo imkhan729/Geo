@@ -7,6 +7,7 @@ async function getPiexif(): Promise<PiexifModule> {
 export interface GeotagData {
   latitude: number;
   longitude: number;
+  altitude?: number;
   keywords?: string;
   description?: string;
 }
@@ -17,6 +18,14 @@ export interface PlaceSuggestion {
   displayName: string;
 }
 
+export interface DmsCoordinate {
+  degrees: number;
+  minutes: number;
+  seconds: number;
+  direction: "N" | "S" | "E" | "W";
+  formatted: string;
+}
+
 export interface ImageFile {
   id: string;
   file: File;
@@ -24,7 +33,7 @@ export interface ImageFile {
   name: string;
   type: string;
   size: number;
-  existingGps?: { lat: number; lng: number } | null;
+  existingGps?: { lat: number; lng: number; altitude?: number } | null;
   status: "pending" | "processing" | "success" | "error";
   error?: string;
 }
@@ -72,7 +81,7 @@ export async function readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
   });
 }
 
-export async function extractExistingGps(dataUrl: string): Promise<{ lat: number; lng: number } | null> {
+export async function extractExistingGps(dataUrl: string): Promise<{ lat: number; lng: number; altitude?: number } | null> {
   try {
     const piexif = await getPiexif();
     let exifPayload = dataUrl;
@@ -132,10 +141,20 @@ export async function extractExistingGps(dataUrl: string): Promise<{ lat: number
     const lngDms = gpsData[piexif.GPSIFD.GPSLongitude] as [[number, number], [number, number], [number, number]];
     const lngRef = gpsData[piexif.GPSIFD.GPSLongitudeRef] as string;
 
-    const lat = dmsToDecimal(latDms, latRef);
-    const lng = dmsToDecimal(lngDms, lngRef);
+    const lat = rationalDmsToDecimal(latDms, latRef);
+    const lng = rationalDmsToDecimal(lngDms, lngRef);
 
-    return { lat, lng };
+    let altitude: number | undefined = undefined;
+    if (gpsData[piexif.GPSIFD.GPSAltitude]) {
+      const altRat = gpsData[piexif.GPSIFD.GPSAltitude] as [number, number];
+      const altRef = gpsData[piexif.GPSIFD.GPSAltitudeRef] as number | undefined;
+      if (Array.isArray(altRat) && altRat[1] && altRat[1] !== 0) {
+        altitude = (altRat[0] / altRat[1]) * (altRef === 1 ? -1 : 1);
+        altitude = Math.round(altitude * 10) / 10;
+      }
+    }
+
+    return { lat, lng, altitude };
   } catch {
     return null;
   }
@@ -152,7 +171,7 @@ function stringToUtf16Le(str: string): number[] {
   return bytes;
 }
 
-function dmsToDecimal(dms: [[number, number], [number, number], [number, number]], ref: string): number {
+function rationalDmsToDecimal(dms: [[number, number], [number, number], [number, number]], ref: string): number {
   const degrees = dms[0][0] / dms[0][1];
   const minutes = dms[1][0] / dms[1][1];
   const seconds = dms[2][0] / dms[2][1];
@@ -164,6 +183,48 @@ function dmsToDecimal(dms: [[number, number], [number, number], [number, number]
   }
 
   return decimal;
+}
+
+export function decimalToDms(val: number, isLat: boolean): DmsCoordinate {
+  const direction: "N" | "S" | "E" | "W" = isLat
+    ? (val >= 0 ? "N" : "S")
+    : (val >= 0 ? "E" : "W");
+  const absolute = Math.abs(val);
+  const degrees = Math.floor(absolute);
+  const minutesFloat = (absolute - degrees) * 60;
+  const minutes = Math.floor(minutesFloat);
+  const seconds = Math.round((minutesFloat - minutes) * 60 * 100) / 100;
+  const formatted = `${degrees}° ${minutes}' ${seconds.toFixed(2)}" ${direction}`;
+  return { degrees, minutes, seconds, direction, formatted };
+}
+
+export function dmsToDecimal(
+  degrees: number,
+  minutes: number,
+  seconds: number,
+  direction: "N" | "S" | "E" | "W"
+): number {
+  const deg = Math.max(0, degrees || 0);
+  const min = Math.max(0, Math.min(59.9999, minutes || 0));
+  const sec = Math.max(0, Math.min(59.9999, seconds || 0));
+  const decimal = deg + min / 60 + sec / 3600;
+  const result = (direction === "S" || direction === "W") ? -decimal : decimal;
+  return Math.round(result * 1000000) / 1000000;
+}
+
+export function formatCoordinates(lat: number, lng: number, format: "decimal" | "dms" = "decimal"): string {
+  if (format === "dms") {
+    const latDms = decimalToDms(lat, true);
+    const lngDms = decimalToDms(lng, false);
+    return `${latDms.formatted}, ${lngDms.formatted}`;
+  }
+  return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+}
+
+export function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 }
 
 async function extractExifBytesFromWebP(file: File): Promise<string | null> {
@@ -444,6 +505,11 @@ export async function addGeotagToImage(
     exifData.GPS[piexif.GPSIFD.GPSLongitude] = degToDmsRational(geotag.longitude);
     exifData.GPS[piexif.GPSIFD.GPSVersionID] = [2, 3, 0, 0];
 
+    if (geotag.altitude !== undefined && !isNaN(geotag.altitude)) {
+      exifData.GPS[piexif.GPSIFD.GPSAltitudeRef] = geotag.altitude >= 0 ? 0 : 1;
+      exifData.GPS[piexif.GPSIFD.GPSAltitude] = [Math.round(Math.abs(geotag.altitude) * 100), 100];
+    }
+
     if (geotag.description) {
       exifData["0th"][piexif.ImageIFD.ImageDescription] = geotag.description;
     }
@@ -484,6 +550,11 @@ export async function addGeotagToImage(
   exifData.GPS[piexif.GPSIFD.GPSLongitudeRef] = lngRef;
   exifData.GPS[piexif.GPSIFD.GPSLongitude] = degToDmsRational(geotag.longitude);
   exifData.GPS[piexif.GPSIFD.GPSVersionID] = [2, 3, 0, 0];
+
+  if (geotag.altitude !== undefined && !isNaN(geotag.altitude)) {
+    exifData.GPS[piexif.GPSIFD.GPSAltitudeRef] = geotag.altitude >= 0 ? 0 : 1;
+    exifData.GPS[piexif.GPSIFD.GPSAltitude] = [Math.round(Math.abs(geotag.altitude) * 100), 100];
+  }
 
   if (geotag.description) {
     exifData["0th"] = exifData["0th"] || {};

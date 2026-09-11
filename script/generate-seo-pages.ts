@@ -102,7 +102,7 @@ const gpsFinderFaqs: Array<{ q: string; a: string }> = [
 
 // ── Rich homepage content (mirrors the in-app landing page sections) ──
 const homeContentHtml = `
-<h1>Geotag Photos Free — Add GPS Coordinates to Any Photo Online</h1>
+<h1>Free Geotagger — Add GPS Location to Photos Online</h1>
 <p>FreeGeoTagger is a free, privacy-first tool that lets you <strong>add GPS coordinates to photos</strong> directly in your browser — no software to install and no account to create. Upload one photo or a whole batch, pin the location on an interactive map or search any address worldwide, then download your images with precise GPS metadata embedded in the EXIF data.</p>
 <p>Your files never leave your device. All processing happens locally in your browser tab, so geotagging is completely private and works in seconds. The output uses standard EXIF GPS metadata that is recognized by <strong>Google Photos, Apple Photos, Adobe Lightroom, Windows Explorer</strong>, and any platform that reads location data.</p>
 
