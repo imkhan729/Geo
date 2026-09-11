@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Phase 6: GPS Finder Upgrade] - 2026-09-11
+
+### Added
+- Created `extractPhotoMetadata(dataUrl)` in `client/src/lib/geotag-utils.ts`: Extracts structured metadata (`ExtractedPhotoDetails`) including decimal latitude/longitude, altitude (meters and feet), DMS formatting (`dmsLat`, `dmsLng`, `dmsFormatted`), timestamp, camera make/model, software, and image descriptions across JPEG, PNG, and WebP images.
+- Added `script/test-gps-finder.ts`: Comprehensive automated test suite with 6 tests verifying GPS extraction across JPEG, PNG `eXIf`, WebP EXIF, graceful handling of images without GPS, camera metadata extraction without GPS, and DMS $\leftrightarrow$ DD conversion fidelity.
+- Added DD $\leftrightarrow$ DMS segmented display toggle in `/gps-finder`, allowing users to switch coordinate views and copy in their preferred notation.
+- Added technical EXIF breakdown card displaying altitude (meters & feet), capture timestamp, and camera make/model.
+- Added "Open in OpenStreetMap" link alongside "Open in Google Maps".
+- Added dedicated, helpful "No GPS Location Found" state with photo thumbnail preview, detected camera metadata, clear explanation of why photos lack location data, and a 1-click CTA linking to `/` to geotag the photo.
+- Added ARIA live region (`aria-live="polite"`) announcing extraction progress and results for screen readers.
+
+### Enhanced
+- Upgraded `client/src/components/tool/leaflet-map.tsx`: Added `readOnly` mode with custom brand pin, smooth zoom/pan, coordinate pill, and container responsiveness.
+- Replaced inline Leaflet logic in `client/src/pages/gps-finder.tsx` with reusable `LeafletMap` component.
+- Added semantic `<main id="main-content">` landmark and breadcrumbs (`Home` > `GPS Finder`).
+- Added `WebApplication` Schema.org structured data aligned with prerendered SEO metadata.
+
+---
+
 ## [Phase 5: Metadata Engine & Verification] - 2026-09-11
 
 ### Added

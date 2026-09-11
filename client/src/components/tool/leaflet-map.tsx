@@ -14,9 +14,10 @@ async function getL() {
 export interface LeafletMapProps {
   latitude: number;
   longitude: number;
-  onCoordinatesChange: (lat: number, lng: number) => void;
+  onCoordinatesChange?: (lat: number, lng: number) => void;
   className?: string;
   zoom?: number;
+  readOnly?: boolean;
 }
 
 export function LeafletMap({
@@ -25,6 +26,7 @@ export function LeafletMap({
   onCoordinatesChange,
   className = "",
   zoom = 13,
+  readOnly = false,
 }: LeafletMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
@@ -61,23 +63,25 @@ export function LeafletMap({
 
       const marker = L.marker([latitude, longitude], {
         icon: customIcon,
-        draggable: true,
+        draggable: !readOnly,
       }).addTo(map);
       markerRef.current = marker;
 
-      marker.on("dragend", () => {
-        const pos = marker.getLatLng();
-        const roundedLat = Math.round(pos.lat * 1000000) / 1000000;
-        const roundedLng = Math.round(pos.lng * 1000000) / 1000000;
-        onCoordinatesChange(roundedLat, roundedLng);
-      });
+      if (!readOnly && onCoordinatesChange) {
+        marker.on("dragend", () => {
+          const pos = marker.getLatLng();
+          const roundedLat = Math.round(pos.lat * 1000000) / 1000000;
+          const roundedLng = Math.round(pos.lng * 1000000) / 1000000;
+          onCoordinatesChange(roundedLat, roundedLng);
+        });
 
-      map.on("click", (e: any) => {
-        const roundedLat = Math.round(e.latlng.lat * 1000000) / 1000000;
-        const roundedLng = Math.round(e.latlng.lng * 1000000) / 1000000;
-        marker.setLatLng([roundedLat, roundedLng]);
-        onCoordinatesChange(roundedLat, roundedLng);
-      });
+        map.on("click", (e: any) => {
+          const roundedLat = Math.round(e.latlng.lat * 1000000) / 1000000;
+          const roundedLng = Math.round(e.latlng.lng * 1000000) / 1000000;
+          marker.setLatLng([roundedLat, roundedLng]);
+          onCoordinatesChange(roundedLat, roundedLng);
+        });
+      }
 
       requestAnimationFrame(() => {
         map.invalidateSize();
@@ -111,9 +115,9 @@ export function LeafletMap({
   return (
     <div
       className={`relative w-full rounded-2xl border border-border overflow-hidden bg-muted/20 shadow-sm ${className}`}
-      style={{ minHeight: "350px", height: "380px" }}
+      style={{ minHeight: "350px", height: "100%" }}
       role="region"
-      aria-label="Interactive location map picker"
+      aria-label={readOnly ? "Map showing photo GPS location" : "Interactive location map picker"}
     >
       <div ref={mapContainerRef} className="absolute inset-0 z-0" data-testid="leaflet-map" />
 
@@ -127,7 +131,7 @@ export function LeafletMap({
 
       {/* Map Usage Hint */}
       <div className="absolute top-3 right-3 z-[400] text-[11px] text-muted-foreground bg-card/90 backdrop-blur-sm border border-border/60 px-2.5 py-1 rounded-lg shadow-sm pointer-events-none hidden sm:block">
-        Click anywhere or drag pin to adjust
+        {readOnly ? "Photo capture location" : "Click anywhere or drag pin to adjust"}
       </div>
     </div>
   );

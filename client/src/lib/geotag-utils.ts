@@ -153,7 +153,30 @@ export async function readFileAsArrayBuffer(file: File | Blob): Promise<ArrayBuf
   });
 }
 
-export async function extractExistingGps(dataUrl: string): Promise<{ lat: number; lng: number; altitude?: number } | null> {
+export interface ExtractedPhotoDetails {
+  hasGps: boolean;
+  gps: {
+    lat: number;
+    lng: number;
+    altitude?: number;
+    altitudeMeters?: number;
+    altitudeFeet?: number;
+    dmsLat: DmsCoordinate;
+    dmsLng: DmsCoordinate;
+    dmsFormatted: string;
+    dateStamp?: string;
+    timeStamp?: string;
+  } | null;
+  camera?: {
+    make?: string;
+    model?: string;
+    software?: string;
+  };
+  dateTimeOriginal?: string;
+  imageDescription?: string;
+}
+
+export async function extractPhotoMetadata(dataUrl: string): Promise<ExtractedPhotoDetails> {
   try {
     const piexif = await getPiexif();
     let exifPayload = dataUrl;
@@ -175,7 +198,9 @@ export async function extractExistingGps(dataUrl: string): Promise<{ lat: number
         }
         pos += 12 + len;
       }
-      if (!found) return null;
+      if (!found) {
+        return { hasGps: false, gps: null };
+      }
     } else if (dataUrl.startsWith("data:image/webp")) {
       const base64 = dataUrl.split(',')[1];
       const binaryStr = safeAtob(base64);
@@ -198,9 +223,10 @@ export async function extractExistingGps(dataUrl: string): Promise<{ lat: number
         }
         pos += 8 + paddedLen;
       }
-      if (!found) return null;
+      if (!found) {
+        return { hasGps: false, gps: null };
+      }
     } else if (dataUrl.startsWith("data:") && !dataUrl.startsWith("data:image/jpeg")) {
-      // Normalize any other data url prefix (e.g. data:image/jpg or octet-stream) to data:image/jpeg;base64,
       const commaIdx = dataUrl.indexOf(",");
       if (commaIdx !== -1) {
         exifPayload = "data:image/jpeg;base64," + dataUrl.substring(commaIdx + 1);
@@ -208,34 +234,99 @@ export async function extractExistingGps(dataUrl: string): Promise<{ lat: number
     }
 
     const exifData = piexif.load(exifPayload);
-    const gpsData = exifData.GPS;
+    const zeroth = exifData["0th"] || {};
+    const exifIfd = exifData["Exif"] || {};
+    const gpsData = exifData.GPS || {};
 
-    if (!gpsData || !gpsData[piexif.GPSIFD.GPSLatitude] || !gpsData[piexif.GPSIFD.GPSLongitude]) {
-      return null;
+    const cameraMake = typeof zeroth[piexif.ImageIFD.Make] === "string" ? (zeroth[piexif.ImageIFD.Make] as string).trim() : undefined;
+    const cameraModel = typeof zeroth[piexif.ImageIFD.Model] === "string" ? (zeroth[piexif.ImageIFD.Model] as string).trim() : undefined;
+    const software = typeof zeroth[piexif.ImageIFD.Software] === "string" ? (zeroth[piexif.ImageIFD.Software] as string).trim() : undefined;
+    const imageDesc = typeof zeroth[piexif.ImageIFD.ImageDescription] === "string" ? (zeroth[piexif.ImageIFD.ImageDescription] as string).trim() : undefined;
+    const rawDateTimeOriginal = (exifIfd as any)[0x9003] || (exifIfd as any)[36867];
+    const rawDateTime = zeroth[piexif.ImageIFD.DateTime];
+    const dateTime = typeof rawDateTimeOriginal === "string" 
+      ? rawDateTimeOriginal.trim() 
+      : typeof rawDateTime === "string" 
+        ? (rawDateTime as string).trim() 
+        : undefined;
+
+    const camera = (cameraMake || cameraModel || software) ? { make: cameraMake, model: cameraModel, software } : undefined;
+
+    if (!gpsData[piexif.GPSIFD.GPSLatitude] || !gpsData[piexif.GPSIFD.GPSLongitude]) {
+      return {
+        hasGps: false,
+        gps: null,
+        camera,
+        dateTimeOriginal: dateTime,
+        imageDescription: imageDesc,
+      };
     }
 
     const latDms = gpsData[piexif.GPSIFD.GPSLatitude] as [[number, number], [number, number], [number, number]];
-    const latRef = gpsData[piexif.GPSIFD.GPSLatitudeRef] as string;
+    const latRef = (gpsData[piexif.GPSIFD.GPSLatitudeRef] as string) || "N";
     const lngDms = gpsData[piexif.GPSIFD.GPSLongitude] as [[number, number], [number, number], [number, number]];
-    const lngRef = gpsData[piexif.GPSIFD.GPSLongitudeRef] as string;
+    const lngRef = (gpsData[piexif.GPSIFD.GPSLongitudeRef] as string) || "E";
 
     const lat = rationalDmsToDecimal(latDms, latRef);
     const lng = rationalDmsToDecimal(lngDms, lngRef);
 
-    let altitude: number | undefined = undefined;
+    let altitudeMeters: number | undefined = undefined;
+    let altitudeFeet: number | undefined = undefined;
+
     if (gpsData[piexif.GPSIFD.GPSAltitude]) {
       const altRat = gpsData[piexif.GPSIFD.GPSAltitude] as [number, number];
       const altRef = gpsData[piexif.GPSIFD.GPSAltitudeRef] as number | undefined;
       if (Array.isArray(altRat) && altRat[1] && altRat[1] !== 0) {
-        altitude = (altRat[0] / altRat[1]) * (altRef === 1 ? -1 : 1);
-        altitude = Math.round(altitude * 10) / 10;
+        const altitude = (altRat[0] / altRat[1]) * (altRef === 1 ? -1 : 1);
+        altitudeMeters = Math.round(altitude * 10) / 10;
+        altitudeFeet = Math.round(altitude * 3.28084 * 10) / 10;
       }
     }
 
-    return { lat, lng, altitude };
+    const dmsLat = decimalToDms(lat, true);
+    const dmsLng = decimalToDms(lng, false);
+    const dmsFormatted = `${dmsLat.formatted}, ${dmsLng.formatted}`;
+
+    const dateStamp = typeof gpsData[29] === "string" ? gpsData[29] : undefined;
+    let timeStamp: string | undefined = undefined;
+    if (Array.isArray(gpsData[7]) && gpsData[7].length === 3) {
+      const h = String(gpsData[7][0][0] / gpsData[7][0][1]).padStart(2, "0");
+      const m = String(gpsData[7][1][0] / gpsData[7][1][1]).padStart(2, "0");
+      const s = String(Math.floor(gpsData[7][2][0] / gpsData[7][2][1])).padStart(2, "0");
+      timeStamp = `${h}:${m}:${s} UTC`;
+    }
+
+    return {
+      hasGps: true,
+      gps: {
+        lat,
+        lng,
+        altitude: altitudeMeters,
+        altitudeMeters,
+        altitudeFeet,
+        dmsLat,
+        dmsLng,
+        dmsFormatted,
+        dateStamp,
+        timeStamp,
+      },
+      camera,
+      dateTimeOriginal: dateTime,
+      imageDescription: imageDesc,
+    };
   } catch {
-    return null;
+    return { hasGps: false, gps: null };
   }
+}
+
+export async function extractExistingGps(dataUrl: string): Promise<{ lat: number; lng: number; altitude?: number } | null> {
+  const meta = await extractPhotoMetadata(dataUrl);
+  if (!meta.hasGps || !meta.gps) return null;
+  return {
+    lat: meta.gps.lat,
+    lng: meta.gps.lng,
+    altitude: meta.gps.altitude,
+  };
 }
 
 function stringToUtf16Le(str: string): number[] {

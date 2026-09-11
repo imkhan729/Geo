@@ -3,46 +3,60 @@ import {
   Eye, FileImage, Copy, Check, Globe, MapPin, Upload,
   Shield, Zap, Camera, Search, Info, ChevronDown,
   Smartphone, Laptop, Image as ImageIcon, Lock,
-  CheckCircle, XCircle, AlertCircle, HelpCircle
+  CheckCircle, AlertCircle, HelpCircle,
+  Compass, Clock, Loader2, ExternalLink
 } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 import {
   readFileAsDataUrl,
-  extractExistingGps,
-  convertHeicToJpeg
+  extractPhotoMetadata,
+  convertHeicToJpeg,
+  formatFileSize,
+  ExtractedPhotoDetails
 } from "@/lib/geotag-utils";
+import { LeafletMap } from "@/components/tool/leaflet-map";
 import { useToast } from "@/hooks/use-toast";
 import { updatePageSEO, SEO_CONFIG, injectPageSchema } from "@/lib/seo";
 
 const ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".heic"];
 
-let leafletModule: any = null;
-async function getLeaflet() {
-  if (!leafletModule) {
-    const leafletUrl = "/vendor/leaflet.esm.js";
-    const leaflet = await import(/* @vite-ignore */ leafletUrl);
-    leafletModule = leaflet.default ?? leaflet;
-  }
-  return leafletModule;
-}
-
-interface ExtractedGps {
-  lat: number;
-  lng: number;
-  fileName: string;
+interface PhotoInspection {
+  file: File;
+  previewUrl: string;
+  name: string;
+  sizeFormatted: string;
+  formatBadge: string;
+  dimensions?: { width: number; height: number };
+  meta: ExtractedPhotoDetails;
 }
 
 export default function GpsFinder() {
-  const [extractedGps, setExtractedGps] = useState<ExtractedGps | null>(null);
+  const [inspection, setInspection] = useState<PhotoInspection | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [coordFormat, setCoordFormat] = useState<"dd" | "dms">("dd");
   const [copiedCoords, setCopiedCoords] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const previewUrlRef = useRef<string | null>(null);
   const { toast } = useToast();
+
+  const cleanupPreview = useCallback(() => {
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      cleanupPreview();
+    };
+  }, [cleanupPreview]);
 
   useEffect(() => {
     updatePageSEO(SEO_CONFIG.gpsFinder);
@@ -67,6 +81,25 @@ export default function GpsFinder() {
           { "@type": "ListItem", "position": 2, "name": "GPS Finder", "item": "https://freegeotagger.com/gps-finder" }
         ]
       }
+    });
+
+    injectPageSchema('gps-finder-app', {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "GPS Photo Finder",
+      "applicationCategory": "PhotographyApplication",
+      "operatingSystem": "Web Browser",
+      "browserRequirements": "Chrome, Firefox, Safari, Edge",
+      "url": "https://freegeotagger.com/gps-finder",
+      "description": SEO_CONFIG.gpsFinder.description,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" },
+      "featureList": [
+        "Read EXIF GPS coordinates from photos",
+        "Show photo location on an interactive map",
+        "Copy coordinates in DD or DMS format",
+        "JPG, PNG, WebP and HEIC support",
+        "Runs entirely in the browser — 100% private"
+      ]
     });
 
     injectPageSchema('gps-finder-faq', {
@@ -97,51 +130,6 @@ export default function GpsFinder() {
     });
   }, []);
 
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<any>(null);
-
-  useEffect(() => {
-    if (!mapRef.current || !extractedGps) return;
-    let isCancelled = false;
-
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.remove();
-    }
-
-    getLeaflet().then((L) => {
-      if (!mapRef.current || isCancelled) return;
-
-      const map = L.map(mapRef.current).setView([extractedGps.lat, extractedGps.lng], 15);
-      mapInstanceRef.current = map;
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '&copy; OpenStreetMap',
-        maxZoom: 19,
-      }).addTo(map);
-
-      const customIcon = L.divIcon({
-        html: `<div style="background:#22c55e;width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4);"></div>`,
-        className: "custom-marker",
-        iconSize: [28, 28],
-        iconAnchor: [14, 28],
-      });
-
-      L.marker([extractedGps.lat, extractedGps.lng], { icon: customIcon }).addTo(map);
-
-      requestAnimationFrame(() => {
-        map.invalidateSize();
-      });
-    });
-
-    return () => {
-      isCancelled = true;
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-      }
-    };
-  }, [extractedGps]);
-
   const processFile = useCallback(async (files: FileList | File[]) => {
     const fileArray = Array.from(files);
     const file = fileArray[0];
@@ -150,31 +138,77 @@ export default function GpsFinder() {
 
     const isAccepted = ACCEPTED_EXTENSIONS.some(ext => file.name.toLowerCase().endsWith(ext));
     if (!isAccepted || file.size > 20 * 1024 * 1024) {
-      toast({ title: "Invalid file", description: "Please upload a valid image file (JPG, PNG, WebP, HEIC)", variant: "destructive" });
+      toast({
+        title: "Invalid file",
+        description: "Please upload a supported image file (JPG, PNG, WebP, HEIC under 20MB)",
+        variant: "destructive"
+      });
       return;
     }
 
+    setIsProcessing(true);
     try {
-      let previewFile = file;
-      if (file.name.toLowerCase().endsWith(".heic")) {
-        const jpegBlob = await convertHeicToJpeg(file);
-        previewFile = new File([jpegBlob], file.name, { type: "image/jpeg" });
+      cleanupPreview();
+
+      let targetBlob: Blob = file;
+      let displayBlob: Blob = file;
+      const isHeic = file.name.toLowerCase().endsWith(".heic");
+
+      if (isHeic) {
+        displayBlob = await convertHeicToJpeg(file);
+        targetBlob = displayBlob;
       }
 
-      const dataUrl = await readFileAsDataUrl(previewFile);
-      const existingGps = await extractExistingGps(dataUrl);
+      const previewUrl = URL.createObjectURL(displayBlob);
+      previewUrlRef.current = previewUrl;
 
-      if (existingGps) {
-        setExtractedGps({ lat: existingGps.lat, lng: existingGps.lng, fileName: file.name });
-        toast({ title: "Location found!", description: "GPS coordinates extracted successfully" });
+      // Read image dimensions
+      const dimensions = await new Promise<{ width: number; height: number } | undefined>((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+        img.onerror = () => resolve(undefined);
+        img.src = previewUrl;
+      });
+
+      const mime = targetBlob.type || (isHeic ? "image/jpeg" : undefined);
+      const dataUrl = await readFileAsDataUrl(new File([targetBlob], file.name, { type: mime }));
+      const meta = await extractPhotoMetadata(dataUrl);
+
+      const ext = file.name.split(".").pop()?.toUpperCase() || "IMG";
+
+      setInspection({
+        file,
+        previewUrl,
+        name: file.name,
+        sizeFormatted: formatFileSize(file.size),
+        formatBadge: ext,
+        dimensions,
+        meta,
+      });
+
+      if (meta.hasGps && meta.gps) {
+        toast({
+          title: "Location Found!",
+          description: `Extracted GPS: ${meta.gps.lat.toFixed(5)}, ${meta.gps.lng.toFixed(5)}`,
+        });
       } else {
-        toast({ title: "No GPS data", description: "This image has no location information embedded", variant: "destructive" });
+        toast({
+          title: "No GPS coordinates",
+          description: "This photo contains no embedded GPS location metadata.",
+          variant: "default",
+        });
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast({ title: "Error", description: "Could not process the image", variant: "destructive" });
+      toast({
+        title: "Processing error",
+        description: err.message || "Could not read photo metadata.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsProcessing(false);
     }
-  }, [toast]);
+  }, [cleanupPreview, toast]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -183,12 +217,17 @@ export default function GpsFinder() {
   }, [processFile]);
 
   const copyCoordinates = useCallback(async () => {
-    if (!extractedGps) return;
-    await navigator.clipboard.writeText(`${extractedGps.lat.toFixed(6)}, ${extractedGps.lng.toFixed(6)}`);
+    if (!inspection?.meta?.gps) return;
+    const gps = inspection.meta.gps;
+    const textToCopy = coordFormat === "dd"
+      ? `${gps.lat.toFixed(6)}, ${gps.lng.toFixed(6)}`
+      : gps.dmsFormatted;
+
+    await navigator.clipboard.writeText(textToCopy);
     setCopiedCoords(true);
-    toast({ title: "Copied!", description: "Coordinates copied to clipboard" });
+    toast({ title: "Coordinates Copied!", description: textToCopy });
     setTimeout(() => setCopiedCoords(false), 2000);
-  }, [extractedGps, toast]);
+  }, [inspection, coordFormat, toast]);
 
   const faqs = [
     {
@@ -226,114 +265,371 @@ export default function GpsFinder() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
 
-      {/* Hero Section */}
-      <section className="py-8 md:py-12 bg-gradient-to-b from-green-500/5 to-transparent">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="max-w-4xl mx-auto text-center">
-            <Badge className="mb-4 bg-green-500/10 text-green-600 border-green-500/20 shadow-hover">
-              <Eye className="h-3 w-3 mr-1" /> Free GPS Location Finder
-            </Badge>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              <span className="gradient-text">GPS Finder</span>
-              {" — "}Extract GPS Coordinates
-              <br />
-              from Any Photo Free
-            </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              Upload any photo to instantly extract its GPS coordinates and see exactly where it was taken on a map. Works with JPG, PNG, WebP, and HEIC — 100% free and private.
-            </p>
+      <main id="main-content" tabIndex={-1} className="outline-none flex-1">
+        {/* Hero Section */}
+        <section className="py-8 md:py-12 bg-gradient-to-b from-primary/5 via-background to-background">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <div className="max-w-4xl mx-auto text-center">
+              {/* Semantic Breadcrumbs */}
+              <nav aria-label="Breadcrumbs" className="mb-4 inline-flex">
+                <ol className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <li>
+                    <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+                  </li>
+                  <li aria-hidden="true" className="opacity-60">/</li>
+                  <li className="font-medium text-foreground" aria-current="page">GPS Finder</li>
+                </ol>
+              </nav>
 
-            {/* Upload Area */}
-            {!extractedGps ? (
-              <Card
-                className={`max-w-2xl mx-auto cursor-pointer transition-all duration-500 border-2 border-dashed shadow-hover ${isDragging ? "border-green-500 bg-green-500/10 scale-105" : "border-green-500/30 hover:border-green-500/50 hover:shadow-xl"}`}
-                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                onDragLeave={(e) => { e.preventDefault(); setIsDragging(false); }}
-                onDrop={handleDrop}
-                onClick={() => document.getElementById("finder-input")?.click()}
-                data-testid="dropzone-finder"
-              >
-                <CardContent className="py-14">
-                  <FileImage className={`h-14 w-14 mx-auto mb-5 text-green-500 transition-transform duration-300 ${isDragging ? "scale-125" : ""}`} />
-                  <h3 className="text-2xl font-semibold mb-3">Drop your photo here</h3>
-                  <p className="text-muted-foreground mb-5 text-lg">or click to browse your files</p>
-                  <div className="flex flex-wrap justify-center gap-2 mb-5">
-                    <Badge variant="outline" className="text-sm">JPG</Badge>
-                    <Badge variant="outline" className="text-sm">PNG</Badge>
-                    <Badge variant="outline" className="text-sm">WebP</Badge>
-                    <Badge variant="outline" className="text-sm">HEIC</Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground max-w-md mx-auto">All processing happens locally in your browser. Your photos never leave your device.</p>
-                  <input
-                    id="finder-input"
-                    type="file"
-                    accept={ACCEPTED_EXTENSIONS.join(",")}
-                    onChange={(e) => e.target.files && processFile(e.target.files)}
-                    className="hidden"
-                    data-testid="input-finder-file"
-                  />
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="space-y-6">
-                <div className="text-center">
-                  <Badge className="mb-4 bg-green-500/10 text-green-600 border-green-500/20" data-testid="badge-location-found">
-                    <CheckCircle className="h-3 w-3 mr-1" /> Location Found
-                  </Badge>
-                  <h2 className="text-2xl md:text-3xl font-bold mb-2" data-testid="text-gps-title">GPS Coordinates Extracted</h2>
-                  <p className="text-muted-foreground" data-testid="text-filename">{extractedGps.fileName}</p>
-                </div>
+              <div className="mb-3">
+                <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 px-3 py-1 text-xs font-semibold">
+                  <Eye className="h-3 w-3 mr-1.5" /> Free GPS Location Finder
+                </Badge>
+              </div>
 
-                <Card className="max-w-3xl mx-auto">
-                  <CardContent className="p-0">
-                    <div ref={mapRef} className="h-[400px] md:h-[500px] rounded-t-lg" data-testid="map-finder" />
-                    <div className="p-6 space-y-4">
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-1">GPS Coordinates</p>
-                          <p className="text-xl md:text-2xl font-mono font-bold" data-testid="text-coordinates">
-                            {extractedGps.lat.toFixed(6)}, {extractedGps.lng.toFixed(6)}
-                          </p>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          <Button variant="outline" onClick={copyCoordinates} data-testid="button-copy-coords">
-                            {copiedCoords ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
-                            {copiedCoords ? "Copied!" : "Copy Coordinates"}
-                          </Button>
-                          <Button onClick={() => window.open(`https://www.google.com/maps?q=${extractedGps.lat},${extractedGps.lng}`, "_blank")} data-testid="button-open-maps">
-                            <Globe className="h-4 w-4 mr-2" /> Open in Google Maps
-                          </Button>
-                        </div>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight leading-tight">
+                <span className="text-primary">GPS Finder</span>
+                {" — "}Extract GPS Coordinates from Photos
+              </h1>
+
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
+                Upload any photo to instantly extract embedded GPS coordinates and view where it was captured on an interactive map. Works with JPG, PNG, WebP, and HEIC — 100% free and private.
+              </p>
+
+              {/* ARIA Live Region for screen readers */}
+              <div className="sr-only" aria-live="polite" aria-atomic="true">
+                {isProcessing
+                  ? "Reading photo metadata..."
+                  : inspection
+                  ? inspection.meta.hasGps
+                    ? `GPS location extracted: ${inspection.meta.gps?.lat.toFixed(5)}, ${inspection.meta.gps?.lng.toFixed(5)}`
+                    : "No GPS coordinates found in uploaded photo."
+                  : "No photo uploaded."}
+              </div>
+
+              {/* Tool Area */}
+              {!inspection ? (
+                <Card
+                  className={`max-w-2xl mx-auto cursor-pointer transition-all duration-300 border-2 border-dashed shadow-sm ${
+                    isDragging
+                      ? "border-primary bg-primary/10 scale-[1.01]"
+                      : "border-border hover:border-primary/50 hover:bg-muted/30"
+                  }`}
+                  onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                  onDragLeave={(e) => { e.preventDefault(); setIsDragging(false); }}
+                  onDrop={handleDrop}
+                  onClick={() => document.getElementById("finder-input")?.click()}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      document.getElementById("finder-input")?.click();
+                    }
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  aria-label="Upload photo to extract GPS coordinates"
+                  data-testid="dropzone-finder"
+                >
+                  <CardContent className="py-12 sm:py-14 text-center">
+                    {isProcessing ? (
+                      <div className="space-y-4">
+                        <Loader2 className="h-12 w-12 mx-auto text-primary animate-spin" />
+                        <h3 className="text-xl font-semibold">Reading photo metadata...</h3>
+                        <p className="text-sm text-muted-foreground">Extracting EXIF GPS tags locally in memory</p>
                       </div>
-                    </div>
+                    ) : (
+                      <>
+                        <FileImage className={`h-12 w-12 mx-auto mb-4 text-primary transition-transform duration-300 ${isDragging ? "scale-110" : ""}`} />
+                        <h3 className="text-xl sm:text-2xl font-semibold mb-2">Drop your photo here</h3>
+                        <p className="text-muted-foreground mb-4 text-sm sm:text-base">or click to browse from your device</p>
+                        <div className="flex flex-wrap justify-center gap-1.5 mb-5">
+                          <Badge variant="outline" className="text-xs">JPG</Badge>
+                          <Badge variant="outline" className="text-xs">PNG</Badge>
+                          <Badge variant="outline" className="text-xs">WebP</Badge>
+                          <Badge variant="outline" className="text-xs">HEIC</Badge>
+                          <Badge variant="secondary" className="text-xs">Max 20MB</Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground max-w-sm mx-auto flex items-center justify-center gap-1.5">
+                          <Shield className="h-3.5 w-3.5 text-primary shrink-0" />
+                          100% Client-Side. Photos never leave your browser.
+                        </p>
+                        <input
+                          id="finder-input"
+                          type="file"
+                          accept={ACCEPTED_EXTENSIONS.join(",")}
+                          onChange={(e) => e.target.files && processFile(e.target.files)}
+                          className="hidden"
+                          data-testid="input-finder-file"
+                        />
+                      </>
+                    )}
                   </CardContent>
                 </Card>
+              ) : !inspection.meta.hasGps || !inspection.meta.gps ? (
+                /* No GPS State */
+                <div className="space-y-6 max-w-3xl mx-auto text-left">
+                  <div className="text-center">
+                    <Badge variant="outline" className="mb-3 bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 px-3 py-1 font-medium" data-testid="badge-no-gps">
+                      <AlertCircle className="h-3.5 w-3.5 mr-1.5" /> No GPS Coordinates Embedded
+                    </Badge>
+                    <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-1 text-foreground" data-testid="text-gps-title">
+                      No Location Data Found in Photo
+                    </h2>
+                    <p className="text-muted-foreground text-sm" data-testid="text-filename">
+                      {inspection.name} • {inspection.sizeFormatted} • {inspection.formatBadge}
+                    </p>
+                  </div>
 
-                <div className="flex flex-wrap justify-center gap-4">
-                  <Button variant="outline" size="lg" onClick={() => setExtractedGps(null)} data-testid="button-check-another">
-                    <Upload className="h-4 w-4 mr-2" /> Check Another Photo
-                  </Button>
-                  <Link href="/">
-                    <Button size="lg" data-testid="button-geotag">
-                      <MapPin className="h-4 w-4 mr-2" /> Add GPS to Your Photos
-                    </Button>
-                  </Link>
+                  <Card className="border-border shadow-sm overflow-hidden">
+                    <CardContent className="p-6 md:p-8 space-y-6">
+                      <div className="flex flex-col sm:flex-row items-center gap-6">
+                        <img
+                          src={inspection.previewUrl}
+                          alt={inspection.name}
+                          className="w-36 h-36 object-cover rounded-xl border border-border shadow-inner shrink-0"
+                        />
+                        <div className="space-y-3 flex-1 text-center sm:text-left">
+                          <h3 className="font-semibold text-lg text-foreground">Metadata Analysis Result</h3>
+                          <p className="text-sm text-muted-foreground leading-relaxed">
+                            Our metadata engine inspected the EXIF headers and container chunks of this file, but no geographic GPS tags were found.
+                          </p>
+                          {(inspection.meta.camera || inspection.meta.dateTimeOriginal) && (
+                            <div className="flex flex-wrap gap-2 pt-1 justify-center sm:justify-start">
+                              {inspection.meta.camera?.make && (
+                                <Badge variant="secondary" className="text-xs">
+                                  Camera: {inspection.meta.camera.make} {inspection.meta.camera.model || ""}
+                                </Badge>
+                              )}
+                              {inspection.meta.dateTimeOriginal && (
+                                <Badge variant="secondary" className="text-xs">
+                                  Captured: {inspection.meta.dateTimeOriginal}
+                                </Badge>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-sm text-amber-900 dark:text-amber-200 space-y-2">
+                        <h4 className="font-semibold flex items-center gap-1.5">
+                          <Info className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" /> Why do photos lack GPS data?
+                        </h4>
+                        <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm opacity-90">
+                          <li>Location services or GPS tagging was disabled in your camera app.</li>
+                          <li>The photo was shared via WhatsApp, Instagram, Facebook, or X (which strip EXIF metadata for privacy).</li>
+                          <li>The image was edited or saved in software that stripped metadata on export.</li>
+                          <li>The camera does not have built-in GPS hardware.</li>
+                        </ul>
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row justify-center gap-3 pt-2">
+                        <Link href="/">
+                          <Button size="lg" className="w-full sm:w-auto font-medium shadow-sm" data-testid="button-geotag">
+                            <MapPin className="h-4 w-4 mr-2" /> Add GPS Location to This Photo
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          onClick={() => { cleanupPreview(); setInspection(null); }}
+                          className="w-full sm:w-auto"
+                          data-testid="button-check-another"
+                        >
+                          <Upload className="h-4 w-4 mr-2" /> Check Another Photo
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
-              </div>
-            )}
+              ) : (
+                /* Success State: GPS Found */
+                <div className="space-y-6 max-w-5xl mx-auto text-left">
+                  <div className="text-center">
+                    <Badge className="mb-3 bg-primary/10 text-primary border-primary/20 px-3 py-1 font-medium" data-testid="badge-location-found">
+                      <CheckCircle className="h-3.5 w-3.5 mr-1.5" /> GPS Location Extracted
+                    </Badge>
+                    <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-1 text-foreground" data-testid="text-gps-title">
+                      GPS Coordinates Found
+                    </h2>
+                    <p className="text-muted-foreground text-sm" data-testid="text-filename">
+                      {inspection.name} • {inspection.sizeFormatted} • {inspection.formatBadge}
+                    </p>
+                  </div>
 
-            <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 mt-8 text-sm text-muted-foreground">
-              <span className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> Instant GPS extraction</span>
-              <span className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> 100% private & secure</span>
-              <span className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> No uploads required</span>
-              <span className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> Works on all devices</span>
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    {/* Left Column: Photo & Details */}
+                    <div className="lg:col-span-5 space-y-4">
+                      {/* Photo Preview Card */}
+                      <Card className="overflow-hidden border-border shadow-sm">
+                        <div className="relative bg-muted/40 aspect-video flex items-center justify-center p-2">
+                          <img
+                            src={inspection.previewUrl}
+                            alt={inspection.name}
+                            className="max-h-52 max-w-full object-contain rounded-lg shadow-sm"
+                          />
+                          {inspection.dimensions && (
+                            <span className="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] px-2 py-0.5 rounded backdrop-blur-xs font-mono">
+                              {inspection.dimensions.width} × {inspection.dimensions.height} px
+                            </span>
+                          )}
+                        </div>
+                      </Card>
+
+                      {/* Coordinate Card */}
+                      <Card className="border-border shadow-sm">
+                        <CardContent className="p-5 space-y-4">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Coordinates</span>
+                            {/* DD / DMS Segmented Toggle */}
+                            <div className="inline-flex rounded-lg border border-border bg-muted/50 p-0.5" role="tablist" aria-label="Coordinate format">
+                              <button
+                                type="button"
+                                role="tab"
+                                aria-selected={coordFormat === "dd"}
+                                onClick={() => setCoordFormat("dd")}
+                                data-testid="toggle-dd"
+                                className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+                                  coordFormat === "dd"
+                                    ? "bg-card text-foreground shadow-xs font-semibold"
+                                    : "text-muted-foreground hover:text-foreground"
+                                }`}
+                              >
+                                Decimal (DD)
+                              </button>
+                              <button
+                                type="button"
+                                role="tab"
+                                aria-selected={coordFormat === "dms"}
+                                onClick={() => setCoordFormat("dms")}
+                                data-testid="toggle-dms"
+                                className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+                                  coordFormat === "dms"
+                                    ? "bg-card text-foreground shadow-xs font-semibold"
+                                    : "text-muted-foreground hover:text-foreground"
+                                }`}
+                              >
+                                DMS
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="bg-muted/30 border border-border/60 rounded-xl p-3.5 text-center">
+                            <div className="text-lg sm:text-xl font-mono font-bold tracking-tight text-foreground" data-testid="text-coordinates">
+                              {coordFormat === "dd"
+                                ? `${inspection.meta.gps.lat.toFixed(6)}, ${inspection.meta.gps.lng.toFixed(6)}`
+                                : inspection.meta.gps.dmsFormatted}
+                            </div>
+                            <div className="text-xs text-muted-foreground font-mono mt-1">
+                              {coordFormat === "dd"
+                                ? inspection.meta.gps.dmsFormatted
+                                : `${inspection.meta.gps.lat.toFixed(6)}, ${inspection.meta.gps.lng.toFixed(6)}`}
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <Button
+                              variant="outline"
+                              onClick={copyCoordinates}
+                              className="w-full justify-center"
+                              data-testid="button-copy-coords"
+                            >
+                              {copiedCoords ? <Check className="h-4 w-4 mr-2 text-primary" /> : <Copy className="h-4 w-4 mr-2" />}
+                              {copiedCoords ? "Copied!" : "Copy Coordinates"}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => window.open(`https://www.google.com/maps?q=${inspection.meta.gps?.lat},${inspection.meta.gps?.lng}`, "_blank", "noopener,noreferrer")}
+                              className="w-full justify-center"
+                              data-testid="button-open-maps"
+                            >
+                              <Globe className="h-4 w-4 mr-2" /> Google Maps
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => window.open(`https://www.openstreetmap.org/?mlat=${inspection.meta.gps?.lat}&mlon=${inspection.meta.gps?.lng}#map=16/${inspection.meta.gps?.lat}/${inspection.meta.gps?.lng}`, "_blank", "noopener,noreferrer")}
+                              className="w-full justify-center sm:col-span-2"
+                              data-testid="button-open-osm"
+                            >
+                              <ExternalLink className="h-4 w-4 mr-2" /> Open in OpenStreetMap
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Technical Metadata Card */}
+                      <Card className="border-border shadow-sm" data-testid="card-metadata-breakdown">
+                        <CardContent className="p-4 space-y-2.5 text-xs">
+                          <div className="font-semibold text-foreground text-sm pb-1 border-b border-border/60">
+                            Technical EXIF Metadata
+                          </div>
+                          <div className="flex justify-between py-0.5">
+                            <span className="text-muted-foreground flex items-center gap-1.5"><Compass className="h-3.5 w-3.5" /> Altitude:</span>
+                            <span className="font-mono font-medium text-foreground">
+                              {inspection.meta.gps.altitudeMeters !== undefined
+                                ? `${inspection.meta.gps.altitudeMeters} m (${inspection.meta.gps.altitudeFeet} ft)`
+                                : "Not recorded"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between py-0.5">
+                            <span className="text-muted-foreground flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> Date / Time:</span>
+                            <span className="font-mono font-medium text-foreground">
+                              {inspection.meta.dateTimeOriginal || inspection.meta.gps.dateStamp || "Not recorded"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between py-0.5">
+                            <span className="text-muted-foreground flex items-center gap-1.5"><Camera className="h-3.5 w-3.5" /> Camera:</span>
+                            <span className="font-medium text-foreground truncate max-w-[200px]" title={[inspection.meta.camera?.make, inspection.meta.camera?.model].filter(Boolean).join(" ") || "Unknown"}>
+                              {[inspection.meta.camera?.make, inspection.meta.camera?.model].filter(Boolean).join(" ") || "Not recorded"}
+                            </span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Right Column: Map Preview */}
+                    <div className="lg:col-span-7 flex flex-col">
+                      <Card className="border-border shadow-sm flex-1 flex flex-col overflow-hidden min-h-[420px] lg:min-h-[500px]" data-testid="map-finder">
+                        <LeafletMap
+                          latitude={inspection.meta.gps.lat}
+                          longitude={inspection.meta.gps.lng}
+                          readOnly={true}
+                          zoom={15}
+                          className="h-full w-full"
+                        />
+                      </Card>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap justify-center gap-3 pt-2">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      onClick={() => { cleanupPreview(); setInspection(null); }}
+                      data-testid="button-check-another"
+                    >
+                      <Upload className="h-4 w-4 mr-2" /> Check Another Photo
+                    </Button>
+                    <Link href="/">
+                      <Button size="lg" data-testid="button-geotag">
+                        <MapPin className="h-4 w-4 mr-2" /> Add GPS to More Photos
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 mt-8 text-sm text-muted-foreground">
+                <span className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Instant GPS extraction</span>
+                <span className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> 100% private & secure</span>
+                <span className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> No uploads required</span>
+                <span className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Works on all devices</span>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
       {/* What is GPS Finder Section */}
       <section className="py-16 bg-muted/30">
@@ -622,9 +918,10 @@ export default function GpsFinder() {
           </div>
         </div>
       </section>
+    </main>
 
-      {/* Footer */}
-      <Footer />
+    {/* Footer */}
+    <Footer />
     </div>
   );
 }
