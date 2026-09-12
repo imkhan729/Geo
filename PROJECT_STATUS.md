@@ -4,7 +4,7 @@ Current phase: Phase 15 — Analytics + Conversion Measurement
 Status: PASS
 Last completed phase: Phase 15 — Analytics + Conversion Measurement
 Current branch: master
-Latest commit: 5e2d8d9 feat(analytics): implement Phase 15 privacy-safe event measurement, Web Vitals monitoring, and consent integration
+Latest commit: 8c0c192 feat(analytics): implement Phase 15 privacy-safe event measurement, Web Vitals monitoring, and consent integration
 Tests passing:
 - Analytics & Privacy-Safe Measurement test suite (`npm run test:analytics`) PASS (48/48 tests passing: parameter blocklist sanitization dropping lat, lng, filename, address, query, exif, bytes, dataUrl, etc.; coordinate decimal pattern scrubbing; email address scrubbing; preservation of safe aggregate metrics; Core Web Vitals rating targets for LCP, CLS, INP, FCP, TTFB; codebase static audit verifying zero prohibited PII parameters passed across 110 client source files)
 - Security & Privacy test suite (`npm run test:security`) PASS (38/38 tests passing: Apache .htaccess security headers with HSTS preload, nosniff, SAMEORIGIN, Referrer-Policy, Permissions-Policy, X-XSS-Protection, Content-Security-Policy; Express security middleware; logging redaction without query strings or response bodies; live geocoding query bounds & control character stripping; reverse geocoding numeric range validation; in-memory sliding-window IP rate limiting returning HTTP 429 + Retry-After; zero server file upload endpoints; client bundle secret isolation; Dropzone 20MB limit & SVG disallow; Object URL memory leak cleanup)
