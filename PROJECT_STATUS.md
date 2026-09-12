@@ -4,7 +4,7 @@ Current phase: Phase 17 — Optional Tool Expansion: Remove GPS Tool
 Status: PASS
 Last completed phase: Phase 17 — Optional Tool Expansion: Remove GPS Tool (Tool 2 of 4)
 Current branch: master
-Latest commit: 84fef17 feat(tools): implement Phase 17 Remove GPS tool, Section 29 dual-mode stripping, and static prerendering
+Latest commit: b8e1bf4 feat(tools): implement Phase 17 Remove GPS tool, Section 29 dual-mode stripping, and static prerendering
 Tests passing:
 - Remove GPS test suite (`npm run test:remove-gps`) PASS (36/36 tests passing: Section 29 dual-mode stripping, pre-inspection, binary post-verification, truth in advertising, fallback notices, mandatory CTAs, privacy invariants, JSON-LD schemas, and ad placement safety)
 - EXIF Viewer test suite (`npm run test:exif-viewer`) PASS (42/42 tests passing)
