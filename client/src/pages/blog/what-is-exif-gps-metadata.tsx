@@ -55,7 +55,7 @@ export default function BlogExifGps() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      <main className="flex-1">
+      <main id="main-content" tabIndex={-1} className="outline-none flex-1">
         <div className="container mx-auto px-4 max-w-3xl py-12 md:py-16">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-xs text-muted-foreground mb-8" aria-label="Breadcrumb">

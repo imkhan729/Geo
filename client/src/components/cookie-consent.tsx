@@ -74,7 +74,7 @@ export function CookieConsent() {
             <button
               type="button"
               onClick={() => choose("declined")}
-              className="flex-1 whitespace-nowrap rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground sm:flex-none"
+              className="flex-1 min-h-[44px] inline-flex items-center justify-center whitespace-nowrap rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground sm:flex-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               data-testid="button-cookie-decline"
             >
               Decline
@@ -82,7 +82,7 @@ export function CookieConsent() {
             <button
               type="button"
               onClick={() => choose("accepted")}
-              className="flex-1 whitespace-nowrap rounded-lg bg-primary px-5 py-2 text-sm font-semibold font-display text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:flex-none"
+              className="flex-1 min-h-[44px] inline-flex items-center justify-center whitespace-nowrap rounded-lg bg-primary px-5 py-2 text-sm font-semibold font-display text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:flex-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               data-testid="button-cookie-accept"
             >
               Accept

@@ -36,7 +36,7 @@ export default function About() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-4 py-12 max-w-3xl">
+      <main id="main-content" tabIndex={-1} className="outline-none container mx-auto px-4 py-12 max-w-3xl">
         <nav className="flex items-center gap-2 text-xs text-muted-foreground mb-8" aria-label="Breadcrumb">
           <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
           <span>/</span>

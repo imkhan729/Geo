@@ -19,7 +19,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main id="main-content" className="flex-1 container mx-auto px-4 py-16 max-w-3xl flex flex-col items-center text-center">
+      <main id="main-content" tabIndex={-1} className="outline-none flex-1 container mx-auto px-4 py-16 max-w-3xl flex flex-col items-center text-center">
         <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 text-primary mb-6 ring-8 ring-primary/5">
           <MapPin className="h-10 w-10 animate-pulse" />
         </div>

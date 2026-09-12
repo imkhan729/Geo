@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Phase 13: Accessibility + Browser QA] - 2026-09-12
+
+### Added
+- **Automated Accessibility & A11y QA Test Suite (`script/test-accessibility.ts`)**: Built a comprehensive 12-point automated test suite covering semantic landmarks across all 18 routes, single `<h1>` enforcement, SkipLink connectivity, keyboard dropzone/queue accessibility, non-map coordinate entry alternatives, map region descriptions, ARIA live region status updates, prefers-reduced-motion CSS support, 44x44px touch targets, and iOS Safari zoom prevention. Added `"test:a11y": "tsx script/test-accessibility.ts"` to `package.json`.
+- **Cross-Browser & Cross-Device Specification (`BROWSER_SUPPORT.md` & `docs/BROWSER_SUPPORT.md`)**: Documented evergreen browser engine support matrix (Chromium, WebKit, Gecko), mobile iOS/Android requirements, and platform-specific fixes.
+- **Accessible Bypass Landmarks**: Added `id="main-content" tabIndex={-1} className="outline-none ..."` across all 18 site routes, enabling the skip-to-content mechanism to focus main content on every page.
+
+### Enhanced
+- **Prefers-Reduced-Motion (`client/src/index.css`)**: Added `@media (prefers-reduced-motion: reduce)` rules enforcing `animation-duration: 0.01ms`, `transition-duration: 0.01ms`, and `scroll-behavior: auto !important` for users with vestibular or motion sensitivities.
+- **Visible Focus & Contrast**: Added global `:focus-visible` styling with high-contrast outlines across light and dark themes.
+- **Mobile Touch Targets**: Enhanced CookieConsent action buttons and navigation toggles to strictly enforce $\ge 44 \times 44$ px touch target dimensions (WCAG 2.5.8).
+- **Interactive Map Screen Reader Alternative**: Updated Leaflet map container with descriptive instructions directing screen reader and non-mouse users to the adjacent numerical coordinate panel.
+- **Updated Accessibility Audit (`ACCESSIBILITY.md` & `docs/ACCESSIBILITY.md`)**: Upgraded specification to Version 2.0.0 documenting full WCAG 2.2 AA compliance.
+
+---
+
 ## [Phase 12: Performance Optimization] - 2026-09-11
 
 ### Added

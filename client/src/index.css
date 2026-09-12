@@ -598,3 +598,40 @@
     border-radius: 1px;
   }
 }
+
+/* ============================================================
+   ACCESSIBILITY & CROSS-BROWSER QA (Phase 13 / WCAG 2.2 AA)
+   - Honors prefers-reduced-motion OS settings
+   - Accessible visible focus indicators
+   - Cross-browser scrollbars & touch target helpers (Safari/Firefox/Chrome)
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Ensure focus rings are accessible on keyboard navigation */
+:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+/* Firefox scrollbar accessibility */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+/* Touch target accessibility helper */
+.touch-target-min {
+  min-height: 44px;
+  min-width: 44px;
+}
+

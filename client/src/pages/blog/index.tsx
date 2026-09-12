@@ -162,7 +162,7 @@ export default function BlogIndex() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      <main className="flex-1">
+      <main id="main-content" tabIndex={-1} className="outline-none flex-1">
         {/* Hero */}
         <section className="border-b border-border bg-muted/30 topo-pattern">
           <div className="container mx-auto px-4 max-w-6xl py-14 md:py-20">

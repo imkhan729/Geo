@@ -117,7 +117,7 @@ export function LeafletMap({
       className={`relative w-full rounded-2xl border border-border overflow-hidden bg-muted/20 shadow-sm ${className}`}
       style={{ minHeight: "350px", height: "100%" }}
       role="region"
-      aria-label={readOnly ? "Map showing photo GPS location" : "Interactive location map picker"}
+      aria-label={readOnly ? "Map showing photo GPS location" : "Interactive location map. To set coordinates without using the map, use the latitude and longitude inputs in the adjacent panel."}
     >
       <div ref={mapContainerRef} className="absolute inset-0 z-0" data-testid="leaflet-map" />
 

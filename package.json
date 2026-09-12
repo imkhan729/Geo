@@ -11,6 +11,7 @@
     "perf:measure": "tsx script/measure-performance.ts",
     "indexnow": "tsx script/indexnow-submit.ts",
     "test:indexnow": "tsx script/test-indexnow.ts",
+    "test:a11y": "tsx script/test-accessibility.ts",
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
