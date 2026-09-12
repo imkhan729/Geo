@@ -5,6 +5,23 @@ All notable changes to FreeGeoTagger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Phase 19: Final Pre-Launch QA — 36-Point Verification Suite] - 2026-09-12
+
+### Added
+- **Phase 19 Automated 36-Point Pre-Launch QA Suite (`script/test-prelaunch-qa.ts`)**:
+  - Implemented full 36-point pre-production verification suite achieving a 100% pass rate (36/36 tests passing) across six critical production dimensions:
+    - *Group 1: Core Tool Workflows & Invariants* (Single Photo Geotagger, GPS Finder, EXIF Viewer, Remove GPS, Coordinate Converter, Improved Batch Workflow).
+    - *Group 2: Zero-Upload Invariant & Privacy Guardrails* (Zero upload endpoints, in-memory Uint8Array/Canvas binary manipulation, zero-telemetry analytics scrubbing, zero database/auth dependencies, strict HSTS/CSP security headers, transparent privacy policy).
+    - *Group 3: Technical SEO & Static Prerendering* (21 canonical routes, title/description budgets, robots.txt & sitemap.xml alignment, 20 prerendered static subpages + index.html, 100% zero-thin content milestone, zero orphan pages).
+    - *Group 4: Structured Data & Schema Markup* (WebSite, Organization with verified logo ImageObject, WebApplication schemas, Article schema on all 9 guides, FAQPage schemas, BreadcrumbList schemas, Open Graph & Twitter cards with 1200x630 og:image).
+    - *Group 5: Web Performance & Budget Guardrails* (Eager JS <= 400 KB, Critical CSS <= 150 KB, Initial HTML <= 50 KB, CLS = 0.00, async lazy-splitting of heic2any and jszip, system font stack).
+    - *Group 6: Accessibility, Cross-Browser & Hostinger Packaging* (WCAG 2.2 AA landmarks on all 21 routes, single h1 headings, skip link, mobile touch targets >= 44px, 16px iOS auto-zoom guard, prefers-reduced-motion, monetization master switch disabled, verified Hostinger forward-slash deployment zip packaging).
+  - Added `"test:qa": "tsx script/test-prelaunch-qa.ts"` command to `package.json`.
+- **Hostinger Production Artifact Verification**:
+  - Executed `powershell -File script/package-hostinger.ps1`.
+  - Packaged 90 production files into `freegeotagger-hostinger-static.zip` (1.79 MB).
+  - Verified forward-slash path normalization, all 9 required root files (`.htaccess`, `index.html`, `robots.txt`, `sitemap.xml`, `llms.txt`, `og-image.png`, `ads.txt`, `404.html`, `favicon.png`), 20 prerendered SEO routes, and 9 image assets.
+
 ## [Phase 18: Page 3 — Blog Hub Expansion & Topical Cluster Architecture] - 2026-09-12
 
 ### Added
