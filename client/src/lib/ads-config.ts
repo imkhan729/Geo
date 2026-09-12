@@ -75,6 +75,15 @@ export const ADS_CONFIG: AdsSystemConfig = {
       maxWidth: 728,
       description: "Placed below the GPS photo inspection results card.",
     },
+    "exif-viewer-below-tool": {
+      id: "exif-viewer-below-tool",
+      name: "EXIF Viewer Below Tool Banner",
+      format: "horizontal",
+      minHeightMobile: 100,
+      minHeightDesktop: 90,
+      maxWidth: 728,
+      description: "Placed below the EXIF photo inspection results card and above educational content.",
+    },
     "article-mid": {
       id: "article-mid",
       name: "Article Mid-Body Unit",

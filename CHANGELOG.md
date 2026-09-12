@@ -5,6 +5,38 @@ All notable changes to FreeGeoTagger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Phase 17: Tool 1 — EXIF Viewer] - 2026-09-12
+
+### Added
+- **Interactive In-Browser EXIF Metadata Viewer (`client/src/pages/exif-viewer.tsx`)**: Built a fully responsive, accessible standalone tool page at `/exif-viewer` supporting JPG, PNG, WebP, and HEIC images with zero server uploads (100% client-side memory extraction).
+- **Section 28 Grouped Metadata Architecture (`client/src/lib/exif-utils.ts`)**: Structured raw binary EXIF tags into clean, human-readable functional categories:
+  - *Camera & Exposure*: Make, Model, Lens Model, Focal Length, 35mm Equivalent, Aperture (F-number), Exposure Time, ISO Sensitivity, Exposure Program, Metering Mode, Flash, and White Balance.
+  - *Date & Time*: DateTimeOriginal, Date Digitized, Date Modified, Subsecond precision, and UTC Time Offset.
+  - *Dimensions & Geometry*: Native pixel width/height, Megapixel count, Aspect Ratio (4:3, 16:9, etc.), Color Space profile, and Orientation matrix.
+  - *GPS Geolocation*: Decimal Degrees and DMS coordinates, Hemisphere indicators, Altitude, interactive Leaflet map preview with custom pinpoint, Copy Coordinates button, and external Google Maps & OpenStreetMap links.
+  - *Software & Technical*: Firmware, Editing Software, Compression mode, Bits Per Sample, and Byte size.
+  - *Copyright & Attribution*: Artist, Creator, Copyright notice, and Image Description.
+- **Section 28 Mandatory Conversion CTAs & Internal Links**:
+  - Direct action button to Geotag/Add GPS via primary tool (`/`).
+  - Direct action button to open coordinates in GPS Photo Finder (`/gps-finder`).
+  - Educational reference link to guide on How to Remove GPS Data (`/blog/how-to-remove-gps-data-from-photos`).
+- **Data Export & Analysis Actions**:
+  - Export full metadata as structured JSON download.
+  - Copy formatted metadata summary to clipboard.
+  - Searchable, collapsible raw EXIF tags table with tag filtering.
+- **Structured Data & SERP Compliance**:
+  - Registered `/exif-viewer` in `SEO_CONFIG` with SERP-validated Title (56 chars) and Meta Description (153 chars).
+  - Injected `WebPage`, `BreadcrumbList`, `WebApplication`, and `FAQPage` JSON-LD schemas.
+  - Added 6-item accordion FAQ section and 1,000+ word technical guide on EXIF standards.
+- **Async Code Splitting & Performance Budget Preservation**:
+  - Code-split `ExifViewer` using `React.lazy()` and dynamically imported `exifreader` within `extractExifData` to keep eager JS bundle at 393.39 KB (< 400 KB budget).
+- **Monetization & Layout Protection**:
+  - Added `exif-viewer-below-tool` to `ADS_CONFIG` with reserved min-heights (100px mobile, 90px desktop) strictly below the tool container.
+- **Static Route Prerendering & Apache Routing**:
+  - Added `/exif-viewer` static generation in `script/generate-seo-pages.ts` and rewrite rule in `.htaccess`.
+  - Added `/exif-viewer` to `client/public/sitemap.xml` and canonical route inventory in `server/indexnow.ts`.
+- **Automated Verification Suite (`script/test-exif-viewer.ts`)**: Implemented 42-point test suite covering Section 28 grouped schema, DMS formatters, aspect ratio calculation, graceful fallback for stripped photos, summary generation, mandatory CTAs, privacy invariant audit, JSON-LD schemas, and ad placement safety. Added `"test:exif-viewer"` to `package.json`.
+
 ---
 
 ## [Phase 16: Ads Readiness Only] - 2026-09-12

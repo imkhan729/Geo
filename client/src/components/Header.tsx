@@ -32,6 +32,7 @@ export function Header() {
         { href: "/#features", label: "Features", testId: "link-features" },
         { href: "/#how-it-works", label: "How it Works", testId: "link-how-it-works" },
         { href: "/gps-finder", label: "GPS Finder", testId: "link-gps-finder" },
+        { href: "/exif-viewer", label: "EXIF Viewer", testId: "link-exif-viewer" },
         { href: "/blog", label: "Blog", testId: "link-blog" },
     ];
 

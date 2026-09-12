@@ -980,13 +980,13 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
               <Card className="p-6 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent shadow-sm flex flex-col justify-between">
                 <div>
                   <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center mb-4 text-primary font-bold">
                     <MapPin className="h-5 w-5" />
                   </div>
-                  <h3 className="font-display text-xl font-bold mb-2 text-foreground">Photo Geotagger (This Tool)</h3>
+                  <h3 className="font-display text-lg font-bold mb-2 text-foreground">Photo Geotagger (This Tool)</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                     Use this tool when your photo lacks location coordinates, or has incorrect coordinates. You choose where the photo belongs, and FreeGeoTagger writes new EXIF GPS tags directly into the image file.
                   </p>
@@ -1001,15 +1001,34 @@ export default function Home() {
                   <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-4 text-foreground font-bold">
                     <Search className="h-5 w-5" />
                   </div>
-                  <h3 className="font-display text-xl font-bold mb-2 text-foreground">GPS Photo Finder</h3>
+                  <h3 className="font-display text-lg font-bold mb-2 text-foreground">GPS Photo Finder</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                    Use GPS Finder when an image already has embedded location data and you simply want to view where it was captured on a map, copy the coordinates, or check camera metadata.
+                    Use GPS Finder when an image already has embedded location data and you simply want to view where it was captured on a map, copy coordinates, or open Google Maps.
                   </p>
                 </div>
                 <div>
                   <Link href="/gps-finder">
                     <a className="inline-flex items-center gap-1.5 text-primary hover:underline font-medium text-sm">
                       Open GPS Photo Finder <ArrowRight className="h-4 w-4" />
+                    </a>
+                  </Link>
+                </div>
+              </Card>
+
+              <Card className="p-6 rounded-2xl border border-border bg-card shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-4 text-foreground font-bold">
+                    <Camera className="h-5 w-5" />
+                  </div>
+                  <h3 className="font-display text-lg font-bold mb-2 text-foreground">EXIF Metadata Viewer</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                    Use EXIF Viewer to inspect complete technical photography data: camera settings, ISO, aperture, shutter speed, lens models, dimensions, timestamps, and raw EXIF tags.
+                  </p>
+                </div>
+                <div>
+                  <Link href="/exif-viewer">
+                    <a className="inline-flex items-center gap-1.5 text-primary hover:underline font-medium text-sm">
+                      Open EXIF Viewer <ArrowRight className="h-4 w-4" />
                     </a>
                   </Link>
                 </div>
@@ -1126,6 +1145,7 @@ export default function Home() {
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
               {[
                 { title: "GPS Photo Finder", href: "/gps-finder", desc: "Extract and view existing GPS coordinates on an interactive map." },
+                { title: "EXIF Metadata Viewer", href: "/exif-viewer", desc: "Inspect camera settings, ISO, exposure, lens details, and raw EXIF tags." },
                 { title: "Bulk Geotagging Guide", href: "/blog/how-to-bulk-geotag-photos", desc: "Learn batch workflows for tagging hundreds of photos simultaneously." },
                 { title: "Add GPS to iPhone Photos", href: "/blog/how-to-add-gps-to-iphone-photos", desc: "Step-by-step tutorial for iOS camera photos and AirDrop files." },
                 { title: "Add GPS to Android Photos", href: "/blog/how-to-geotag-photos-android", desc: "Easy guide for geotagging photos on Android smartphones." },
@@ -1133,7 +1153,6 @@ export default function Home() {
                 { title: "Remove GPS from Photos", href: "/blog/how-to-remove-gps-data-from-photos", desc: "Protect privacy by stripping location data before public sharing." },
                 { title: "Fix Wrong GPS Location", href: "/blog/how-to-fix-wrong-gps-location-on-photos", desc: "Resolve drifting coordinates, clock drift, and misplaced pins." },
                 { title: "Best Free Geotagging Tools", href: "/blog/best-free-photo-geotagging-tools", desc: "Comparison of free online, desktop, and CLI geotaggers in 2026." },
-                { title: "Photo Geotagging Blog", href: "/blog", desc: "Complete library of photography and metadata tutorials." },
               ].map(({ title, href, desc }) => (
                 <Card key={title} className="p-4.5 rounded-xl border border-border bg-card shadow-sm hover:border-primary/40 transition-colors flex flex-col justify-between">
                   <div>

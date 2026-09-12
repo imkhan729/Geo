@@ -156,6 +156,13 @@ export const SEO_CONFIG = {
     ogType: "website",
     keywords: "gps finder, extract gps from photo, find location of photo, photo gps extractor, read exif gps data, where was photo taken, image location finder, exif viewer online"
   },
+  exifViewer: {
+    title: "EXIF Viewer Online Free – View Image Metadata in Browser",
+    description: "Inspect full EXIF photo metadata online free in your browser. View camera settings, ISO, exposure, lens data, and GPS tags with 100% client-side privacy.",
+    canonical: "/exif-viewer",
+    ogType: "website",
+    keywords: "exif viewer, online exif viewer, view photo metadata, image exif reader, check exif data online, camera settings viewer, view photo gps exif, photo metadata viewer"
+  },
   privacy: {
     title: "Privacy Policy – How We Handle Your Photos and Data",
     description: "How FreeGeoTagger handles your data: photos processed locally in your browser, cookie use, advertising partners, and your GDPR and CCPA rights.",

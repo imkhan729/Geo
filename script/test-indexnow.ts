@@ -148,8 +148,8 @@ async function runTests() {
   );
 
   // 7. Canonical Routes Coverage
-  console.log("\n-- Canonical Routes Coverage (17/17) --");
-  assert(CANONICAL_ROUTES.length === 17, "Exactly 17 canonical routes defined");
+  console.log("\n-- Canonical Routes Coverage (18/18) --");
+  assert(CANONICAL_ROUTES.length === 18, "Exactly 18 canonical routes defined");
   let allRoutesValid = true;
   for (const route of CANONICAL_ROUTES) {
     const fullUrl = `https://${INDEXNOW_HOST}${route === "/" ? "/" : route}`;
@@ -158,13 +158,14 @@ async function runTests() {
       console.error(`Failed validation on route: ${fullUrl}`);
     }
   }
-  assert(allRoutesValid, "All 17 canonical site routes pass URL validation");
+  assert(allRoutesValid, "All 18 canonical site routes pass URL validation");
 
   // 8. Git change path mapper
   console.log("\n-- Git Changed Files Mapper --");
   const sampleChangedFiles = [
     "client/src/pages/home.tsx",
     "client/src/pages/gps-finder.tsx",
+    "client/src/pages/exif-viewer.tsx",
     "client/src/pages/blog/how-to-bulk-geotag-photos.tsx",
     "README.md", // Should be ignored (not a page)
     "package.json", // Should be ignored
@@ -173,8 +174,9 @@ async function runTests() {
   assert(
     mappedUrls.includes("https://freegeotagger.com/") &&
       mappedUrls.includes("https://freegeotagger.com/gps-finder") &&
+      mappedUrls.includes("https://freegeotagger.com/exif-viewer") &&
       mappedUrls.includes("https://freegeotagger.com/blog/how-to-bulk-geotag-photos") &&
-      mappedUrls.length === 3,
+      mappedUrls.length === 4,
     "mapChangedFilesToUrls correctly maps source files to canonical URLs and ignores non-page files"
   );
 

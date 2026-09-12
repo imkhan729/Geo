@@ -646,6 +646,11 @@ export default function GpsFinder() {
                         <MapPin className="h-4 w-4 mr-2" /> Add GPS to More Photos
                       </Button>
                     </Link>
+                    <Link href="/exif-viewer">
+                      <Button variant="outline" size="lg" data-testid="button-view-exif">
+                        <Camera className="h-4 w-4 mr-2" /> View Full EXIF Data
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               )}

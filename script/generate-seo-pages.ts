@@ -58,6 +58,7 @@ type RouteMeta = {
 const commonLinks = [
   { href: "/", label: "Geotag Photos Free" },
   { href: "/gps-finder", label: "GPS Finder" },
+  { href: "/exif-viewer", label: "EXIF Viewer" },
   { href: "/blog", label: "Photo Geotagging Blog" },
   { href: "/about", label: "About FreeGeoTagger" },
   { href: "/contact", label: "Contact" },
@@ -138,6 +139,239 @@ const gpsFinderFaqs: Array<{ q: string; a: string }> = [
   { q: "Why doesn't my photo have GPS data?", a: "Photos may lack GPS data if location services were disabled, the image was edited and metadata was stripped, the camera had no GPS, or the image was downloaded from social media, which often removes location data." },
   { q: "How accurate are the GPS coordinates?", a: "Accuracy depends on the device that captured the photo. Modern smartphones typically provide accuracy within 5–10 meters, and professional cameras with GPS modules can be even more accurate." },
 ];
+
+const exifViewerFaqs: Array<{ q: string; a: string }> = [
+  {
+    q: "What is EXIF data in a photo?",
+    a: "EXIF (Exchangeable Image File Format) is an international metadata standard that records camera settings, exposure values, date and time stamps, image dimensions, and GPS coordinates directly inside digital image files.",
+  },
+  {
+    q: "Are my photos uploaded to your servers when using the EXIF Viewer?",
+    a: "No. All file reading, metadata parsing, and analysis happen locally in your web browser using JavaScript. Your images are never transmitted to any server, keeping personal photos and location details 100% confidential.",
+  },
+  {
+    q: "Can I view EXIF metadata from iPhone HEIC photos?",
+    a: "Yes. FreeGeoTagger automatically parses HEIC and HEIF photos locally in your browser, extracting camera hardware details, computational photography tags, and GPS coordinates without requiring manual conversion.",
+  },
+  {
+    q: "Why does my photo have no EXIF data?",
+    a: "Photos may lack EXIF data if they were downloaded from social media platforms (such as Facebook, Instagram, or Twitter) or sent through chat apps (like WhatsApp), which automatically strip metadata to protect privacy and reduce file sizes.",
+  },
+  {
+    q: "How do I edit or add GPS data to a photo after viewing it?",
+    a: "You can click the 'Geotag This Photo' button to open FreeGeoTagger's free geotagging tool, where you can place a pin on an interactive map or search any address to embed new coordinates into the photo.",
+  },
+  {
+    q: "What is the difference between the EXIF Viewer and GPS Finder?",
+    a: "The GPS Finder focuses specifically on extracting location coordinates to show capture spots on a map. The EXIF Viewer provides a comprehensive technical breakdown of all camera settings, exposure values, lens data, timestamps, and dimensions in addition to GPS data.",
+  },
+];
+
+const exifViewerContentHtml = `
+<h1>EXIF Viewer — Inspect Camera Settings, EXIF Tags &amp; GPS Metadata Online</h1>
+<p>FreeGeoTagger's free online <strong>EXIF Viewer</strong> lets you inspect complete technical metadata embedded within digital photographs directly in your web browser. Discover camera hardware make and model, optical lens specifications, focal length, aperture f-stop, shutter speed, ISO sensitivity, capture timestamps, color space profiles, and embedded GPS coordinates with <strong>100% client-side privacy and zero server uploads</strong>.</p>
+<p>Unlike conventional online metadata viewers that transmit your sensitive family photos, real estate assets, or confidential investigative evidence to third-party web servers, FreeGeoTagger parses EXIF, TIFF, XMP, and IPTC headers strictly in-memory inside your device's browser sandbox. Your pictures are never uploaded, stored, logged, or indexed by any remote server.</p>
+
+<h2>How to View Photo EXIF Metadata in 3 Simple Steps</h2>
+<ol>
+<li><strong>Select or drop your photo</strong> — Drag and drop any JPG, PNG, WebP, or HEIC image into the dropzone, or click the file picker to browse images from your desktop computer or mobile phone.</li>
+<li><strong>Instant client-side extraction</strong> — The browser parses image file header segments (APP1, ExifIFD, GPSInfoIFD, InteroperabilityIFD) instantly using JavaScript without generating any network upload traffic.</li>
+<li><strong>Analyze, inspect and export</strong> — Review camera exposure settings, view GPS coordinates on an interactive OpenStreetMap view, copy formatted DMS coordinates, or export the raw tag inventory as a structured JSON document.</li>
+</ol>
+
+<h2>What Is EXIF Data in Digital Photography?</h2>
+<p>EXIF stands for <strong>Exchangeable Image File Format</strong>, a global technical specification established by JEITA (Japan Electronics and Information Technology Industries Association) and CIPA. First introduced in 1995 and maintained through modern standards like EXIF 2.32, the standard defines how digital cameras, smartphones, drones, and scanners encapsulate capture metadata directly within image file containers.</p>
+<p>When your camera captures an exposure, the onboard image processor records optical telemetry from the lens sensors, ambient metering arrays, internal chronometers, and GPS satellite receivers into standardized Image File Directory (IFD) structures. This metadata travels with the photograph across storage drives, editing workflows, and digital asset management systems.</p>
+
+<h2>Comprehensive Structured Metadata Breakdown</h2>
+<p>FreeGeoTagger organizes complex raw binary tags into clean, human-readable functional categories so photographers, researchers, and privacy-conscious users can quickly find the exact attributes they need:</p>
+
+<h3>1. Camera Hardware &amp; Optics</h3>
+<ul>
+<li><strong>Camera Manufacturer (Make):</strong> Identifies the camera company (e.g., Canon, Nikon, Sony, Apple, Fujifilm, Leica).</li>
+<li><strong>Camera Model:</strong> Precise body name and revision (e.g., Sony Alpha A7 IV, iPhone 15 Pro, Canon EOS R5).</li>
+<li><strong>Lens Model:</strong> Identifies the mounted optical lens, focal range, and maximum aperture (e.g., FE 24-70mm F2.8 GM II).</li>
+<li><strong>Focal Length:</strong> The physical focal length in millimeters used for the shot, alongside the 35mm sensor equivalent comparison.</li>
+<li><strong>Lens Serial Number:</strong> Unique manufacturing identification number embedded by professional glass manufacturers.</li>
+</ul>
+
+<h3>2. Exposure &amp; Capture Settings</h3>
+<ul>
+<li><strong>Aperture (F-Number):</strong> Optical iris opening diameter (e.g., f/1.8, f/2.8, f/8.0), dictating depth of field and light throughput.</li>
+<li><strong>Shutter Speed (Exposure Time):</strong> Sensor exposure duration in fractions of a second (e.g., 1/250s, 1/1000s, 30s bulb).</li>
+<li><strong>ISO Sensitivity:</strong> Sensor signal gain and amplification rating (e.g., ISO 100, ISO 800, ISO 6400).</li>
+<li><strong>Exposure Bias:</strong> Intentional exposure compensation applied in EV steps (e.g., +0.3 EV, -1.0 EV).</li>
+<li><strong>Metering Mode:</strong> Evaluative, spot, center-weighted average, or multi-zone luminance analysis algorithm.</li>
+<li><strong>Flash State:</strong> Indicates whether an electronic strobe or LED fill light was triggered, including red-eye reduction status.</li>
+<li><strong>White Balance:</strong> Automatic white balance algorithm or manual color temperature preset (e.g., Daylight, Shade, Tungsten).</li>
+</ul>
+
+<h3>3. Image Geometry &amp; Display Metrics</h3>
+<ul>
+<li><strong>Pixel Dimensions:</strong> Native width and height expressed in total horizontal and vertical pixel grids.</li>
+<li><strong>Megapixel Resolution:</strong> True optical resolution computed from width and height (e.g., 24.2 MP, 48.0 MP).</li>
+<li><strong>Aspect Ratio:</strong> Normalized frame proportions (e.g., 3:2 standard 35mm, 4:3 smartphone/micro four-thirds, 16:9 widescreen).</li>
+<li><strong>Color Space:</strong> Color gamut mapping standard, such as sRGB IEC61966-2.1 or Display P3 wide gamut.</li>
+<li><strong>Orientation:</strong> EXIF rotation matrix flag (Top-Left, Right-Top, etc.) directing display viewers how to orient vertical captures.</li>
+</ul>
+
+<h3>4. Geolocation &amp; Spatial Telemetry</h3>
+<ul>
+<li><strong>Latitude &amp; Longitude:</strong> High-precision geographic coordinates formatted in both Decimal Degrees (DD) and Degrees, Minutes, Seconds (DMS).</li>
+<li><strong>Hemisphere References:</strong> North/South and East/West coordinate hemisphere indicators.</li>
+<li><strong>Altitude:</strong> Height above or below mean sea level calculated from satellite trilateration.</li>
+<li><strong>Map Visualization:</strong> Interactive OpenStreetMap integration showing the capture location pinpoint with direct Google Maps navigation links.</li>
+</ul>
+
+<h3>5. Timestamps &amp; Chronology</h3>
+<ul>
+<li><strong>Date &amp; Time Original:</strong> Exact moment the shutter was pressed and photons struck the sensor.</li>
+<li><strong>Subsecond Precision:</strong> Millisecond fractions enabling forensic synchronization across high-speed burst sequences.</li>
+<li><strong>Modification Timestamp:</strong> Records when software or editors last altered file attributes.</li>
+</ul>
+
+<h3>6. Software &amp; Technical Attributes</h3>
+<ul>
+<li><strong>Firmware &amp; Software:</strong> In-camera operating system version or desktop software used to process the image (e.g., Adobe Photoshop, Lightroom, Capture One).</li>
+<li><strong>File Size &amp; Compression:</strong> Exact byte length and compression format (Baseline DCT JPEG, Deflate PNG, Lossless VP8X WebP).</li>
+<li><strong>Copyright &amp; Artist:</strong> IPTC/EXIF rights declarations identifying the photographer, creator organization, and legal copyright notices.</li>
+</ul>
+
+<h2>EXIF Tag Technical Specification Reference</h2>
+<p>The following table details key EXIF 2.32 standard tag identifiers, hexadecimal memory IDs, data types, and typical field representations parsed by our viewer engine:</p>
+<table>
+<thead>
+<tr>
+<th>Tag Name</th>
+<th>Hex ID</th>
+<th>IFD Directory</th>
+<th>Data Format</th>
+<th>Sample Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Make</td>
+<td>0x010F</td>
+<td>0th IFD</td>
+<td>ASCII</td>
+<td>Sony</td>
+<td>Manufacturer of recording equipment</td>
+</tr>
+<tr>
+<td>Model</td>
+<td>0x0110</td>
+<td>0th IFD</td>
+<td>ASCII</td>
+<td>ILCE-7M4</td>
+<td>Model name or number of camera body</td>
+</tr>
+<tr>
+<td>ExposureTime</td>
+<td>0x829A</td>
+<td>Exif IFD</td>
+<td>Rational</td>
+<td>1/500 sec</td>
+<td>Exposure duration in fractional seconds</td>
+</tr>
+<tr>
+<td>FNumber</td>
+<td>0x829D</td>
+<td>Exif IFD</td>
+<td>Rational</td>
+<td>f/2.8</td>
+<td>Lens focal aperture ratio</td>
+</tr>
+<tr>
+<td>ISOSpeedRatings</td>
+<td>0x8827</td>
+<td>Exif IFD</td>
+<td>Short</td>
+<td>400</td>
+<td>ISO photographic speed rating</td>
+</tr>
+<tr>
+<td>DateTimeOriginal</td>
+<td>0x9003</td>
+<td>Exif IFD</td>
+<td>ASCII</td>
+<td>2026:09:12 14:32:10</td>
+<td>Date and time when image was captured</td>
+</tr>
+<tr>
+<td>FocalLength</td>
+<td>0x920A</td>
+<td>Exif IFD</td>
+<td>Rational</td>
+<td>35.0 mm</td>
+<td>Actual focal length of lens</td>
+</tr>
+<tr>
+<td>LensModel</td>
+<td>0xA434</td>
+<td>Exif IFD</td>
+<td>ASCII</td>
+<td>FE 35mm F1.4 GM</td>
+<td>Complete commercial model designation of lens</td>
+</tr>
+<tr>
+<td>GPSLatitude</td>
+<td>0x0002</td>
+<td>GPS IFD</td>
+<td>Rational[3]</td>
+<td>40/1, 46/1, 588/100</td>
+<td>Latitude in degrees, minutes, and seconds</td>
+</tr>
+<tr>
+<td>GPSLongitude</td>
+<td>0x0004</td>
+<td>GPS IFD</td>
+<td>Rational[3]</td>
+<td>73/1, 58/1, 235/100</td>
+<td>Longitude in degrees, minutes, and seconds</td>
+</tr>
+<tr>
+<td>GPSAltitude</td>
+<td>0x0006</td>
+<td>GPS IFD</td>
+<td>Rational</td>
+<td>154/10 m</td>
+<td>Altitude measurement above sea level</td>
+</tr>
+</tbody>
+</table>
+
+<h2>Why Inspect EXIF Metadata? Practical Real-World Applications</h2>
+<p>Examining image metadata serves crucial functions across modern digital photography, legal compliance, and web privacy:</p>
+<ul>
+<li><strong>Photographic Skill Development:</strong> Inspect the exact camera configurations behind striking shots. Review shutter speeds in sports photography, apertures in portrait bokeh, or ISO settings in night astrophotography to hone your own shooting skills.</li>
+<li><strong>Digital Asset Management:</strong> Ensure batch export catalogs contain accurate copyright notices, artist names, and creation timestamps before syndicating imagery across media agencies.</li>
+<li><strong>Real Estate &amp; Insurance Documentation:</strong> Validate that listing and damage photos were captured on the exact dates and geographic locations claimed, preventing fraudulent or outdated asset submissions.</li>
+<li><strong>Privacy Protection &amp; Security Audits:</strong> Verify whether photos taken around your home, workplace, or children's schools contain sensitive embedded GPS coordinates before posting to forums, marketplaces, or personal portfolios. If sensitive location markers are found, use our comprehensive guide to <a href="/blog/how-to-remove-gps-data-from-photos">strip GPS metadata safely</a>.</li>
+</ul>
+
+<h2>Why Do Some Photos Have No EXIF Data?</h2>
+<p>If you upload an image and our viewer displays an empty metadata notice, several common scenarios explain the absence of EXIF records:</p>
+<ul>
+<li><strong>Social Media Sanitization:</strong> Networks like Facebook, Instagram, Twitter/X, and WhatsApp automatically scrub all EXIF, IPTC, and GPS tags upon upload to reduce bandwidth loads and protect user privacy. Downloaded images from these networks rarely retain original capture tags.</li>
+<li><strong>Screenshots &amp; Screen Captures:</strong> Images captured using operating system screen grab tools (such as Windows Snipping Tool or macOS Grab) create synthetic raster buffers that do not originate from optical camera sensors and therefore contain no EXIF hardware blocks.</li>
+<li><strong>Privacy-Conscious Camera Settings:</strong> Modern iOS and Android operating systems permit users to disable location services for camera applications, resulting in images that lack GPS headers while preserving exposure metrics.</li>
+<li><strong>Editing Software Export Presets:</strong> Export settings in applications like Photoshop or Lightroom frequently enable 'Strip Metadata' or 'Export for Web' by default to optimize file transfer sizes.</li>
+</ul>
+
+<h2>Essential Next Steps: Geotag, View, or Clean Your Photos</h2>
+<p>Depending on what you discover in your photo's EXIF records, FreeGeoTagger provides complete browser-based solutions:</p>
+<ul>
+<li><strong>Missing or Incorrect GPS Data?</strong> Use our primary <a href="/">Free Photo Geotagger</a> to place a pinpoint on an interactive map or search any address to inject verified coordinates into your photos.</li>
+<li><strong>Want to Inspect Location Coordinates Exclusively?</strong> Check out our dedicated <a href="/gps-finder">GPS Photo Finder</a> to visualize geographical coordinates with zero distraction.</li>
+<li><strong>Need to Remove Sensitive Location Markers?</strong> Read our comprehensive tutorial on <a href="/blog/how-to-remove-gps-data-from-photos">how to remove GPS data from photos</a> before sharing your files on public forums or classified ads.</li>
+<li><strong>Managing Large Photo Libraries?</strong> Discover batch geotagging workflows with our guide on <a href="/blog/how-to-bulk-geotag-photos">how to bulk geotag photos</a> efficiently.</li>
+</ul>
+
+<h2>Frequently Asked Questions</h2>
+${exifViewerFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</p>`).join("\n")}
+`.trim();
 
 // ── Rich homepage content (mirrors the in-app landing page sections) ──
 const homeContentHtml = `
@@ -474,6 +708,15 @@ ${gpsFinderFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</
 `.trim(),
     links: commonLinks,
     faqs: gpsFinderFaqs,
+  },
+  {
+    path: "/exif-viewer",
+    file: "exif-viewer.html",
+    ogType: "website",
+    h1: "EXIF Viewer — View Image Metadata Online Free",
+    contentHtml: exifViewerContentHtml,
+    links: commonLinks,
+    faqs: exifViewerFaqs,
   },
   {
     path: "/blog",

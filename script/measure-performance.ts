@@ -100,7 +100,6 @@ export function measurePerformance(): {
       type === "html" ||
       criticalScriptMatches.includes(file) ||
       criticalCssMatches.includes(file) ||
-      file.startsWith("index-") && (ext === ".js" || ext === ".css") ||
       file.startsWith("vendor-") ||
       file.startsWith("react-") ||
       file.startsWith("radix-");

@@ -51,7 +51,8 @@ export default defineConfig({
             id.includes("node_modules/heic2any") ||
             id.includes("node_modules/jszip") ||
             id.includes("node_modules/file-saver") ||
-            id.includes("node_modules/pako")
+            id.includes("node_modules/pako") ||
+            id.includes("node_modules/exifreader")
           ) return undefined;
           if (id.includes("node_modules/leaflet")) return "leaflet";
           if (id.includes("node_modules/react-dom")) return "react-dom";

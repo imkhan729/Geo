@@ -14,6 +14,7 @@ export const BING_SITE_AUTH_CODE = "E0D90E8F27DE42939B95E0528659FECA";
 export const CANONICAL_ROUTES = [
   "/",
   "/gps-finder",
+  "/exif-viewer",
   "/blog",
   "/blog/best-free-photo-geotagging-tools",
   "/blog/how-to-add-gps-to-iphone-photos",
@@ -142,6 +143,7 @@ export function mapChangedFilesToUrls(filePaths: string[], host = INDEXNOW_HOST)
   const fileMap: Record<string, string> = {
     "client/src/pages/home.tsx": "/",
     "client/src/pages/gps-finder.tsx": "/gps-finder",
+    "client/src/pages/exif-viewer.tsx": "/exif-viewer",
     "client/src/pages/about.tsx": "/about",
     "client/src/pages/contact.tsx": "/contact",
     "client/src/pages/privacy.tsx": "/privacy",
