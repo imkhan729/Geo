@@ -1,11 +1,12 @@
 # Project Status
 
-Current phase: Phase 13 — Accessibility + Browser QA
+Current phase: Phase 14 — Security + Privacy Hardening
 Status: PASS
-Last completed phase: Phase 13 — Accessibility + Browser QA
+Last completed phase: Phase 14 — Security + Privacy Hardening
 Current branch: master
-Latest commit: Pending Phase 13 commit
+Latest commit: Pending Phase 14 commit
 Tests passing:
+- Security & Privacy test suite (`npm run test:security`) PASS (38/38 tests passing: Apache .htaccess security headers with HSTS preload, nosniff, SAMEORIGIN, Referrer-Policy, Permissions-Policy, X-XSS-Protection, Content-Security-Policy; Express security middleware; logging redaction without query strings or response bodies; live geocoding query bounds & control character stripping; reverse geocoding numeric range validation; in-memory sliding-window IP rate limiting returning HTTP 429 + Retry-After; zero server file upload endpoints; client bundle secret isolation; Dropzone 20MB limit & SVG disallow; Object URL memory leak cleanup)
 - Accessibility & A11y QA test suite (`npm run test:a11y`) PASS (12/12 tests passing: all 18 routes with <main id="main-content" tabIndex={-1}>, single H1 per page, SkipLink targeting, keyboard dropzone/queue, non-map coordinate alternatives, map region descriptions, ARIA live regions, prefers-reduced-motion, >=44px touch targets, iOS Safari auto-zoom prevention, visible focus indicators)
 - TypeScript check (`npm run check`) PASS (0 errors)
 - Production build & static prerender (`npm run build`) PASS (17/17 static routes generated)
@@ -19,9 +20,8 @@ Tests passing:
 - Metadata engine verification suite (`npx tsx script/test-metadata-engine.ts`) PASS (8/8 tests passing)
 - WCAG 2.2 AA Contrast & Touch Targets PASS
 Known issues:
-- Legacy database, auth, and animation dependencies (`drizzle-orm`, `pg`, `passport`, `connect-pg-simple`) exist from initial scaffold and can be pruned safely in subsequent phases (Phase 14).
 - Trust pages (`/about`, `/contact`, `/privacy`, `/terms`, `/cookies`) and blog index are under 800 words and should be expanded with rich, helpful first-party content (Phase 18).
-Next approved phase: Phase 14 — Code Cleanup + Dead Code Elimination (Awaiting user approval: "NEXT")
+Next approved phase: Phase 15 — Analytics + Conversion Measurement (Awaiting user approval: "NEXT")
 
 
 

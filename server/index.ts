@@ -33,25 +33,47 @@ export function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
+// Security Headers Middleware
+app.use((_req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "geolocation=(self), camera=(), microphone=()");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+
+  if (process.env.NODE_ENV === "production") {
+    res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+  }
+
+  // Content Security Policy compatible with Google Analytics 4, AdSense, OpenStreetMap, and Leaflet
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://pagead2.googlesyndication.com; " +
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+    "font-src 'self' https://fonts.gstatic.com data:; " +
+    "img-src 'self' data: blob: https://*.tile.openstreetmap.org https://unpkg.com https://www.google-analytics.com https://*.doubleclick.net https://pagead2.googlesyndication.com; " +
+    "connect-src 'self' https://nominatim.openstreetmap.org https://www.google-analytics.com https://analytics.google.com https://*.doubleclick.net https://pagead2.googlesyndication.com; " +
+    "frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; " +
+    "worker-src 'self' blob:; " +
+    "object-src 'none'; " +
+    "base-uri 'self'; " +
+    "form-action 'self';"
+  );
+
+  next();
+});
+
+// Privacy-Safe Request Logging Middleware (Zero GPS coordinates or JSON response dumps)
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
 
   res.on("finish", () => {
     const duration = Date.now() - start;
     if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
+      // Strips query strings and response payloads to ensure zero PII/GPS leakage
+      const logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
       log(logLine);
     }
   });

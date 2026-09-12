@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Phase 14: Security + Privacy Hardening] - 2026-09-12
+
+### Added
+- **Automated Security & Privacy Test Suite (`script/test-security-privacy.ts`)**: Implemented a comprehensive 38-point automated test suite covering Apache `.htaccess` security headers (HSTS preload, nosniff, SAMEORIGIN, Referrer-Policy, Permissions-Policy, X-XSS-Protection, Content-Security-Policy), Express security middleware, logging redaction (zero query params or response bodies logged), geocoding input validation, in-memory IP rate limiting returning HTTP 429 + Retry-After, zero server upload endpoint verification, client bundle secret isolation, Dropzone 20MB limit & SVG disallow, and Object URL memory leak cleanup. Added `"test:security": "tsx script/test-security-privacy.ts"` to `package.json`.
+- **Comprehensive Security & Privacy Architecture Specification (`SECURITY_PRIVACY.md` & `docs/SECURITY_PRIVACY.md`)**: Fully documented zero server image upload architecture, local-first WebAssembly/Canvas processing, zero GPS telemetry, HTTP security headers, in-memory rate limiting, input validation, logging redaction, secret isolation, and vulnerability disclosure policies.
+- **In-Memory IP Sliding-Window Rate Limiting (`server/routes.ts`)**: Built a zero-dependency sliding-window IP rate limiter (`createRateLimiter`) with automatic memory cleanup. Applied 60 req/min for geocoding proxies (`/api/geocode/*`), 10 req/min for IndexNow submissions (`/api/indexnow`), and 120 req/min for general API routes (`/api/*`), emitting standard `X-RateLimit-*` and `Retry-After` headers.
+
+### Enhanced
+- **HTTP Security Headers & CSP (`server/index.ts` & `client/public/.htaccess`)**: Configured strict security headers across both Express and Apache hosting: `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: geolocation=(self), camera=(), microphone=()`, `X-XSS-Protection: 1; mode=block`, and a Content-Security-Policy compatible with Leaflet maps, OpenStreetMap tiles, Google Analytics 4, and Google AdSense.
+- **Privacy-Safe Server Logging Redaction (`server/index.ts`)**: Completely eliminated response payload interception (`capturedJsonResponse`). Hardened request logs to record only sanitized method, route path, status, and execution duration without user-typed search strings, postal codes, or coordinates.
+- **Strict API Input Validation (`server/routes.ts`)**: Added length bounding (max 128 chars) and control-character filtering on `/api/geocode/search`. Added finite number verification (`Number.isFinite`) and coordinate range enforcement (latitude $[-90, 90]$, longitude $[-180, 180]$) on `/api/geocode/reverse`. Added max batch limit (10,000 URLs) on `/api/indexnow`.
+- **Dependency Minimization & Attack Surface Reduction**: Pruned unused legacy scaffold database and auth packages (`drizzle-orm`, `drizzle-kit`, `drizzle-zod`, `pg`, `connect-pg-simple`, `passport`, `passport-local`, `express-session`, `memorystore`), removing 55 packages from the dependency tree and eliminating the high-severity SQL injection advisory (GHSA-gpj5-g38j-94v9).
+- **Express 5 Path Compatibility (`server/routes.ts`)**: Updated route definitions to use standard parameter extraction and middleware filtering compatible with Express 5 and `path-to-regexp` v8.
+
+---
+
 ## [Phase 13: Accessibility + Browser QA] - 2026-09-12
 
 ### Added
