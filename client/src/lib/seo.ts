@@ -179,6 +179,13 @@ export const SEO_CONFIG = {
     ogType: "website",
     keywords: "coordinate converter, gps coordinate converter, dd to dms, convert coordinates online, decimal degrees to dms, latitude longitude converter, geohash converter, photo coordinate tool"
   },
+  batchGeotag: {
+    title: "Batch Geotag Photos Online Free – Bulk GPS Image Tagger",
+    description: "Batch geotag photos online free in your browser. Add GPS coordinates to multiple images at once, import CSV coordinates, or tag multi-locations privately.",
+    canonical: "/batch-geotag-photos",
+    ogType: "website",
+    keywords: "batch geotag photos, bulk photo geotagging, geotag multiple photos, csv photo geotag, bulk image gps tagger, add gps to multiple photos online, photo batch location editor"
+  },
   privacy: {
     title: "Privacy Policy – How We Handle Your Photos and Data",
     description: "How FreeGeoTagger handles your data: photos processed locally in your browser, cookie use, advertising partners, and your GDPR and CCPA rights.",

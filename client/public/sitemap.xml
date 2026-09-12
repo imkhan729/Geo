@@ -40,6 +40,13 @@
   </url>
 
   <url>
+    <loc>https://freegeotagger.com/batch-geotag-photos</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
     <loc>https://freegeotagger.com/blog</loc>
     <lastmod>2026-07-26</lastmod>
     <changefreq>weekly</changefreq>

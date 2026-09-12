@@ -25,6 +25,7 @@ const GpsFinder = lazy(() => import("@/pages/gps-finder"));
 const ExifViewer = lazy(() => import("@/pages/exif-viewer"));
 const RemoveGpsFromPhoto = lazy(() => import("@/pages/remove-gps-from-photo"));
 const CoordinateConverter = lazy(() => import("@/pages/coordinate-converter"));
+const BatchGeotagPhotos = lazy(() => import("@/pages/batch-geotag-photos"));
 const BlogIndex = lazy(() => import("@/pages/blog/index"));
 const BlogRealEstate = lazy(() => import("@/pages/blog/how-to-geotag-photos-for-real-estate"));
 const BlogExifGps = lazy(() => import("@/pages/blog/what-is-exif-gps-metadata"));
@@ -83,6 +84,7 @@ function Router() {
         <Route path="/exif-viewer" component={ExifViewer} />
         <Route path="/remove-gps-from-photo" component={RemoveGpsFromPhoto} />
         <Route path="/coordinate-converter" component={CoordinateConverter} />
+        <Route path="/batch-geotag-photos" component={BatchGeotagPhotos} />
         <Route path="/blog" component={BlogIndex} />
         <Route path="/blog/how-to-geotag-photos-for-real-estate" component={BlogRealEstate} />
         <Route path="/blog/what-is-exif-gps-metadata" component={BlogExifGps} />

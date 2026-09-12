@@ -102,6 +102,15 @@ export const ADS_CONFIG: AdsSystemConfig = {
       maxWidth: 728,
       description: "Placed below the Coordinate Converter interaction cards and above educational content.",
     },
+    "batch-geotag-below-tool": {
+      id: "batch-geotag-below-tool",
+      name: "Batch Geotag Below Tool Banner",
+      format: "horizontal",
+      minHeightMobile: 100,
+      minHeightDesktop: 90,
+      maxWidth: 728,
+      description: "Placed below the Batch Geotagging queue and map and above educational content.",
+    },
     "article-mid": {
       id: "article-mid",
       name: "Article Mid-Body Unit",

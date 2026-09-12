@@ -5,6 +5,40 @@ All notable changes to FreeGeoTagger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Phase 17: Tool 4 — Improved Batch Workflow] - 2026-09-12
+
+### Added
+- **Batch Geotagging & CSV Mapping Engine (`client/src/lib/batch-workflow-utils.ts`)**: Built high-throughput, 100% client-side multi-file metadata utilities:
+  - Smart CSV / TSV Coordinate Parser (`parseCoordinateCsv`) auto-detecting delimiters (comma, semicolon, tab) and recognizing varied header schemes (`filename`, `latitude`, `longitude`, `altitude`, `description`) with WGS84 boundary enforcement.
+  - Multi-Criteria Filename Matcher (`matchCsvToImages`) supporting exact, case-insensitive, and extension-agnostic filename pairing to loaded photos.
+  - Batch CSV Exporter (`generateBatchExportCsv`) producing downloadable verification logs.
+  - Tokenized Batch Renamer (`formatBatchFilename`) supporting `{name}`, `{index}`, `{lat}`, and `{lng}` filename pattern tokens.
+- **Standalone Batch Geotag Tool Page (`client/src/pages/batch-geotag-photos.tsx`)**:
+  - Accessible, responsive standalone batch workspace at `/batch-geotag-photos`.
+  - Multi-file drag-and-drop dropzone supporting JPG, PNG, WebP, and Apple HEIC with automatic JPEG transcoding.
+  - CSV Coordinate Import card with instant upload matching and visual match counters.
+  - Batch selection toolbar ("Select All", "Deselect", "Select Untagged") enabling multi-location group tagging within a single session.
+  - Interactive Leaflet map with geocoding search and group location assignment.
+  - Sequential chunked EXIF embedding with accessible live progress bar (`role="progressbar"`).
+  - Consolidated ZIP packaging with custom tokenized file renaming.
+  - Batch CSV export log download.
+  - Phase 17 Mandatory CTAs: Single Geotagger (`/`), GPS Finder (`/gps-finder`), EXIF Viewer (`/exif-viewer`), Remove GPS (`/remove-gps-from-photo`), Coordinate Converter (`/coordinate-converter`), and Bulk Geotag Guide (`/blog/how-to-bulk-geotag-photos`).
+  - Reserved CLS-guarded `<AdSlot placement="batch-geotag-below-tool" />` strictly below the tool interface.
+  - 1,000+ word educational article covering batch geotagging workflows, CSV coordinate import syntax, memory optimization, and metadata standards.
+  - 6-item FAQ accordion with JSON-LD schemas (`WebPage`, `BreadcrumbList`, `WebApplication`, `FAQPage`).
+  - Landmark `<main id="main-content" tabIndex={-1} className="outline-none flex-1">`.
+- **Navigation & Routing**:
+  - Registered `/batch-geotag-photos` in `client/src/App.tsx` (code-split lazy chunk: 38.50 KB).
+  - Added "Batch" link to header navigation and "Batch Geotagger" to footer.
+  - Added prerendered static SEO page `dist/public/seo-routes/batch-geotag-photos.html` in `script/generate-seo-pages.ts`.
+  - Added Apache rewrite rule in `client/public/.htaccess` and sitemap entry in `client/public/sitemap.xml`.
+  - Registered canonical route in `server/indexnow.ts` (now 21 canonical routes).
+- **Monetization & Ads Readiness**:
+  - Registered `batch-geotag-below-tool` placement in `client/src/lib/ads-config.ts` with reserved slot geometry (100px mobile, 90px desktop).
+- **Verification Suites**:
+  - Created 44-point verification suite in `script/test-batch-geotag.ts` (`npm run test:batch-geotag`) — 44/44 PASS.
+  - Updated route assertions across technical SEO, IndexNow, and accessibility test suites (all 100% PASS).
+
 ## [Phase 17: Tool 3 — Coordinate Converter] - 2026-09-12
 
 ### Added

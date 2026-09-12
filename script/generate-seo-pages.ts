@@ -61,6 +61,7 @@ const commonLinks = [
   { href: "/exif-viewer", label: "EXIF Viewer" },
   { href: "/remove-gps-from-photo", label: "Remove GPS" },
   { href: "/coordinate-converter", label: "Coordinate Converter" },
+  { href: "/batch-geotag-photos", label: "Batch Geotag Photos" },
   { href: "/blog", label: "Photo Geotagging Blog" },
   { href: "/about", label: "About FreeGeoTagger" },
   { href: "/contact", label: "Contact" },
@@ -665,11 +666,125 @@ const coordinateConverterContentHtml = `
 <li><strong>Inspect Stored Geotags:</strong> Check coordinates embedded in existing photos using our <a href="/gps-finder">GPS Photo Finder</a>.</li>
 <li><strong>Inspect All Camera Settings:</strong> Analyze shutter speed, ISO, aperture, and lens metrics in our <a href="/exif-viewer">Online EXIF Viewer</a>.</li>
 <li><strong>Protect Your Privacy:</strong> Strip location tags before sharing images publicly with our <a href="/remove-gps-from-photo">Remove GPS from Photo</a> tool.</li>
+<li><strong>Batch Geotagging:</strong> Process multiple images with group coordinates or CSV sheets using our <a href="/batch-geotag-photos">Batch Geotag Photos</a> tool.</li>
 <li><strong>In-Depth Technical Guide:</strong> Read our comprehensive tutorial on <a href="/blog/what-is-exif-gps-metadata">what EXIF GPS metadata is and how it works</a>.</li>
 </ul>
 
 <h2>Frequently Asked Questions</h2>
 ${coordinateConverterFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</p>`).join("\n")}
+`.trim();
+
+
+
+const batchGeotagFaqs = [
+  {
+    q: "How many photos can I batch geotag at once?",
+    a: "FreeGeoTagger processes all images entirely within your browser's local memory, allowing you to comfortably batch geotag 50 to 100+ photos in a single session depending on your device RAM. Because files are never uploaded to a remote server, processing is instantaneous and 100% private.",
+  },
+  {
+    q: "How does CSV coordinate mapping work?",
+    a: "You can upload a simple CSV or TSV spreadsheet containing filenames and matching coordinates (columns: filename, latitude, longitude, and optional altitude/description). FreeGeoTagger automatically maps each row to your loaded photos, assigning unique GPS locations to individual files across your entire batch.",
+  },
+  {
+    q: "Can I assign different locations to different photos in the same batch?",
+    a: "Yes! Unlike basic geotaggers that force one single location onto all photos, FreeGeoTagger's batch workflow lets you select specific subsets of images using checkboxes and apply different GPS pins to each group, or use CSV import for per-file precision.",
+  },
+  {
+    q: "Are my photos uploaded to any server during batch processing?",
+    a: "No. FreeGeoTagger operates under a strict Zero-Upload Privacy Invariant. Every image decode, EXIF metadata injection, and ZIP archive creation executes purely in your browser's local JavaScript environment. No photos or location data ever leave your device.",
+  },
+  {
+    q: "What image formats are supported in bulk geotagging?",
+    a: "We support JPEG (.jpg, .jpeg), PNG, WebP, and Apple HEIC (.heic) files. HEIC photos from iPhones are automatically converted to universally compatible standard JPEG images before GPS tags are embedded.",
+  },
+  {
+    q: "Does bulk geotagging compress or degrade photo quality?",
+    a: "For JPEG images, FreeGeoTagger performs direct lossless binary EXIF header injection, preserving 100% of the original pixel data, sensor sharpness, and camera settings. For PNG and WebP, lossless canvas re-encoding is applied.",
+  },
+];
+
+const batchGeotagContentHtml = `
+<h1>Batch Geotag Photos Online Free — Bulk GPS Image Tagger</h1>
+<p>FreeGeoTagger's <strong>Batch Photo Geotagger</strong> provides a high-throughput, privacy-first workflow for adding GPS coordinates to dozens or hundreds of images simultaneously. Designed for real estate professionals, drone operators, GIS surveyors, field contractors, and travel photographers, our tool allows you to assign unified group coordinates, map custom coordinates via CSV spreadsheets, and export cleanly packaged ZIP archives entirely inside your web browser.</p>
+<p>Unlike server-side cloud services that limit upload quantities, compress your images, or expose private field photos to remote storage, FreeGeoTagger operates with a strict <strong>Zero-Upload Privacy Invariant</strong>. Your photos never leave your device RAM, guaranteeing maximum data security, client confidentiality, and instantaneous local processing.</p>
+
+<h2>Three High-Efficiency Batch Geotagging Modes</h2>
+<p>Every commercial project requires a tailored metadata workflow. FreeGeoTagger supports three flexible bulk tagging methods:</p>
+<ul>
+<li><strong>Single-Pin Bulk Application:</strong> Upload 20, 50, or 100 photos taken at the same venue, job site, or property listing, drop a single pin on the interactive Leaflet map, and stamp identical GPS EXIF tags onto all files in a single click.</li>
+<li><strong>Multi-Group Sub-Batching:</strong> When surveying multiple consecutive locations throughout a day, check specific photo groups in your queue to apply Pin A to Photos 1–10, Pin B to Photos 11–25, and Pin C to Photos 26–50 without resetting your workspace.</li>
+<li><strong>Automated CSV Spreadsheet Mapping:</strong> The ultimate professional pipeline. Upload a comma-separated or tab-separated text sheet containing individual filenames and target coordinates. Our matching algorithm automatically pairs each row with loaded images by filename and assigns unique GPS locations across your queue.</li>
+</ul>
+
+<h2>CSV Coordinate Import Specification</h2>
+<p>Our intelligent CSV parser auto-detects column delimiters (comma, semicolon, tab) and recognizes flexible column header names:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Permitted Header Names</th>
+<th>Example Value</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Filename</td>
+<td><code>filename</code>, <code>file</code>, <code>name</code>, <code>photo</code>, <code>image</code></td>
+<td><code>IMG_2041.jpg</code></td>
+<td>Mandatory</td>
+</tr>
+<tr>
+<td>Latitude</td>
+<td><code>latitude</code>, <code>lat</code>, <code>y</code></td>
+<td><code>37.774929</code></td>
+<td>Mandatory (-90 to +90)</td>
+</tr>
+<tr>
+<td>Longitude</td>
+<td><code>longitude</code>, <code>lng</code>, <code>lon</code>, <code>long</code>, <code>x</code></td>
+<td><code>-122.419416</code></td>
+<td>Mandatory (-180 to +180)</td>
+</tr>
+<tr>
+<td>Altitude</td>
+<td><code>altitude</code>, <code>alt</code>, <code>elevation</code>, <code>ele</code></td>
+<td><code>18.4</code></td>
+<td>Optional (meters)</td>
+</tr>
+<tr>
+<td>Description</td>
+<td><code>description</code>, <code>desc</code>, <code>caption</code>, <code>title</code></td>
+<td><code>"East Entrance Milestone"</code></td>
+<td>Optional</td>
+</tr>
+</tbody>
+</table>
+
+<h2>Client-Side Memory Safety for Large Photo Batches</h2>
+<p>Processing gigabytes of multi-megapixel imagery inside a browser requires disciplined memory management. FreeGeoTagger applies advanced performance safeguards to keep your browser tab responsive and lightweight:</p>
+<ul>
+<li><strong>Sequential Chunking:</strong> Rather than decoding all photos in parallel (which can spike RAM and trigger mobile tab crashes), images are read, tagged, and verified in orderly sequential queues.</li>
+<li><strong>Immediate Blob URL Disposal:</strong> Object URLs generated for thumbnail previews and packaging are explicitly revoked immediately upon task completion, freeing memory buffers for ongoing operations.</li>
+<li><strong>Lossless Binary Injection:</strong> For JPEG files, binary EXIF markers (APP1) are modified directly in memory without re-compressing DCT frequency coefficients, ensuring zero generational pixel degradation.</li>
+<li><strong>Automatic Apple HEIC Transcoding:</strong> High-efficiency HEIC photos from modern iPhones are safely converted to standard JPEG before EXIF embedding, ensuring universal compatibility across Windows, Mac, Linux, and web platforms.</li>
+</ul>
+
+<h2>Custom File Renaming &amp; Batch CSV Auditing</h2>
+<p>Organization is critical when managing thousands of project assets. FreeGeoTagger includes customizable batch renaming rules using tokens such as <code>{name}</code>, <code>{index}</code>, <code>{lat}</code>, and <code>{lng}</code> (e.g., <code>{name}_geotagged</code>). Additionally, you can export a complete CSV audit log of all applied coordinates and verification results alongside your ZIP download for client deliverables and project archives.</p>
+
+<h2>Explore Our Full Suite of Geotagging Utilities</h2>
+<ul>
+<li><strong>Single Photo Geotagger:</strong> For quick individual photo location tagging, visit our primary <a href="/">Free Photo Geotagger</a>.</li>
+<li><strong>Verify Photo GPS:</strong> Confirm embedded coordinates and inspect reverse geocoded street addresses in our <a href="/gps-finder">GPS Photo Finder</a>.</li>
+<li><strong>Inspect Camera Metadata:</strong> View complete camera, lens, exposure, and color space tags with our <a href="/exif-viewer">Online EXIF Viewer</a>.</li>
+<li><strong>Strip Location Data:</strong> Clean sensitive coordinates before publishing online using <a href="/remove-gps-from-photo">Remove GPS from Photo</a>.</li>
+<li><strong>Format Conversion:</strong> Convert coordinates between DD, DMS, and DDM in our <a href="/coordinate-converter">GPS Coordinate Converter</a>.</li>
+<li><strong>In-Depth Tutorial:</strong> Read our complete guide on <a href="/blog/how-to-bulk-geotag-photos">how to bulk geotag photos for events, listings, and travel</a>.</li>
+</ul>
+
+<h2>Frequently Asked Questions</h2>
+${batchGeotagFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</p>`).join("\n")}
 `.trim();
 
 
@@ -850,6 +965,10 @@ const homeContentHtml = `
 <p>Browse our complete collection of photo geotagging tutorials and resources:</p>
 <ul>
 <li><a href="/gps-finder">GPS Photo Finder</a> — Extract and view existing GPS coordinates on an interactive map.</li>
+<li><a href="/exif-viewer">EXIF Metadata Viewer</a> — Inspect camera settings, ISO, exposure, and GPS tags.</li>
+<li><a href="/remove-gps-from-photo">Remove GPS from Photo</a> — Strip location coordinates with 100% client-side privacy.</li>
+<li><a href="/coordinate-converter">Coordinate Converter</a> — Convert between DD, DMS, and DDM map coordinates.</li>
+<li><a href="/batch-geotag-photos">Batch Geotag Photos</a> — Advanced multi-location queues and CSV coordinate import.</li>
 <li><a href="/blog/how-to-bulk-geotag-photos">How to Bulk Geotag Photos</a> — Efficient batch workflows for large photo collections.</li>
 <li><a href="/blog/how-to-add-gps-to-iphone-photos">How to Add GPS to iPhone Photos</a> — Guide for iPhone camera settings and photo transfers.</li>
 <li><a href="/blog/how-to-geotag-photos-android">How to Add GPS to Android Photos</a> — Step-by-step instructions for Android devices.</li>
@@ -1035,6 +1154,15 @@ ${gpsFinderFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</
     contentHtml: coordinateConverterContentHtml,
     links: commonLinks,
     faqs: coordinateConverterFaqs,
+  },
+  {
+    path: "/batch-geotag-photos",
+    file: "batch-geotag-photos.html",
+    ogType: "website",
+    h1: "Batch Geotag Photos Online Free — Bulk GPS Image Tagger",
+    contentHtml: batchGeotagContentHtml,
+    links: commonLinks,
+    faqs: batchGeotagFaqs,
   },
   {
     path: "/blog",

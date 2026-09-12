@@ -150,8 +150,8 @@ export default function BlogBulkGeotag() {
               There are three realistic approaches to bulk geotagging, and each has a legitimate use case:
             </p>
 
-            <ul>
-              <li><strong>Browser-based (FreeGeoTagger):</strong> zero install, free batch support, complete privacy since files never leave the device. Best for same-location batches of up to a few hundred photos — which covers the overwhelming majority of real jobs.</li>
+              <ul>
+                <li><strong>Browser-based (FreeGeoTagger):</strong> zero install, free batch support, complete privacy since files never leave the device. For advanced multi-location queues and CSV mapping, use our dedicated <Link href="/batch-geotag-photos">Batch Geotag Photos</Link> tool.</li>
               <li><strong>Desktop software (Lightroom, GeoSetter):</strong> worthwhile when you need track-log matching — syncing photo timestamps against a GPS track recorded while shooting, so each photo gets its own position along a route. Overkill for single-location batches, and batch features are often paywalled.</li>
               <li><strong>Command line (ExifTool):</strong> unbeatable for automation and very large archives — one command can tag thousands of files or apply a track log. The cost is a learning curve and no visual map to verify against. Our <Link href="/blog/best-free-photo-geotagging-tools">free geotagging tools comparison</Link> weighs all three in detail.</li>
             </ul>
@@ -221,8 +221,8 @@ export default function BlogBulkGeotag() {
                 text="Bulk Geotag Free"
                 leftIcon={<MapPin className="h-4 w-4" />}
                 onClick={() => {
-                trackArticleToToolClick({ article_slug: "how-to-bulk-geotag-photos", destination: "home" });
-                navigate("/");
+                trackArticleToToolClick({ article_slug: "how-to-bulk-geotag-photos", destination: "batch_geotag" });
+                navigate("/batch-geotag-photos");
               }}
               />
               <EclipseButton
