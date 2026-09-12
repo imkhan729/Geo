@@ -4,7 +4,7 @@ Current phase: Phase 17 — Optional Tool Expansion: Improved Batch Workflow
 Status: PASS
 Last completed phase: Phase 17 — Optional Tool Expansion: Improved Batch Workflow (Tool 4 of 4)
 Current branch: master
-Latest commit: <PENDING_COMMIT>
+Latest commit: fc93eae feat(tools): implement Phase 17 Improved Batch Workflow tool, CSV mapping engine, and static prerendering
 Tests passing:
 - Batch Geotag test suite (`npm run test:batch-geotag`) PASS (44/44 tests passing: CSV parsing precision, delimiter auto-detection, boundary validation, filename matching, export formatting, tokenized renaming, mandatory Phase 17 CTAs, privacy invariants, JSON-LD schemas, and ad layout safety)
 - Coordinate Converter test suite (`npm run test:coordinate-converter`) PASS (44/44 tests passing)
