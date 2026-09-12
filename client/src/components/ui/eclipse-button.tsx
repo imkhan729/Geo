@@ -34,7 +34,7 @@ const EclipseButton = React.forwardRef<HTMLButtonElement, EclipseButtonProps>(
     };
 
     const sizeStyles: Record<string, string> = {
-      default: 'h-11 sm:h-12 px-4 sm:px-6 text-xs sm:text-sm font-semibold sm:font-bold tracking-wide sm:tracking-wider',
+      default: 'h-11 sm:h-12 px-3 sm:px-4 text-xs sm:text-xs md:text-sm font-semibold uppercase tracking-wide',
       sm: 'h-9 sm:h-10 px-3 sm:px-4 text-xs font-semibold tracking-wide',
       lg: 'h-14 sm:h-16 px-6 sm:px-8 text-sm sm:text-base font-bold tracking-wider',
       icon: 'h-11 w-11 sm:h-12 sm:w-12 p-0',
@@ -44,7 +44,7 @@ const EclipseButton = React.forwardRef<HTMLButtonElement, EclipseButtonProps>(
       <button
         ref={ref}
         className={cn(
-          'relative rounded-full border font-semibold sm:font-bold uppercase tracking-wide sm:tracking-wider',
+          'relative rounded-full border font-semibold uppercase tracking-wide',
           'inline-flex items-center justify-center gap-2 max-w-full',
           variantStyles[variant],
           sizeStyles[size],
@@ -60,7 +60,7 @@ const EclipseButton = React.forwardRef<HTMLButtonElement, EclipseButtonProps>(
         {!isLoading && leftIcon && (
           <span className="flex items-center justify-center shrink-0">{leftIcon}</span>
         )}
-        {text && <span className="truncate">{text}</span>}
+        {text && <span className="whitespace-nowrap">{text}</span>}
         {!isLoading && rightIcon && (
           <span className="flex items-center justify-center shrink-0">{rightIcon}</span>
         )}

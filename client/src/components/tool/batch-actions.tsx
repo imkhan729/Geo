@@ -70,8 +70,8 @@ export function BatchActions({
         </div>
       )}
 
-      {/* ── Action Buttons Row ── */}
-      <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3">
+      {/* ── Row 1: Primary Action Buttons (Side by Side Grid) ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
         {/* Write EXIF / Apply GPS button */}
         <EclipseButton
           text={
@@ -81,12 +81,12 @@ export function BatchActions({
               ? `Apply GPS to All (${totalImages})`
               : "Apply GPS to Photo"
           }
-          leftIcon={<PenLine className="h-4 w-4" aria-hidden="true" />}
+          leftIcon={<PenLine className="h-4 w-4 shrink-0" aria-hidden="true" />}
           isLoading={isWritingExif}
           onClick={onWriteExif}
           disabled={isBusy || totalImages === 0}
           size="default"
-          className="w-full sm:w-auto flex-1 min-w-0 min-h-[44px]"
+          className="w-full min-h-[44px]"
           data-testid="button-write-exif"
         />
 
@@ -101,35 +101,39 @@ export function BatchActions({
           }
           leftIcon={
             totalImages > 1 ? (
-              <Archive className="h-4 w-4" aria-hidden="true" />
+              <Archive className="h-4 w-4 shrink-0" aria-hidden="true" />
             ) : (
-              <Download className="h-4 w-4" aria-hidden="true" />
+              <Download className="h-4 w-4 shrink-0" aria-hidden="true" />
             )
           }
           isLoading={isProcessing}
           onClick={onDownloadAll}
           disabled={isBusy || totalImages === 0}
           size="default"
-          className="w-full sm:w-auto flex-1 min-w-0 min-h-[44px]"
+          className="w-full min-h-[44px]"
           data-testid="button-download"
         />
+      </div>
 
+      {/* ── Row 2: Secondary Utility & Privacy Badge ── */}
+      <div className="flex items-center justify-between gap-3 pt-1 border-t border-border/40">
         {/* Clear All Button */}
         <Button
           type="button"
           variant="outline"
+          size="sm"
           onClick={onClearAll}
           disabled={isBusy}
-          className="min-h-[44px] px-4 rounded-xl border-border/70 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 shrink-0"
+          className="min-h-[36px] px-3.5 rounded-xl border-border/70 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 shrink-0 text-xs font-medium"
           data-testid="button-clear"
           aria-label="Clear all photos from the workspace"
         >
-          <Trash2 className="h-4 w-4 mr-1.5" aria-hidden="true" />
+          <Trash2 className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
           Clear
         </Button>
 
         {/* Privacy Note */}
-        <div className="w-full sm:w-auto sm:ml-auto flex items-center justify-center sm:justify-end gap-1.5 text-xs text-muted-foreground/80 py-1">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground/80 py-0.5">
           <Lock className="h-3.5 w-3.5 text-primary shrink-0" aria-hidden="true" />
           <span>Photos never leave your device</span>
         </div>
