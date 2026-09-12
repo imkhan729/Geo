@@ -5,6 +5,22 @@ All notable changes to FreeGeoTagger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Phase 18: Page 2 — Contact Page Expansion & Support Architecture] - 2026-09-12
+
+### Added
+- **Contact Page Deep Expansion (`client/src/pages/contact.tsx`)**:
+  - Expanded crawlable technical documentation from 543 to 1,472 words, resolving the thin-content audit warning.
+  - Formulated comprehensive support triage architecture: metadata parsing & EXIF standardization anomalies (TIFF header offsets, maker notes, Apple HEIC quirks), browser/WebGL/memory compatibility, community field workflow suggestions, and responsible security disclosures.
+  - Detailed actionable diagnostic checklist for users submitting technical bug reports (page URL, OS/browser, camera/software source, browser developer console error traces).
+  - Explicit Zero-Upload Privacy policy forbidding email attachment of sensitive personal imagery to protect user privacy.
+  - Provided instant self-service directory linking directly to all 6 tools: Single Geotagger (`/`), GPS Finder (`/gps-finder`), EXIF Viewer (`/exif-viewer`), Remove GPS (`/remove-gps-from-photo`), Coordinate Converter (`/coordinate-converter`), and Batch Geotagging (`/batch-geotag-photos`).
+  - Cross-linked full educational tutorial library: GPS fixing, GPS removal, iPhone/iOS geotagging, Android geotagging, Google Business Profile SEO, Real Estate MLS, bulk workflows, tool comparison, and EXIF 2.32 fundamentals.
+  - Added 4-item technical support FAQ covering response SLAs (24–48 hours direct engineer replies), permanent metadata loss on social networks, zero cloud API invariants, and offline air-gapped support.
+  - Enhanced structured data with JSON-LD `ContactPage`, `ContactPoint`, `Organization`, `BreadcrumbList`, and `FAQPage` schemas.
+- **Static SEO Prerender Update**:
+  - Prerendered `dist/public/seo-routes/contact.html` at 1,472 crawlable words.
+  - Cleared `[thin] /contact` warning in `script/seo-check.mjs` (only `/blog` remains as LOW).
+
 ## [Phase 18: Page 1 — About Page Expansion & E-E-A-T Optimization] - 2026-09-12
 
 ### Added
