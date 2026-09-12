@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5" />
+
+  <!-- Progressive enhancement: mark that JS is active before the body paints, so the
+       prerendered SEO fallback is hidden from real users (no content flash / layout shift).
+       The fallback stays in the raw HTML for crawlers; React renders the real UI on top. -->
+  <script>document.documentElement.className += ' js';</script>
+  <style>
+    /* Reserve viewport height so React mounting into #root causes no layout shift (CLS). */
+    #root { min-height: 100vh; }
+    /* Hide the crawlable prerendered content once JS runs; React replaces #root on mount. */
+    .js #static-seo-content { display: none !important; }
+  </style>
+
+  <title>Privacy Policy – How We Handle Your Photos and Data</title>
+  <meta name="description" content="How FreeGeoTagger handles your data: photos processed locally in your browser, cookie use, advertising partners, and your GDPR and CCPA rights." />
+  <meta name="keywords" content="freegeotagger privacy policy, photo metadata privacy, exif data privacy, browser based photo processing" />
+  <meta name="author" content="FreeGeoTagger" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="rating" content="general" />
+  <meta name="revisit-after" content="7 days" />
+  <meta name="google-adsense-account" content="ca-pub-6438644207209483" />
+  <meta name="msvalidate.01" content="E0D90E8F27DE42939B95E0528659FECA" />
+
+  <link rel="canonical" href="https://freegeotagger.com/privacy" />
+
+  <!-- Google Consent Mode v2 defaults (must run before ad/analytics scripts) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('consent', 'default', {
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied',
+      'analytics_storage': 'denied',
+      'wait_for_update': 500
+    });
+    // Apply a previously saved choice immediately so returning visitors aren't re-gated.
+    try {
+      if (localStorage.getItem('fgt-cookie-consent') === 'accepted') {
+        gtag('consent', 'update', {
+          'ad_storage': 'granted',
+          'ad_user_data': 'granted',
+          'ad_personalization': 'granted',
+          'analytics_storage': 'granted'
+        });
+      }
+    } catch (e) { /* localStorage unavailable */ }
+  </script>
+
+  <!-- Google tag (gtag.js) — Google Analytics 4. Loaded after the consent defaults above so
+       measurement respects Consent Mode v2. dataLayer/gtag are already defined by that block. -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BWMMC6PP63"></script>
+  <script>
+    gtag('js', new Date());
+    // Sends the page_view for the initial load. Because this is a SPA, subsequent
+    // client-side route changes send their own page_view (client/src/lib/analytics.ts).
+    gtag('config', 'G-BWMMC6PP63');
+  </script>
+
+  <!-- Google AdSense Auto ads — loaded after the page is interactive so it stays off the
+       critical render path (improves FCP/LCP on mobile). Ownership is verified via the
+       google-adsense-account meta tag above and /ads.txt, both independent of load timing. -->
+  <script>
+    (function () {
+      var loaded = false;
+      function loadAdSense() {
+        if (loaded) return;
+        loaded = true;
+        var s = document.createElement('script');
+        s.async = true;
+        s.crossOrigin = 'anonymous';
+        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6438644207209483';
+        document.head.appendChild(s);
+      }
+      // Load shortly after the page finishes loading, or on the first user interaction —
+      // whichever comes first.
+      if (document.readyState === 'complete') {
+        setTimeout(loadAdSense, 1500);
+      } else {
+        window.addEventListener('load', function () { setTimeout(loadAdSense, 1500); }, { once: true });
+      }
+      ['scroll', 'pointerdown', 'keydown', 'touchstart'].forEach(function (evt) {
+        window.addEventListener(evt, loadAdSense, { once: true, passive: true });
+      });
+    })();
+  </script>
+
+  <!-- Open Graph -->
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Privacy Policy – How We Handle Your Photos and Data" />
+  <meta property="og:description" content="How FreeGeoTagger handles your data: photos processed locally in your browser, cookie use, advertising partners, and your GDPR and CCPA rights." />
+  <meta property="og:url" content="https://freegeotagger.com/privacy" />
+  <meta property="og:site_name" content="FreeGeoTagger" />
+  <meta property="og:image" content="https://freegeotagger.com/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="FreeGeoTagger – Free browser-based photo geotagging tool" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@freegeotagger" />
+  <meta name="twitter:creator" content="@freegeotagger" />
+  <meta name="twitter:title" content="Privacy Policy – How We Handle Your Photos and Data" />
+  <meta name="twitter:description" content="How FreeGeoTagger handles your data: photos processed locally in your browser, cookie use, advertising partners, and your GDPR and CCPA rights." />
+  <meta name="twitter:image" content="https://freegeotagger.com/og-image.png" />
+  <meta name="twitter:image:alt" content="FreeGeoTagger – Free browser-based photo geotagging tool" />
+
+  <!-- PWA / App -->
+  <meta name="application-name" content="FreeGeoTagger" />
+  <meta name="apple-mobile-web-app-title" content="FreeGeoTagger" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#2D6A4F" />
+  <meta name="msapplication-TileColor" content="#2D6A4F" />
+
+  <!-- Icons -->
+  <link rel="icon" type="image/png" href="/favicon.png?v=2" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+
+  <!-- DNS prefetch for map tiles -->
+  <link rel="dns-prefetch" href="https://tile.openstreetmap.org" />
+  <link rel="dns-prefetch" href="https://nominatim.openstreetmap.org" />
+
+  <!-- Structured Data: SoftwareApplication -->
+  <!-- Structured Data: WebPage -->
+  <!-- Structured Data: Organization -->
+  <!-- Structured Data: HowTo -->
+  <!-- Structured Data: WebSite (Site name and Google Search discovery) -->
+  <script type="module" crossorigin src="/assets/index-BvcekLZ3.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CDH008xT.css">
+  <script type="application/ld+json" data-schema="static-privacy.html-0">{"@context":"https://schema.org","@type":"WebPage","name":"Privacy Policy","url":"https://freegeotagger.com/privacy","description":"How FreeGeoTagger handles your data: photos processed locally in your browser, cookie use, advertising partners, and your GDPR and CCPA rights.","inLanguage":"en-US","isPartOf":{"@type":"WebSite","name":"FreeGeoTagger","url":"https://freegeotagger.com"},"publisher":{"@type":"Organization","name":"FreeGeoTagger","url":"https://freegeotagger.com","logo":{"@type":"ImageObject","url":"https://freegeotagger.com/favicon.png","width":289,"height":289}}}</script>
+  <script type="application/ld+json" data-schema="static-privacy.html-1">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://freegeotagger.com/"},{"@type":"ListItem","position":2,"name":"Privacy Policy","item":"https://freegeotagger.com/privacy"}]}</script>
+</head>
+
+<body>
+  <div id="root">
+<main id="static-seo-content" style="max-width: 820px; margin: 40px auto; padding: 0 20px; font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; line-height: 1.65;">
+<h1>Privacy Policy</h1>
+<h2>The short version</h2>
+
+          <p>
+            FreeGeoTagger is a browser-based tool for adding, reading and editing GPS location data in photos. The single most important thing to know about privacy here is this: <strong>your photos are never uploaded to us.</strong> Every image you open in FreeGeoTagger is read, modified and saved entirely by JavaScript running inside your own browser tab. There is no server-side image processing, no temporary upload, and no copy of your photo on any machine but your own.
+          </p>
+
+          <p>
+            We do not ask you to create an account. We do not ask for your name or email to use the tools. We do collect anonymous, consent-gated analytics about page visits, and we show advertising to keep the tools free. Those two things — analytics and ads — are the only places where third parties are involved, and both are described in detail below.
+          </p>
+
+          <h2>Who we are</h2>
+
+          <p>
+            FreeGeoTagger operates the website at <strong>freegeotagger.com</strong>, which provides a free photo geotagging tool and a free <a href="/gps-finder">GPS Finder</a> for reading location data out of existing photos. For any privacy question or request, contact us at <a href="mailto:contact@freegeotagger.com">contact@freegeotagger.com</a>. You can also use our <a href="/contact">contact page</a>.
+          </p>
+
+          <h2>Your photos: processed locally, never uploaded</h2>
+
+          <p>
+            This is the part most people want to understand properly, so here is the actual mechanism rather than a vague reassurance.
+          </p>
+
+          <p>
+            When you select a photo, your browser hands our JavaScript a reference to that file from your own file system. We read the file's bytes in memory, locate the EXIF metadata block, write or read the GPS fields inside it, and then hand the resulting bytes back to your browser as a download. The pixel data of your image is never touched, which is why geotagging with this tool causes zero quality loss — only the metadata section changes.
+          </p>
+
+          <p>
+            Because all of that happens in the page itself, there is no network request carrying your image anywhere. If you want to verify this rather than take our word for it, open your browser's developer tools, switch to the Network tab, and geotag a photo. You will see no upload request. You can also disconnect from the internet after the page has loaded and the tool will continue to work.
+          </p>
+
+          <ul>
+            <li><strong>Your photos are not stored on our servers</strong> — they never reach our servers at all.</li>
+            <li><strong>Your photos are not retained anywhere</strong> — when you close or reload the tab, the in-memory copy is discarded.</li>
+            <li><strong>Your GPS coordinates are not logged</strong> — the location you pin is used only to write into your file.</li>
+            <li><strong>HEIC conversion is also local</strong> — iPhone HEIC files are converted to JPEG in your browser, not on a server.</li>
+          </ul>
+
+          <h2>Location and device permissions</h2>
+
+          <p>
+            The tool offers a "use my current location" option. If you choose it, your browser will ask for permission to share your device location, and the resulting coordinates are used only to place the map pin and to write into your photo's metadata. We do not transmit or store your device location. You can decline the permission and still use every other feature by clicking the map or searching an address instead.
+          </p>
+
+          <h2>What data we do collect</h2>
+
+          <p>
+            We collect analytics about how the website is used, so we know which guides are useful and which pages are broken. We use <strong>Google Analytics 4</strong> for this. It records things like which pages were viewed, approximate geographic region, device type, browser, and how visitors arrived. It does not receive your photos, your pinned coordinates, or any file you open.
+          </p>
+
+          <p>
+            Analytics storage is <strong>denied by default</strong> until you accept cookies. Until you do, Google Analytics runs in a restricted, cookieless mode that cannot identify a returning visitor. This is implemented with Google Consent Mode v2, which sets consent signals before any measurement or advertising script is allowed to load.
+          </p>
+
+          <p>
+            Separately, our hosting provider keeps standard server access logs, which typically include IP address, timestamp, requested URL and user agent. These are ordinary security and operations records common to every website.
+          </p>
+
+          <h2>Cookies and browser storage</h2>
+
+          <p>
+            FreeGeoTagger itself stores only two small values in your browser's local storage, and neither is a tracking identifier:
+          </p>
+
+          <ul>
+            <li><strong>Your cookie choice</strong> — so the consent banner does not reappear on every visit.</li>
+            <li><strong>Your theme preference</strong> — whether you chose light or dark mode.</li>
+          </ul>
+
+          <p>
+            Advertising and analytics cookies are set by Google, not by us, and only after you accept. Our <a href="/cookies">Cookie Policy</a> lists what these do and how to remove them.
+          </p>
+
+          <h2>Third-party services and what each one receives</h2>
+
+          <p>
+            We keep third parties to a minimum, but the map and the ads do involve other companies. Here is exactly what each one sees:
+          </p>
+
+          <ul>
+            <li><strong>OpenStreetMap</strong> — serves the map image tiles. To draw a map it necessarily receives requests for the tiles covering the area you are looking at, along with your IP address. It does not receive your photo.</li>
+            <li><strong>Nominatim</strong> — powers address and place-name search. When you type a search, that text is sent to Nominatim to be resolved into coordinates. Do not type sensitive information into the search box. It does not receive your photo.</li>
+            <li><strong>Google AdSense</strong> — serves the advertising that funds the site. After consent, Google may use cookies to select, measure and cap ads. It does not receive your photo.</li>
+            <li><strong>Google Analytics 4</strong> — anonymous usage measurement, consent-gated as described above. It does not receive your photo.</li>
+            <li><strong>Hostinger</strong> — our web host, which serves the site's files and keeps standard access logs.</li>
+          </ul>
+
+          <p>
+            Each of these operates under its own privacy policy, and we have no control over their internal practices.
+          </p>
+
+          <h2>Advertising and personalisation</h2>
+
+          <p>
+            Advertising is what makes it possible to offer these tools free, with no account and no file limits. Third-party vendors including Google use cookies to serve ads based on prior visits to this and other websites. You can opt out of personalised advertising at any time through Google's Ads Settings, and you can decline advertising cookies entirely using our consent banner — the tools work identically either way.
+          </p>
+
+          <h2>Your rights</h2>
+
+          <p>
+            If you are in the European Economic Area or the UK, the GDPR gives you the right to access, correct, delete, restrict, port and object to processing of your personal data, and to withdraw consent at any time. Our lawful bases are consent for analytics and advertising cookies, and legitimate interests for basic security logging.
+          </p>
+
+          <p>
+            If you are a California resident, the CCPA and CPRA give you the right to know what personal information is collected, to request deletion, to correct inaccurate information, and to opt out of the sale or sharing of personal information. <strong>We do not sell your personal information.</strong>
+          </p>
+
+          <p>
+            In practice we hold very little about you, because the tools require no account and your photos never reach us. To exercise any right, email <a href="mailto:contact@freegeotagger.com">contact@freegeotagger.com</a>. You may also withdraw cookie consent yourself at any time by clearing your browser's site data for freegeotagger.com.
+          </p>
+
+          <h2>Data retention</h2>
+
+          <p>
+            Photos: not retained, because they are never received. Consent and theme preferences: stored in your browser until you clear them. Analytics data: retained according to the retention period configured in Google Analytics. Server access logs: retained by our host under its standard schedule.
+          </p>
+
+          <h2>Children's privacy</h2>
+
+          <p>
+            FreeGeoTagger is a general-purpose utility and is not directed at children under 13. We do not knowingly collect personal information from children. If you believe a child has provided personal information, contact us and we will delete it.
+          </p>
+
+          <h2>Security</h2>
+
+          <p>
+            The site is served over HTTPS with HSTS enabled, so traffic between your browser and our host is encrypted. Because your photos are processed locally and never transmitted, the most common risk in online photo tools — a server-side breach exposing uploaded images — does not apply here.
+          </p>
+
+          <h2>International visitors</h2>
+
+          <p>
+            The site is available worldwide. Our third-party providers, including Google, may process data in countries other than your own, including the United States, under their own transfer safeguards.
+          </p>
+
+          <h2>Changes to this policy</h2>
+
+          <p>
+            If we change how data is handled, we will update this page and revise the "last updated" date above. Material changes affecting consent will be reflected in the consent banner.
+          </p>
+
+          <h2>Contact us</h2>
+
+          <p>
+            Questions about this policy, or a privacy request: <a href="mailto:contact@freegeotagger.com">contact@freegeotagger.com</a>. Please include the URL of the page you are asking about. See also our <a href="/terms">Terms of Service</a> and <a href="/cookies">Cookie Policy</a>.
+          </p>
+<nav aria-label="Related pages"><ul>
+<li><a href="/">Geotag Photos Free</a></li>
+<li><a href="/gps-finder">GPS Finder</a></li>
+<li><a href="/exif-viewer">EXIF Viewer</a></li>
+<li><a href="/remove-gps-from-photo">Remove GPS</a></li>
+<li><a href="/coordinate-converter">Coordinate Converter</a></li>
+<li><a href="/batch-geotag-photos">Batch Geotag Photos</a></li>
+<li><a href="/blog">Photo Geotagging Blog</a></li>
+<li><a href="/about">About FreeGeoTagger</a></li>
+<li><a href="/contact">Contact</a></li>
+<li><a href="/cookies">Cookie Policy</a></li>
+<li><a href="/terms">Terms of Service</a></li>
+</ul></nav>
+</main>
+  </div>
+</body>
+
+</html>

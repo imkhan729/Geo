@@ -1,0 +1,102 @@
+# robots.txt for freegeotagger.com
+# https://www.robotstxt.org/
+
+User-agent: *
+Allow: /
+Allow: /ads.txt
+Allow: /sitemap.xml
+
+# Sitemap location
+Sitemap: https://freegeotagger.com/sitemap.xml
+
+# No Crawl-delay directive: Googlebot ignores it entirely, and on a small static
+# site it only slows down the crawlers that do honour it (Bing, Yandex) for no gain.
+
+# Disallow admin or private paths (none currently)
+# Disallow: /admin/
+# Disallow: /private/
+
+# Allow all major search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Mediapartners-Google
+Allow: /
+Allow: /ads.txt
+
+User-agent: Google-Display-Ads-Bot
+Allow: /
+Allow: /ads.txt
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+# ── AI answer engines and LLM crawlers ──
+# Explicitly allowed. These crawlers are how the site gets cited in AI answers
+# (ChatGPT, Claude, Perplexity, Google AI overviews), which is a growing share of
+# how people find a free utility like this. Google-Extended controls Gemini/Vertex
+# grounding only — it does not affect normal Google Search ranking.
+# See /llms.txt for a plain-text guide to the site's content.
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bingbot-Extended
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: CCBot
+Allow: /
