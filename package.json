@@ -20,7 +20,8 @@
     "test:remove-gps": "tsx script/test-remove-gps.ts",
     "test:coordinate-converter": "tsx script/test-coordinate-converter.ts",
     "test:batch-geotag": "tsx script/test-batch-geotag.ts",
-    "test:qa": "tsx script/test-prelaunch-qa.ts"
+    "test:qa": "tsx script/test-prelaunch-qa.ts",
+    "test:live": "tsx script/test-postlaunch-live.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
