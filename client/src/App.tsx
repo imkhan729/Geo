@@ -3,12 +3,14 @@ import { useEffect, useRef, lazy, Suspense } from "react";
 import { trackPageView, initWebVitalsMonitoring } from "@/lib/analytics";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const CookieConsent = lazy(() =>
   import("@/components/cookie-consent").then((m) => ({ default: m.CookieConsent }))
+);
+
+const Toaster = lazy(() =>
+  import("@/components/ui/toaster").then((m) => ({ default: m.Toaster }))
 );
 
 // Home is loaded eagerly (critical path)
@@ -109,13 +111,11 @@ function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="geofinder-theme">
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
+        <Router />
+        <Suspense fallback={null}>
           <Toaster />
-          <Router />
-          <Suspense fallback={null}>
-            <CookieConsent />
-          </Suspense>
-        </TooltipProvider>
+          <CookieConsent />
+        </Suspense>
       </QueryClientProvider>
     </ThemeProvider>
   );

@@ -5,6 +5,28 @@ All notable changes to FreeGeoTagger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Post-Launch Polish: Uncongested Navigation & Tools Dropdown] - 2026-09-12
+
+### Changed
+- **Streamlined Desktop Header Navigation (`Header.tsx`)**:
+  - Replaced 9 congested, horizontal navbar links with an organized, 5-link primary menu: `Home`, `Tools ▾`, `How it Works`, `Features`, `Blog`, `About`.
+  - Consolidated all 6 photo geotagging utilities into a single, accessible "Tools" dropdown panel:
+    - *Photo Geotagger* (`/` or `/#upload-widget`)
+    - *Batch Geotagger* (`/batch-geotag-photos`)
+    - *GPS Photo Finder* (`/gps-finder`)
+    - *EXIF Viewer* (`/exif-viewer`)
+    - *Remove GPS* (`/remove-gps-from-photo`)
+    - *Coordinate Converter* (`/coordinate-converter`)
+  - Dropdown features full WCAG 2.2 AA keyboard accessibility (`Escape` key listener, arrow navigation, `aria-expanded`, `aria-haspopup="menu"`, outside click dismissal).
+- **Organized Mobile Navigation Drawer**:
+  - Replaced the flat unorganized mobile link stack with clean category sections: Primary Site Links, Collapsible "Tools & Utilities" group, and high-visibility CTA button.
+- **Performance Budget Headroom Optimization (`App.tsx` & `Header.tsx`)**:
+  - Code-split notification `Toaster` with `React.lazy` and removed unused global `TooltipProvider`.
+  - Implemented zero-overhead inline SVGs for tool icons.
+  - Critical eager JS dropped from 399.91 KB down to **374.20 KB** (gzipped: 112.83 KB), expanding performance budget headroom by over 25 KB.
+- **Packaging (`package-hostinger.ps1`)**:
+  - Repackaged production build into `freegeotagger-hostinger-static.zip` (1.78 MB, 91 files).
+
 ## [Phase 20: Deployment & Post-Launch Verification] - 2026-09-12
 
 ### Added
