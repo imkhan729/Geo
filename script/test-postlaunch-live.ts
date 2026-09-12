@@ -80,7 +80,7 @@ async function runAllLiveTests() {
   await runTest("BingSiteAuth.xml is accessible with valid verification token", async () => {
     const res = await fetchUrl("https://freegeotagger.com/BingSiteAuth.xml");
     assert.strictEqual(res.statusCode, 200);
-    assert.ok(res.body.includes("<user>CBEFD8E2A2775E06FE08CC6C91350FE7</user>"), "Bing auth token mismatch");
+    assert.ok(res.body.includes("<user>E0D90E8F27DE42939B95E0528659FECA</user>"), "Bing auth token mismatch");
   });
 
   // 6. ads.txt check
