@@ -34,18 +34,18 @@ const EclipseButton = React.forwardRef<HTMLButtonElement, EclipseButtonProps>(
     };
 
     const sizeStyles: Record<string, string> = {
-      default: 'h-12 px-8 text-sm',
-      sm: 'h-10 px-5 text-xs',
-      lg: 'h-16 px-10 text-base',
-      icon: 'h-12 w-12 p-0',
+      default: 'h-11 sm:h-12 px-4 sm:px-6 text-xs sm:text-sm font-semibold sm:font-bold tracking-wide sm:tracking-wider',
+      sm: 'h-9 sm:h-10 px-3 sm:px-4 text-xs font-semibold tracking-wide',
+      lg: 'h-14 sm:h-16 px-6 sm:px-8 text-sm sm:text-base font-bold tracking-wider',
+      icon: 'h-11 w-11 sm:h-12 sm:w-12 p-0',
     };
 
     return (
       <button
         ref={ref}
         className={cn(
-          'relative rounded-full border font-bold uppercase tracking-widest',
-          'inline-flex items-center justify-center gap-2',
+          'relative rounded-full border font-semibold sm:font-bold uppercase tracking-wide sm:tracking-wider',
+          'inline-flex items-center justify-center gap-2 max-w-full',
           variantStyles[variant],
           sizeStyles[size],
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
@@ -56,13 +56,13 @@ const EclipseButton = React.forwardRef<HTMLButtonElement, EclipseButtonProps>(
         type="button"
         {...props}
       >
-        {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+        {isLoading && <Loader2 className="h-4 w-4 animate-spin shrink-0" />}
         {!isLoading && leftIcon && (
-          <span className="flex items-center justify-center">{leftIcon}</span>
+          <span className="flex items-center justify-center shrink-0">{leftIcon}</span>
         )}
-        {text && <span>{text}</span>}
+        {text && <span className="truncate">{text}</span>}
         {!isLoading && rightIcon && (
-          <span className="flex items-center justify-center">{rightIcon}</span>
+          <span className="flex items-center justify-center shrink-0">{rightIcon}</span>
         )}
       </button>
     );

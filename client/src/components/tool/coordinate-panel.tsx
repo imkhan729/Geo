@@ -44,6 +44,7 @@ export interface CoordinatePanelProps {
   onDescriptionChange: (description: string) => void;
   onLocationFound?: (lat: number, lng: number, displayName?: string) => void;
   className?: string;
+  showSearch?: boolean;
 }
 
 export function CoordinatePanel({
@@ -59,6 +60,7 @@ export function CoordinatePanel({
   onDescriptionChange,
   onLocationFound,
   className = "",
+  showSearch = false,
 }: CoordinatePanelProps) {
   const [coordFormat, setCoordFormat] = useState<"decimal" | "dms">("decimal");
   const [searchQuery, setSearchQuery] = useState("");
@@ -260,81 +262,83 @@ export function CoordinatePanel({
 
   return (
     <div className={`space-y-4 ${className}`}>
-      {/* ── Search and Quick Actions Bar ── */}
-      <div className="relative">
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-muted-foreground">
-              <Search className="h-4 w-4" aria-hidden="true" />
-            </div>
-            <Input
-              type="text"
-              placeholder="Search place, city, or address..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
-              className="pl-9 pr-8 h-10 rounded-xl bg-background border-border/70 text-sm focus-visible:ring-primary"
-              aria-label="Search place name or address"
-            />
-            {isSearching && (
-              <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-primary">
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+      {/* ── Optional Search and Quick Actions Bar (hidden by default when map provides search) ── */}
+      {showSearch && (
+        <div className="relative">
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-muted-foreground">
+                <Search className="h-4 w-4" aria-hidden="true" />
               </div>
-            )}
+              <Input
+                type="text"
+                placeholder="Search place, city, or address..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
+                className="pl-9 pr-8 h-10 rounded-xl bg-background border-border/70 text-sm focus-visible:ring-primary"
+                aria-label="Search place name or address"
+              />
+              {isSearching && (
+                <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-primary">
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                </div>
+              )}
+            </div>
+
+            <Button
+              type="button"
+              onClick={handleSearchSubmit}
+              disabled={isSearching || !searchQuery.trim()}
+              className="h-10 px-3.5 sm:px-4 rounded-xl font-medium shrink-0"
+              aria-label="Submit place search"
+            >
+              <Search className="h-4 w-4 sm:mr-1.5" aria-hidden="true" />
+              <span className="hidden sm:inline">Search</span>
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleUseMyLocation}
+              disabled={isLocating}
+              className="h-10 px-3 rounded-xl border-border/70 hover:bg-primary/10 hover:text-primary shrink-0"
+              title="Use current GPS location"
+              aria-label="Use my device GPS location"
+            >
+              {isLocating ? (
+                <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden="true" />
+              ) : (
+                <Locate className="h-4 w-4 text-primary" aria-hidden="true" />
+              )}
+              <span className="hidden md:inline ml-1.5 text-xs font-medium">My Location</span>
+            </Button>
           </div>
 
-          <Button
-            type="button"
-            onClick={handleSearchSubmit}
-            disabled={isSearching || !searchQuery.trim()}
-            className="h-10 px-3.5 sm:px-4 rounded-xl font-medium shrink-0"
-            aria-label="Submit place search"
-          >
-            <Search className="h-4 w-4 sm:mr-1.5" aria-hidden="true" />
-            <span className="hidden sm:inline">Search</span>
-          </Button>
-
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleUseMyLocation}
-            disabled={isLocating}
-            className="h-10 px-3 rounded-xl border-border/70 hover:bg-primary/10 hover:text-primary shrink-0"
-            title="Use current GPS location"
-            aria-label="Use my device GPS location"
-          >
-            {isLocating ? (
-              <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden="true" />
-            ) : (
-              <Locate className="h-4 w-4 text-primary" aria-hidden="true" />
-            )}
-            <span className="hidden md:inline ml-1.5 text-xs font-medium">My Location</span>
-          </Button>
+          {/* Autocomplete Suggestions Dropdown */}
+          {showSuggestions && suggestions.length > 0 && (
+            <div
+              className="absolute top-full left-0 right-0 mt-1.5 bg-card border border-border shadow-xl rounded-xl overflow-hidden z-[1001] max-h-56 overflow-y-auto"
+              role="listbox"
+              aria-label="Location suggestions"
+            >
+              {suggestions.map((item, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleSelectSuggestion(item)}
+                  className="w-full text-left px-3.5 py-2.5 hover:bg-primary/10 transition-colors text-xs sm:text-sm flex items-start gap-2 border-b border-border/20 last:border-0"
+                  role="option"
+                  aria-selected="false"
+                >
+                  <MapPin className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" aria-hidden="true" />
+                  <span className="line-clamp-1 text-foreground font-medium">{item.displayName}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-
-        {/* Autocomplete Suggestions Dropdown */}
-        {showSuggestions && suggestions.length > 0 && (
-          <div
-            className="absolute top-full left-0 right-0 mt-1.5 bg-card border border-border shadow-xl rounded-xl overflow-hidden z-[1001] max-h-56 overflow-y-auto"
-            role="listbox"
-            aria-label="Location suggestions"
-          >
-            {suggestions.map((item, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => handleSelectSuggestion(item)}
-                className="w-full text-left px-3.5 py-2.5 hover:bg-primary/10 transition-colors text-xs sm:text-sm flex items-start gap-2 border-b border-border/20 last:border-0"
-                role="option"
-                aria-selected="false"
-              >
-                <MapPin className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" aria-hidden="true" />
-                <span className="line-clamp-1 text-foreground font-medium">{item.displayName}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      )}
 
       {/* ── Coordinates Control Card ── */}
       <div className="p-4 rounded-2xl border border-border bg-card shadow-sm space-y-4">

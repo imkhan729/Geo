@@ -40,7 +40,7 @@ export function BatchActions({
   const progressPercent = totalImages > 0 ? Math.round((processedCount / totalImages) * 100) : 0;
 
   return (
-    <div className={`p-4 sm:p-5 rounded-2xl border border-border bg-card shadow-sm space-y-4 ${className}`}>
+    <div className={`p-4 sm:p-5 rounded-2xl border border-border bg-card shadow-sm space-y-4 overflow-hidden ${className}`}>
       {/* ── Progress Bar (visible when busy or partially complete) ── */}
       {isBusy && (
         <div className="space-y-2" role="status" aria-live="polite">
@@ -71,7 +71,7 @@ export function BatchActions({
       )}
 
       {/* ── Action Buttons Row ── */}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3">
         {/* Write EXIF / Apply GPS button */}
         <EclipseButton
           text={
@@ -86,7 +86,7 @@ export function BatchActions({
           onClick={onWriteExif}
           disabled={isBusy || totalImages === 0}
           size="default"
-          className="min-h-[44px]"
+          className="w-full sm:w-auto flex-1 min-w-0 min-h-[44px]"
           data-testid="button-write-exif"
         />
 
@@ -110,7 +110,7 @@ export function BatchActions({
           onClick={onDownloadAll}
           disabled={isBusy || totalImages === 0}
           size="default"
-          className="min-h-[44px]"
+          className="w-full sm:w-auto flex-1 min-w-0 min-h-[44px]"
           data-testid="button-download"
         />
 
@@ -120,7 +120,7 @@ export function BatchActions({
           variant="outline"
           onClick={onClearAll}
           disabled={isBusy}
-          className="min-h-[44px] px-4 rounded-xl border-border/70 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30"
+          className="min-h-[44px] px-4 rounded-xl border-border/70 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 shrink-0"
           data-testid="button-clear"
           aria-label="Clear all photos from the workspace"
         >
@@ -129,7 +129,7 @@ export function BatchActions({
         </Button>
 
         {/* Privacy Note */}
-        <div className="ml-auto flex items-center gap-1.5 text-xs text-muted-foreground/80 py-1">
+        <div className="w-full sm:w-auto sm:ml-auto flex items-center justify-center sm:justify-end gap-1.5 text-xs text-muted-foreground/80 py-1">
           <Lock className="h-3.5 w-3.5 text-primary shrink-0" aria-hidden="true" />
           <span>Photos never leave your device</span>
         </div>

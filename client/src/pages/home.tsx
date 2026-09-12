@@ -689,11 +689,23 @@ export default function Home() {
                         className="hidden"
                         tabIndex={-1}
                       />
+
+                      {/* Batch Actions and Download Panel */}
+                      <BatchActions
+                        totalImages={images.length}
+                        processedCount={processedCount}
+                        isProcessing={isProcessing}
+                        isWritingExif={isWritingExif}
+                        hasTaggedImages={images.some((img) => img.status === "success")}
+                        onWriteExif={writeExifOnly}
+                        onDownloadAll={processAndDownloadAll}
+                        onClearAll={clearAll}
+                      />
                     </div>
 
                     {/* Right Column: Interactive Leaflet Map */}
                     <div className="lg:col-span-6 space-y-4">
-                      <React.Suspense fallback={<MapSkeleton className="h-[320px] sm:h-[400px] w-full" />}>
+                      <React.Suspense fallback={<MapSkeleton className="h-[300px] sm:h-[340px] md:h-[360px] w-full" />}>
                         <LazyLeafletMap
                           latitude={latitude}
                           longitude={longitude}
@@ -701,6 +713,10 @@ export default function Home() {
                             setLatitude(lat);
                             setLongitude(lng);
                             trackMapLocationSelected({ method: "map_click" });
+                          }}
+                          onLocationFound={(lat, lng) => {
+                            setLatitude(lat);
+                            setLongitude(lng);
                           }}
                         />
                       </React.Suspense>
@@ -727,18 +743,6 @@ export default function Home() {
                       />
                     </div>
                   </div>
-
-                  {/* Row 2: Batch Actions and Download Panel */}
-                  <BatchActions
-                    totalImages={images.length}
-                    processedCount={processedCount}
-                    isProcessing={isProcessing}
-                    isWritingExif={isWritingExif}
-                    hasTaggedImages={images.some((img) => img.status === "success")}
-                    onWriteExif={writeExifOnly}
-                    onDownloadAll={processAndDownloadAll}
-                    onClearAll={clearAll}
-                  />
                 </div>
               )}
             </div>

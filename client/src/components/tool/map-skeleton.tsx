@@ -4,7 +4,7 @@ export interface MapSkeletonProps {
   className?: string;
 }
 
-export function MapSkeleton({ className = "h-[380px] w-full" }: MapSkeletonProps) {
+export function MapSkeleton({ className = "h-[300px] sm:h-[340px] md:h-[360px] w-full" }: MapSkeletonProps) {
   return (
     <div
       className={`relative rounded-xl border border-border bg-muted/30 flex flex-col items-center justify-center animate-pulse ${className}`}
