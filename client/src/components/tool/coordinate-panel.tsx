@@ -25,6 +25,11 @@ import {
   PlaceSuggestion,
 } from "@/lib/geotag-utils";
 import { useToast } from "@/hooks/use-toast";
+import {
+  trackMapLocationSelected,
+  trackManualCoordinatesEntered,
+  trackGeocoderError,
+} from "@/lib/analytics";
 
 export interface CoordinatePanelProps {
   latitude: number;
@@ -125,6 +130,7 @@ export function CoordinatePanel({
     setShowSuggestions(false);
     onCoordinatesChange(item.lat, item.lng);
     onLocationFound?.(item.lat, item.lng, item.displayName);
+    trackMapLocationSelected({ method: "search" });
     toast({
       title: "Location Selected",
       description: item.displayName.substring(0, 60),
@@ -139,12 +145,14 @@ export function CoordinatePanel({
       if (result) {
         onCoordinatesChange(result.lat, result.lng);
         onLocationFound?.(result.lat, result.lng, result.displayName);
+        trackMapLocationSelected({ method: "search" });
         setShowSuggestions(false);
         toast({
           title: "Location Found",
           description: result.displayName.substring(0, 60),
         });
       } else {
+        trackGeocoderError({ error_type: "location_not_found" });
         toast({
           title: "Location Not Found",
           description: "Try entering a city name, address, or postal code.",
@@ -176,6 +184,7 @@ export function CoordinatePanel({
           onAltitudeChange(Math.round(pos.coords.altitude));
         }
         onLocationFound?.(lat, lng, "Current Location");
+        trackMapLocationSelected({ method: "device_gps" });
         setIsLocating(false);
         toast({
           title: "Location Detected",
@@ -246,6 +255,7 @@ export function CoordinatePanel({
     const newLat = dmsToDecimal(latDeg, latMin, latSec, latDir);
     const newLng = dmsToDecimal(lngDeg, lngMin, lngSec, lngDir);
     onCoordinatesChange(newLat, newLng);
+    trackManualCoordinatesEntered({ format: "dms" });
   };
 
   return (
@@ -415,6 +425,7 @@ export function CoordinatePanel({
                   const val = parseFloat(e.target.value);
                   if (!isNaN(val)) onCoordinatesChange(val, longitude);
                 }}
+                onBlur={() => trackManualCoordinatesEntered({ format: "dd" })}
                 className="font-mono text-sm h-9 bg-background focus-visible:ring-primary"
                 data-testid="input-latitude"
               />
@@ -436,6 +447,7 @@ export function CoordinatePanel({
                   const val = parseFloat(e.target.value);
                   if (!isNaN(val)) onCoordinatesChange(latitude, val);
                 }}
+                onBlur={() => trackManualCoordinatesEntered({ format: "dd" })}
                 className="font-mono text-sm h-9 bg-background focus-visible:ring-primary"
                 data-testid="input-longitude"
               />

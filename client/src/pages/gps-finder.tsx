@@ -22,6 +22,12 @@ import {
 import { MapSkeleton } from "@/components/tool/map-skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { updatePageSEO, SEO_CONFIG, injectPageSchema } from "@/lib/seo";
+import {
+  trackGpsFinderUsed,
+  trackUnsupportedFormat,
+  trackParsingError,
+  trackEvent,
+} from "@/lib/analytics";
 
 const LazyLeafletMap = React.lazy(() => import("@/components/tool/leaflet-map"));
 
@@ -139,7 +145,17 @@ export default function GpsFinder() {
     if (!file) return;
 
     const isAccepted = ACCEPTED_EXTENSIONS.some(ext => file.name.toLowerCase().endsWith(ext));
-    if (!isAccepted || file.size > 20 * 1024 * 1024) {
+    if (!isAccepted) {
+      const ext = file.name.split(".").pop() || "unknown";
+      trackUnsupportedFormat({ extension: ext });
+      toast({
+        title: "Invalid file",
+        description: "Please upload a supported image file (JPG, PNG, WebP, HEIC under 20MB)",
+        variant: "destructive"
+      });
+      return;
+    }
+    if (file.size > 20 * 1024 * 1024) {
       toast({
         title: "Invalid file",
         description: "Please upload a supported image file (JPG, PNG, WebP, HEIC under 20MB)",
@@ -188,6 +204,11 @@ export default function GpsFinder() {
         meta,
       });
 
+      trackGpsFinderUsed({
+        has_gps: !!(meta.hasGps && meta.gps),
+        format: ext.toLowerCase(),
+      });
+
       if (meta.hasGps && meta.gps) {
         toast({
           title: "Location Found!",
@@ -202,6 +223,8 @@ export default function GpsFinder() {
       }
     } catch (err: any) {
       console.error(err);
+      const ext = file.name.split(".").pop()?.toLowerCase() || "unknown";
+      trackParsingError({ format: ext, error_category: "finder_read_error" });
       toast({
         title: "Processing error",
         description: err.message || "Could not read photo metadata.",
@@ -226,6 +249,7 @@ export default function GpsFinder() {
       : gps.dmsFormatted;
 
     await navigator.clipboard.writeText(textToCopy);
+    trackEvent("gps_finder_copied", { coord_format: coordFormat });
     setCopiedCoords(true);
     toast({ title: "Coordinates Copied!", description: textToCopy });
     setTimeout(() => setCopiedCoords(false), 2000);

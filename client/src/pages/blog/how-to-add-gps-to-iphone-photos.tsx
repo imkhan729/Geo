@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
 import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
+import { trackArticleToToolClick } from "@/lib/analytics";
 import { EclipseButton } from "@/components/ui/eclipse-button";
 import { useLocation } from "wouter";
 
@@ -261,7 +262,10 @@ export default function BlogIphone() {
             <EclipseButton
               text="Geotag Photos Free"
               leftIcon={<MapPin className="h-4 w-4" />}
-              onClick={() => navigate("/")}
+              onClick={() => {
+                trackArticleToToolClick({ article_slug: "how-to-add-gps-to-iphone-photos", destination: "home" });
+                navigate("/");
+              }}
             />
           </div>
         </div>

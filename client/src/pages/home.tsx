@@ -71,6 +71,20 @@ import {
 } from "@/lib/geotag-utils";
 import { useToast } from "@/hooks/use-toast";
 import { SEO_CONFIG, updatePageSEO, injectPageSchema } from "@/lib/seo";
+import {
+  trackUploadOpened,
+  trackFileAccepted,
+  trackExistingGpsDetected,
+  trackMapLocationSelected,
+  trackProcessingStarted,
+  trackProcessingCompleted,
+  trackVerificationPassed,
+  trackVerificationFailed,
+  trackDownloadCompleted,
+  trackBatchDownloadCompleted,
+  trackParsingError,
+  trackWritingError,
+} from "@/lib/analytics";
 
 export const HOME_FAQS = [
   {
@@ -234,9 +248,11 @@ export default function Home() {
   }, []);
 
   const processFiles = useCallback(async (incomingFiles: File[]) => {
+    trackUploadOpened();
     const newItems: ImageFile[] = [];
 
     for (const file of incomingFiles) {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "unknown";
       try {
         let previewFile = file;
         if (file.name.toLowerCase().endsWith(".heic")) {
@@ -246,6 +262,11 @@ export default function Home() {
 
         const dataUrl = await readFileAsDataUrl(previewFile);
         const existingGps = await extractExistingGps(dataUrl);
+
+        trackFileAccepted({ count: 1, format: ext });
+        if (existingGps) {
+          trackExistingGpsDetected({ format: ext });
+        }
 
         newItems.push({
           id: generateId(),
@@ -259,6 +280,7 @@ export default function Home() {
         });
       } catch (err) {
         console.error(`Failed to load ${file.name}:`, err);
+        trackParsingError({ format: ext, error_category: "decode_error" });
       }
     }
 
@@ -308,6 +330,10 @@ export default function Home() {
     if (images.length === 0) return;
     setIsWritingExif(true);
 
+    const startTime = performance.now();
+    const mode = images.length > 1 ? "batch" : "single";
+    trackProcessingStarted({ mode, count: images.length });
+
     const geotag: GeotagData = {
       latitude,
       longitude,
@@ -317,9 +343,11 @@ export default function Home() {
     };
 
     const newMap = new Map(processedBlobs);
+    let successCount = 0;
 
     for (let i = 0; i < images.length; i++) {
       const item = images[i];
+      const ext = item.name.split(".").pop()?.toLowerCase() || "unknown";
       setImages((prev) =>
         prev.map((img, idx) => (idx === i ? { ...img, status: "processing" } : img))
       );
@@ -331,8 +359,15 @@ export default function Home() {
         setImages((prev) =>
           prev.map((img, idx) => (idx === i ? { ...img, status: "success" } : img))
         );
+        successCount++;
+        if (verification?.coordinatesVerified) {
+          trackVerificationPassed({ format: ext });
+        } else if (verification) {
+          trackVerificationFailed({ reason_category: "coordinate_mismatch" });
+        }
       } catch (err) {
         console.error(`Error geotagging ${item.name}:`, err);
+        trackWritingError({ format: ext, error_category: "exif_write_failed" });
         setImages((prev) =>
           prev.map((img, idx) => (idx === i ? { ...img, status: "error" } : img))
         );
@@ -341,6 +376,14 @@ export default function Home() {
 
     setProcessedBlobs(newMap);
     setIsWritingExif(false);
+
+    const durationMs = performance.now() - startTime;
+    trackProcessingCompleted({
+      mode,
+      count: images.length,
+      duration_ms: durationMs,
+      success_count: successCount,
+    });
 
     toast({
       title: "GPS Metadata Applied",
@@ -353,6 +396,10 @@ export default function Home() {
     setIsProcessing(true);
     setProcessedCount(0);
 
+    const startTime = performance.now();
+    const mode = images.length > 1 ? "batch" : "single";
+    trackProcessingStarted({ mode, count: images.length });
+
     const geotag: GeotagData = {
       latitude,
       longitude,
@@ -363,9 +410,11 @@ export default function Home() {
 
     const filesToZip: Array<{ name: string; blob: Blob }> = [];
     const newMap = new Map(processedBlobs);
+    let successCount = 0;
 
     for (let i = 0; i < images.length; i++) {
       const item = images[i];
+      const ext = item.name.split(".").pop()?.toLowerCase() || "unknown";
       setImages((prev) =>
         prev.map((img, idx) => (idx === i ? { ...img, status: "processing" } : img))
       );
@@ -376,14 +425,21 @@ export default function Home() {
           const result = await addGeotagAndVerify(item.file, geotag);
           blobToUse = result.blob;
           newMap.set(item.id, { blob: result.blob, verification: result.verification });
+          if (result.verification?.coordinatesVerified) {
+            trackVerificationPassed({ format: ext });
+          } else if (result.verification) {
+            trackVerificationFailed({ reason_category: "coordinate_mismatch" });
+          }
         }
 
         filesToZip.push({ name: item.name, blob: blobToUse });
         setImages((prev) =>
           prev.map((img, idx) => (idx === i ? { ...img, status: "success" } : img))
         );
+        successCount++;
       } catch (err) {
         console.error(`Error processing ${item.name}:`, err);
+        trackWritingError({ format: ext, error_category: "exif_write_failed" });
         setImages((prev) =>
           prev.map((img, idx) => (idx === i ? { ...img, status: "error" } : img))
         );
@@ -394,14 +450,27 @@ export default function Home() {
 
     setProcessedBlobs(newMap);
 
+    const durationMs = performance.now() - startTime;
+    trackProcessingCompleted({
+      mode,
+      count: images.length,
+      duration_ms: durationMs,
+      success_count: successCount,
+    });
+
     if (filesToZip.length === 1) {
       await downloadGeotaggedImage(filesToZip[0].blob, filesToZip[0].name);
+      trackDownloadCompleted({
+        format: filesToZip[0].name.split(".").pop()?.toLowerCase() || "unknown",
+        count: 1,
+      });
       toast({
         title: "Photo Downloaded",
         description: `Saved ${filesToZip[0].name} with verified GPS coordinates.`,
       });
     } else if (filesToZip.length > 1) {
       await downloadAsZip(filesToZip);
+      trackBatchDownloadCompleted({ count: filesToZip.length });
       toast({
         title: "ZIP Downloaded",
         description: `Downloaded ${filesToZip.length} geotagged photos in a ZIP archive.`,
@@ -412,6 +481,7 @@ export default function Home() {
   }, [images, latitude, longitude, altitude, keywords, description, processedBlobs, toast]);
 
   const handleDownloadSingle = useCallback(async (image: ImageFile) => {
+    const ext = image.name.split(".").pop()?.toLowerCase() || "unknown";
     try {
       let blob = processedBlobs.get(image.id)?.blob;
       if (!blob) {
@@ -432,15 +502,22 @@ export default function Home() {
         setImages((prev) =>
           prev.map((img) => (img.id === image.id ? { ...img, status: "success" } : img))
         );
+        if (res.verification?.coordinatesVerified) {
+          trackVerificationPassed({ format: ext });
+        } else if (res.verification) {
+          trackVerificationFailed({ reason_category: "coordinate_mismatch" });
+        }
       }
 
       await downloadGeotaggedImage(blob, image.name);
+      trackDownloadCompleted({ format: ext, count: 1 });
       toast({
         title: "Photo Downloaded",
         description: `Saved ${image.name} with verified GPS metadata.`,
       });
     } catch (err: any) {
       console.error(err);
+      trackWritingError({ format: ext, error_category: "download_failed" });
       toast({
         title: "Download Failed",
         description: `Could not save ${image.name}: ${err.message || err}`,
@@ -610,6 +687,7 @@ export default function Home() {
                           onCoordinatesChange={(lat, lng) => {
                             setLatitude(lat);
                             setLongitude(lng);
+                            trackMapLocationSelected({ method: "map_click" });
                           }}
                         />
                       </React.Suspense>

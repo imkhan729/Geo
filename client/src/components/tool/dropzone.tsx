@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback } from "react";
 import { Upload, Camera, MapPin, Lock, AlertCircle, FileImage } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { trackUploadOpened, trackUnsupportedFormat } from "@/lib/analytics";
 
 export const ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".heic"];
 export const MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024; // 20MB
@@ -31,6 +32,8 @@ export function Dropzone({
       const hasValidExt = ACCEPTED_EXTENSIONS.some((ext) => lower.endsWith(ext));
 
       if (!hasValidExt) {
+        const ext = file.name.split(".").pop() || "unknown";
+        trackUnsupportedFormat({ extension: ext });
         errors.push(`"${file.name}" has an unsupported format. Supported formats: JPG, PNG, WebP, HEIC.`);
         continue;
       }
@@ -87,6 +90,7 @@ export function Dropzone({
   }, [validateAndFilterFiles, onFilesSelected]);
 
   const triggerPicker = () => {
+    trackUploadOpened();
     fileInputRef.current?.click();
   };
 

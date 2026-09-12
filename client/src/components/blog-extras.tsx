@@ -1,6 +1,12 @@
 import { useEffect } from "react";
+import { useLocation } from "wouter";
+import { EclipseButton } from "@/components/ui/eclipse-button";
+import { MapPin } from "lucide-react";
 import { extrasFor } from "@/lib/blog-content";
 import { injectPageSchema } from "@/lib/seo";
+import { trackArticleToToolClick } from "@/lib/analytics";
+
+export { trackArticleToToolClick };
 
 /**
  * Article building blocks whose content lives in client/src/lib/blog-content.ts.
@@ -72,6 +78,51 @@ export function BlogFigure({ slug }: { slug: string }) {
       />
       <figcaption className="mt-2 text-xs leading-relaxed text-muted-foreground">{caption}</figcaption>
     </figure>
+  );
+}
+
+/**
+ * Reusable acquisition CTA for blog articles that tracks conversion
+ * to the geotagging tool or GPS finder without transmitting any PII.
+ */
+export function BlogToolCta({
+  slug,
+  title = "Ready to geotag your photos?",
+  description = "Add GPS coordinates to your JPG, PNG, WebP, or HEIC images in seconds — completely free, private, and in your browser.",
+  primaryText = "Geotag Photos Free",
+  secondaryText = "Extract GPS from Photo",
+}: {
+  slug: string;
+  title?: string;
+  description?: string;
+  primaryText?: string;
+  secondaryText?: string;
+}) {
+  const [, navigate] = useLocation();
+
+  return (
+    <div className="mt-10 p-6 rounded-2xl bg-primary/5 border border-primary/20 text-center not-prose">
+      <h3 className="font-display font-bold text-lg mb-2">{title}</h3>
+      <p className="text-sm text-muted-foreground mb-4">{description}</p>
+      <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+        <EclipseButton
+          text={primaryText}
+          leftIcon={<MapPin className="h-4 w-4" />}
+          onClick={() => {
+            trackArticleToToolClick({ article_slug: slug, destination: "home" });
+            navigate("/");
+          }}
+        />
+        <EclipseButton
+          text={secondaryText}
+          variant="outline"
+          onClick={() => {
+            trackArticleToToolClick({ article_slug: slug, destination: "gps_finder" });
+            navigate("/gps-finder");
+          }}
+        />
+      </div>
+    </div>
   );
 }
 

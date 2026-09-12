@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
 import { Calendar, Clock, ArrowRight, MapPin, FileImage, Smartphone, Globe, Monitor, Layers, ShieldOff, Crosshair, Images } from "lucide-react";
+import { trackArticleToToolClick } from "@/lib/analytics";
 import { EclipseButton } from "@/components/ui/eclipse-button";
 import { useLocation } from "wouter";
 
@@ -241,12 +242,18 @@ export default function BlogIndex() {
               <EclipseButton
                 text="Geotag Photos Free"
                 leftIcon={<MapPin className="h-4 w-4" />}
-                onClick={() => navigate("/")}
+                onClick={() => {
+                trackArticleToToolClick({ article_slug: "index", destination: "home" });
+                navigate("/");
+              }}
               />
               <EclipseButton
                 text="Extract GPS from Photo"
                 variant="outline"
-                onClick={() => navigate("/gps-finder")}
+                onClick={() => {
+                trackArticleToToolClick({ article_slug: "index", destination: "gps_finder" });
+                navigate("/gps-finder");
+              }}
               />
             </div>
           </div>

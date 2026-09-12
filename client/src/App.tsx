@@ -1,6 +1,6 @@
 import { Switch, Route, useLocation } from "wouter";
 import { useEffect, useRef, lazy, Suspense } from "react";
-import { trackPageView } from "@/lib/analytics";
+import { trackPageView, initWebVitalsMonitoring } from "@/lib/analytics";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -90,6 +90,10 @@ function Router() {
 }
 
 function App() {
+  useEffect(() => {
+    initWebVitalsMonitoring();
+  }, []);
+
   return (
     <ThemeProvider defaultTheme="light" storageKey="geofinder-theme">
       <QueryClientProvider client={queryClient}>

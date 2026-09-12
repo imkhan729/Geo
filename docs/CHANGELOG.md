@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Phase 15: Analytics + Conversion Measurement] - 2026-09-12
+
+### Added
+- **Automated Analytics & Privacy Verification Test Suite (`script/test-analytics.ts`)**: Implemented a 48-point test suite verifying strict parameter blocklist sanitization (`PROHIBITED_PARAM_KEYS` dropping coordinates, filenames, addresses, queries, EXIF payloads, data URLs, emails), coordinate regex string scrubbing, email value scrubbing, Core Web Vitals rating targets, and a static AST/regex audit across all 110 client files confirming zero sensitive telemetry in tracking calls. Added `"test:analytics": "tsx script/test-analytics.ts"` to `package.json`.
+- **Analytics & Measurement Specification (`ANALYTICS_SPEC.md` & `docs/ANALYTICS_SPEC.md`)**: Comprehensive documentation detailing zero-PII invariants, event taxonomy across Acquisition, Tool Funnel, and Quality categories, parameter blocklists, Web Vitals observer targets, and Consent Mode v2 integration.
+- **Native Core Web Vitals Monitoring (`client/src/lib/analytics.ts`)**: Built a zero-dependency `PerformanceObserver` monitoring LCP, CLS, INP, FCP, and TTFB in real time without external npm dependencies (`< 1.5 KB` uncompressed JS). Initialized on app mount in `client/src/App.tsx`.
+- **Blog Acquisition CTA Conversion Tracking**: Connected `trackArticleToToolClick` across all 9 blog articles, tracking reader conversions to the geotagging tool and GPS finder with zero PII. Created reusable `BlogToolCta` component in `client/src/components/blog-extras.tsx`.
+
+### Enhanced
+- **Zero-PII Tool Funnel Measurement (`client/src/pages/home.tsx`)**: Hooked privacy-safe funnel events: `trackUploadOpened`, `trackFileAccepted` (by format family), `trackExistingGpsDetected`, `trackMapLocationSelected` (map_click, search, device_gps), `trackProcessingStarted`, `trackProcessingCompleted` (processing duration and success count), `trackVerificationPassed` / `trackVerificationFailed`, `trackDownloadCompleted`, and `trackBatchDownloadCompleted`.
+- **GPS Photo Finder Measurement (`client/src/pages/gps-finder.tsx`)**: Hooked `trackGpsFinderUsed` (recording format and whether photo had embedded coordinates), `trackUnsupportedFormat`, `trackParsingError`, and `gps_finder_copied`.
+- **Input & Quality Tracking (`client/src/components/tool/coordinate-panel.tsx` & `dropzone.tsx`)**: Added tracking for manual Decimal Degree (`dd`) and DMS coordinate entries on blur/change, `trackGeocoderError` on failed address searches, and `trackUnsupportedFormat` on rejected file uploads.
+- **Google Consent Mode v2 Alignment**: Validated default-denied consent state in `client/index.html` before analytics scripts execute, respecting user cookie decisions made in `CookieConsent`.
+
+---
+
 ## [Phase 14: Security + Privacy Hardening] - 2026-09-12
 
 ### Added

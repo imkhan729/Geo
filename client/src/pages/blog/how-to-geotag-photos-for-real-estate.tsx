@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
 import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
+import { trackArticleToToolClick } from "@/lib/analytics";
 import { EclipseButton } from "@/components/ui/eclipse-button";
 import { useLocation } from "wouter";
 
@@ -237,7 +238,10 @@ export default function BlogRealEstate() {
             <EclipseButton
               text="Start Geotagging Free"
               leftIcon={<MapPin className="h-4 w-4" />}
-              onClick={() => navigate("/")}
+              onClick={() => {
+                trackArticleToToolClick({ article_slug: "how-to-geotag-photos-for-real-estate", destination: "home" });
+                navigate("/");
+              }}
             />
           </div>
         </div>
