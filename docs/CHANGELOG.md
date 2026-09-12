@@ -5,6 +5,24 @@ All notable changes to FreeGeoTagger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Phase 18: Page 3 — Blog Hub Expansion & Topical Cluster Architecture] - 2026-09-12
+
+### Added
+- **Blog Hub Deep Expansion (`client/src/pages/blog/index.tsx` & `script/generate-seo-pages.ts`)**:
+  - Expanded crawlable technical documentation from 681 to 1,092 words, completely clearing the final thin-content audit warning across the entire site.
+  - Formulated four core topical learning clusters:
+    - *Cluster 1: Mobile Device Geotagging & OS Permissions* (iOS Safari sandbox, Apple HEIC transcode, Android location permissions).
+    - *Cluster 2: Privacy Defense, Security & Metadata Sanitization* (Accidental home address exposure, selective GPS removal vs complete metadata destruction).
+    - *Cluster 3: Commercial Applications (Local SEO & Real Estate)* (Google Business Profile reality vs myths, MLS syndication compliance).
+    - *Cluster 4: Geodetic Standards & High-Throughput Batch Workflows* (EXIF 2.32 GPS IFD, WGS84 ellipsoid datum, CSV coordinate import).
+  - Built interactive category filter pill navigation in the React client view allowing instant sorting across Mobile, Privacy, Business/SEO, and Batch/Standards clusters.
+  - Linked directly to the full 6-tool browser-native ecosystem: Single Geotagger (`/`), GPS Finder (`/gps-finder`), EXIF Viewer (`/exif-viewer`), Remove GPS (`/remove-gps-from-photo`), Coordinate Converter (`/coordinate-converter`), and Batch Geotag Photos (`/batch-geotag-photos`).
+  - Added 4-item technical FAQ accordion covering image sharpness preservation, social media platform metadata stripping, EXIF WGS84 coordinate systems, and air-gapped offline usage.
+  - Enriched structured data with JSON-LD `Blog`, `CollectionPage`, `BreadcrumbList`, and `FAQPage` schemas.
+- **Milestone Achievement: 100% Zero-Thin Content & Zero-Audit Issues**:
+  - Prerendered `dist/public/seo-routes/blog.html` at 1,092 crawlable words.
+  - `script/seo-check.mjs` now reports **0 HIGH, 0 MED, 0 LOW issues across all 21 pages**. Every single route meets or exceeds the 800-word E-E-A-T quality threshold.
+
 ## [Phase 18: Page 2 — Contact Page Expansion & Support Architecture] - 2026-09-12
 
 ### Added
