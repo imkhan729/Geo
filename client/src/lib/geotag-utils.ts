@@ -152,6 +152,45 @@ export async function readFileAsArrayBuffer(file: File | Blob): Promise<ArrayBuf
   });
 }
 
+/** Convert a generated data URL locally. Do not use fetch(data:...) here: the
+ * site's strict CSP correctly rejects that as a network request in some browsers. */
+function dataUrlToBlob(dataUrl: string): Blob {
+  const match = /^data:([^;,]+)?(?:;base64)?,([\s\S]*)$/.exec(dataUrl);
+  if (!match) throw new Error("Could not prepare the geotagged image for saving.");
+  const mimeType = match[1] || "application/octet-stream";
+  const binary = safeAtob(match[2]);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new Blob([bytes], { type: mimeType });
+}
+
+/**
+ * Some phone and messaging apps give JPEG files an extension and MIME type even
+ * though their internal marker layout is not accepted by piexif.  The browser
+ * can still decode those files, so use a JPEG normalisation only as a fallback
+ * instead of rejecting an otherwise usable photo.
+ */
+async function normaliseDecodableImageToJpeg(dataUrl: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = image.naturalWidth;
+        canvas.height = image.naturalHeight;
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error("Your browser could not prepare this image for GPS tagging.");
+        context.drawImage(image, 0, 0);
+        resolve(canvas.toDataURL("image/jpeg", 0.95));
+      } catch (error) {
+        reject(error);
+      }
+    };
+    image.onerror = () => reject(new Error("This image could not be decoded by your browser."));
+    image.src = dataUrl;
+  });
+}
+
 export interface ExtractedPhotoDetails {
   hasGps: boolean;
   gps: {
@@ -780,9 +819,16 @@ export async function addGeotagToImage(
   }
 
   const exifBytes = piexif.dump(exifData);
-  const newDataUrl = piexif.insert(exifBytes, dataUrl);
-  const response = await fetch(newDataUrl);
-  return response.blob();
+  let newDataUrl: string;
+  try {
+    newDataUrl = piexif.insert(exifBytes, dataUrl);
+  } catch (initialError) {
+    // Preserve original bytes whenever possible.  This is deliberately a
+    // last-resort path for valid-but-unusual JPEGs from chat/camera software.
+    const normalisedDataUrl = await normaliseDecodableImageToJpeg(dataUrl);
+    newDataUrl = piexif.insert(exifBytes, normalisedDataUrl);
+  }
+  return dataUrlToBlob(newDataUrl);
 }
 
 export async function verifyGeotaggedBlob(

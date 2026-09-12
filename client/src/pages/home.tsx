@@ -378,11 +378,11 @@ export default function Home() {
         } else if (verification) {
           trackVerificationFailed({ reason_category: "coordinate_mismatch" });
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error(`Error geotagging ${item.name}:`, err);
         trackWritingError({ format: ext, error_category: "exif_write_failed" });
         setImages((prev) =>
-          prev.map((img, idx) => (idx === i ? { ...img, status: "error" } : img))
+          prev.map((img, idx) => (idx === i ? { ...img, status: "error", error: err?.message || "Unable to add GPS metadata to this image." } : img))
         );
       }
     }
@@ -399,8 +399,11 @@ export default function Home() {
     });
 
     toast({
-      title: "GPS Metadata Applied",
-      description: `Embedded location in ${images.length} photo${images.length > 1 ? "s" : ""}. Ready to download.`,
+      title: successCount === images.length ? "GPS Metadata Applied" : "Some Photos Could Not Be Tagged",
+      description: successCount === images.length
+        ? `Embedded location in ${images.length} photo${images.length > 1 ? "s" : ""}. Ready to download.`
+        : `${successCount} of ${images.length} photos were tagged. The queue shows the reason for each failed photo.`,
+      variant: successCount === images.length ? "default" : "destructive",
     });
   }, [images, latitude, longitude, altitude, keywords, description, processedBlobs, toast]);
 
@@ -450,11 +453,11 @@ export default function Home() {
           prev.map((img, idx) => (idx === i ? { ...img, status: "success" } : img))
         );
         successCount++;
-      } catch (err) {
+      } catch (err: any) {
         console.error(`Error processing ${item.name}:`, err);
         trackWritingError({ format: ext, error_category: "exif_write_failed" });
         setImages((prev) =>
-          prev.map((img, idx) => (idx === i ? { ...img, status: "error" } : img))
+          prev.map((img, idx) => (idx === i ? { ...img, status: "error", error: err?.message || "Unable to add GPS metadata to this image." } : img))
         );
       }
 

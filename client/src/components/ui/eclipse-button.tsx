@@ -60,7 +60,7 @@ const EclipseButton = React.forwardRef<HTMLButtonElement, EclipseButtonProps>(
         {!isLoading && leftIcon && (
           <span className="flex items-center justify-center shrink-0">{leftIcon}</span>
         )}
-        {text && <span className="whitespace-nowrap">{text}</span>}
+        {text && <span className="min-w-0 text-center leading-tight">{text}</span>}
         {!isLoading && rightIcon && (
           <span className="flex items-center justify-center shrink-0">{rightIcon}</span>
         )}

@@ -71,7 +71,7 @@ export function BatchActions({
       )}
 
       {/* ── Row 1: Primary Action Buttons (Side by Side Grid) ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,17.5rem),1fr))] gap-2.5">
         {/* Write EXIF / Apply GPS button */}
         <EclipseButton
           text={
