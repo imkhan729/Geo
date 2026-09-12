@@ -1165,31 +1165,38 @@ export default function Home() {
 
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
               {[
-                { title: "GPS Photo Finder", href: "/gps-finder", desc: "Extract and view existing GPS coordinates on an interactive map." },
-                { title: "EXIF Metadata Viewer", href: "/exif-viewer", desc: "Inspect camera settings, ISO, exposure, lens details, and raw EXIF tags." },
-                { title: "Bulk Geotagging Guide", href: "/blog/how-to-bulk-geotag-photos", desc: "Learn batch workflows for tagging hundreds of photos simultaneously." },
-                { title: "Add GPS to iPhone Photos", href: "/blog/how-to-add-gps-to-iphone-photos", desc: "Step-by-step tutorial for iOS camera photos and AirDrop files." },
-                { title: "Add GPS to Android Photos", href: "/blog/how-to-geotag-photos-android", desc: "Easy guide for geotagging photos on Android smartphones." },
-                { title: "What Is EXIF GPS Metadata?", href: "/blog/what-is-exif-gps-metadata", desc: "Deep dive into EXIF tags, coordinate formats, and standards." },
-                { title: "Remove GPS from Photos", href: "/blog/how-to-remove-gps-data-from-photos", desc: "Protect privacy by stripping location data before public sharing." },
-                { title: "Fix Wrong GPS Location", href: "/blog/how-to-fix-wrong-gps-location-on-photos", desc: "Resolve drifting coordinates, clock drift, and misplaced pins." },
-                { title: "Best Free Geotagging Tools", href: "/blog/best-free-photo-geotagging-tools", desc: "Comparison of free online, desktop, and CLI geotaggers in 2026." },
-              ].map(({ title, href, desc }) => (
-                <Card key={title} className="p-4.5 rounded-xl border border-border bg-card shadow-sm hover:border-primary/40 transition-colors flex flex-col justify-between">
-                  <div>
-                    <h3 className="font-display font-semibold text-sm mb-1 text-foreground">
-                      <Link href={href}>
-                        <a className="hover:text-primary transition-colors">{title}</a>
-                      </Link>
-                    </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed mb-3">{desc}</p>
-                  </div>
-                  <Link href={href}>
-                    <a className="text-xs text-primary font-medium hover:underline inline-flex items-center gap-1">
-                      Learn more <ArrowRight className="h-3 w-3" />
-                    </a>
-                  </Link>
-                </Card>
+                { title: "GPS Photo Finder", href: "/gps-finder", desc: "Extract and view existing GPS coordinates on an interactive map.", icon: Search, label: "Free tool" },
+                { title: "EXIF Metadata Viewer", href: "/exif-viewer", desc: "Inspect camera settings, ISO, exposure, lens details, and raw EXIF tags.", icon: FileCheck, label: "Free tool" },
+                { title: "Bulk Geotagging Guide", href: "/blog/how-to-bulk-geotag-photos", desc: "Learn batch workflows for tagging hundreds of photos simultaneously.", icon: Layers, label: "Guide" },
+                { title: "Add GPS to iPhone Photos", href: "/blog/how-to-add-gps-to-iphone-photos", desc: "Step-by-step tutorial for iOS camera photos and AirDrop files.", icon: Smartphone, label: "Guide" },
+                { title: "Add GPS to Android Photos", href: "/blog/how-to-geotag-photos-android", desc: "Easy guide for geotagging photos on Android smartphones.", icon: Smartphone, label: "Guide" },
+                { title: "What Is EXIF GPS Metadata?", href: "/blog/what-is-exif-gps-metadata", desc: "Deep dive into EXIF tags, coordinate formats, and standards.", icon: Tag, label: "Explainer" },
+                { title: "Remove GPS from Photos", href: "/blog/how-to-remove-gps-data-from-photos", desc: "Protect privacy by stripping location data before public sharing.", icon: UserX, label: "Privacy" },
+                { title: "Fix Wrong GPS Location", href: "/blog/how-to-fix-wrong-gps-location-on-photos", desc: "Resolve drifting coordinates, clock drift, and misplaced pins.", icon: Compass, label: "Troubleshooting" },
+                { title: "Best Free Geotagging Tools", href: "/blog/best-free-photo-geotagging-tools", desc: "Comparison of free online, desktop, and CLI geotaggers in 2026.", icon: BookOpen, label: "Comparison" },
+              ].map(({ title, href, desc, icon: Icon, label }) => (
+                <Link key={title} href={href}>
+                  <a className="group block h-full rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+                    <Card className="relative h-full min-h-[184px] overflow-hidden rounded-2xl border-border/80 bg-gradient-to-br from-card via-card to-primary/[0.035] p-5 shadow-sm transition-all duration-200 group-hover:-translate-y-1 group-hover:border-primary/45 group-hover:shadow-lg">
+                      <div className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-primary transition-transform duration-200 group-hover:scale-x-100" />
+                      <div className="flex items-start justify-between gap-3">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/15 bg-primary/10 text-primary">
+                          <Icon className="h-5 w-5" aria-hidden="true" />
+                        </span>
+                        <span className="rounded-full bg-muted px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                          {label}
+                        </span>
+                      </div>
+                      <h3 className="mt-4 font-display text-base font-bold text-foreground transition-colors group-hover:text-primary">
+                        {title}
+                      </h3>
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p>
+                      <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+                        Explore <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
+                      </span>
+                    </Card>
+                  </a>
+                </Link>
               ))}
             </div>
           </div>
