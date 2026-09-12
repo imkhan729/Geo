@@ -4,7 +4,7 @@ Current phase: Phase 17 — Optional Tool Expansion: EXIF Viewer
 Status: PASS
 Last completed phase: Phase 17 — Optional Tool Expansion: EXIF Viewer (Tool 1 of 4)
 Current branch: master
-Latest commit: Pending feat(tools): implement Phase 17 EXIF Viewer tool, Section 28 grouped metadata, and static prerendering
+Latest commit: afeda7e feat(tools): implement Phase 17 EXIF Viewer tool, Section 28 grouped metadata, and static prerendering
 Tests passing:
 - EXIF Viewer test suite (`npm run test:exif-viewer`) PASS (42/42 tests passing: Section 28 grouped metadata, DMS conversion, megapixel calculation, aspect ratio, human-readable file sizes, graceful fallback for stripped photos, summary generation, mandatory Section 28 CTAs, privacy invariant audit, JSON-LD schemas, and ad placement safety reservation)
 - Technical SEO test suite (`npm run test:technical-seo`) PASS (9/9 tests passing across all 18 canonical routes)
