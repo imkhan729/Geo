@@ -1,21 +1,14 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef, lazy, Suspense } from "react";
 import { Link } from "wouter";
 import {
   Download,
   Loader2,
   Upload,
-  X,
   Search,
-  Locate,
   CheckCircle,
-  AlertCircle,
   Camera,
-  Shield,
-  Zap,
   ChevronDown,
   Sparkles,
-  PenLine,
-  Trash2,
   HelpCircle,
   Globe,
   MapPin,
@@ -28,12 +21,10 @@ import {
   HardDrive,
   Eye,
   UserX,
-  Plane,
   Newspaper,
   Building,
   Home as HomeIcon,
   Tag,
-  FileText,
   Layers,
   ArrowRight,
   BookOpen,
@@ -46,13 +37,18 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ToolComparisonTable } from "@/components/tool-comparison-table";
 import { Dropzone } from "@/components/tool/dropzone";
 import { FileQueue } from "@/components/tool/file-queue";
 import { CoordinatePanel } from "@/components/tool/coordinate-panel";
 import { MapSkeleton } from "@/components/tool/map-skeleton";
 import { BatchActions } from "@/components/tool/batch-actions";
 import { AdSlot } from "@/components/ad-slot";
+
+const ToolComparisonTable = lazy(() =>
+  import("@/components/tool-comparison-table").then((m) => ({
+    default: m.ToolComparisonTable,
+  }))
+);
 
 const LazyLeafletMap = React.lazy(() => import("@/components/tool/leaflet-map"));
 
@@ -71,7 +67,7 @@ import {
   VerificationResult,
 } from "@/lib/geotag-utils";
 import { useToast } from "@/hooks/use-toast";
-import { SEO_CONFIG, updatePageSEO, injectPageSchema } from "@/lib/seo";
+import { HOME_SEO_CONFIG, updatePageSEO, injectPageSchema } from "@/lib/seo";
 import {
   trackUploadOpened,
   trackFileAccepted,
@@ -159,7 +155,23 @@ export default function Home() {
   const { toast } = useToast();
 
   useEffect(() => {
-    updatePageSEO(SEO_CONFIG.home);
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const urlLat = params.get("lat");
+      const urlLng = params.get("lng");
+      if (urlLat && urlLng) {
+        const pLat = parseFloat(urlLat);
+        const pLng = parseFloat(urlLng);
+        if (!isNaN(pLat) && !isNaN(pLng) && pLat >= -90 && pLat <= 90 && pLng >= -180 && pLng <= 180) {
+          setLatitude(Number(pLat.toFixed(6)));
+          setLongitude(Number(pLng.toFixed(6)));
+        }
+      }
+    } catch {
+      // Ignore URL param parsing errors
+    }
+
+    updatePageSEO(HOME_SEO_CONFIG);
 
     injectPageSchema("home-software", {
       "@context": "https://schema.org",
@@ -954,7 +966,9 @@ export default function Home() {
             </div>
 
             <div className="max-w-4xl mx-auto">
-              <ToolComparisonTable />
+              <Suspense fallback={<div className="h-64 rounded-xl border bg-muted/20 animate-pulse" />}>
+                <ToolComparisonTable />
+              </Suspense>
             </div>
           </div>
         </section>

@@ -17,7 +17,8 @@
     "test:ads": "tsx script/test-ads-readiness.ts",
     "test:technical-seo": "tsx script/test-technical-seo.ts",
     "test:exif-viewer": "tsx script/test-exif-viewer.ts",
-    "test:remove-gps": "tsx script/test-remove-gps.ts"
+    "test:remove-gps": "tsx script/test-remove-gps.ts",
+    "test:coordinate-converter": "tsx script/test-coordinate-converter.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

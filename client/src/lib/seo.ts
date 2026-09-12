@@ -141,14 +141,16 @@ export function updatePageSEO(config: SEOConfig) {
  *  via updatePageSEO(), and script/generate-seo-pages.ts imports it for the prerendered
  *  HTML, so the two can never drift. Titles are 50-60 chars and descriptions 140-160,
  *  enforced by script/validate-meta.ts which fails the build on violations. */
+export const HOME_SEO_CONFIG: SEOConfig = {
+  title: "Geotag Photos Free – Add GPS to Any Photo in Seconds",
+  description: "Add GPS coordinates to any photo free, right in your browser. No uploads, no signup. Batch geotag JPG, PNG, WebP and HEIC with zero quality loss.",
+  canonical: "/",
+  ogType: "website",
+  keywords: "geotag photos free, add gps to photos online, photo geotagging tool, embed gps in photos, free geotagging, add location to photos, exif gps editor, batch geotagging, geotag jpeg online"
+};
+
 export const SEO_CONFIG = {
-  home: {
-    title: "Geotag Photos Free – Add GPS to Any Photo in Seconds",
-    description: "Add GPS coordinates to any photo free, right in your browser. No uploads, no signup. Batch geotag JPG, PNG, WebP and HEIC with zero quality loss.",
-    canonical: "/",
-    ogType: "website",
-    keywords: "geotag photos free, add gps to photos online, photo geotagging tool, embed gps in photos, free geotagging, add location to photos, exif gps editor, batch geotagging, geotag jpeg online"
-  },
+  home: HOME_SEO_CONFIG,
   gpsFinder: {
     title: "GPS Photo Finder – See Where Any Photo Was Taken Free",
     description: "Upload a photo to see exactly where it was taken on a map. Free GPS photo finder reads EXIF location data privately in your browser. No signup.",
@@ -169,6 +171,13 @@ export const SEO_CONFIG = {
     canonical: "/remove-gps-from-photo",
     ogType: "website",
     keywords: "remove gps from photo, strip photo location, remove geotag online, delete gps metadata, photo privacy cleaner, strip exif location, remove gps data free"
+  },
+  coordinateConverter: {
+    title: "GPS Coordinate Converter Online Free – DD to DMS Map",
+    description: "Convert GPS coordinates between Decimal Degrees, DMS, and DDM online free. Interactive map pin, smart format parser, and one-click photo geotagging integration.",
+    canonical: "/coordinate-converter",
+    ogType: "website",
+    keywords: "coordinate converter, gps coordinate converter, dd to dms, convert coordinates online, decimal degrees to dms, latitude longitude converter, geohash converter, photo coordinate tool"
   },
   privacy: {
     title: "Privacy Policy – How We Handle Your Photos and Data",

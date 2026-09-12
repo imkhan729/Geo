@@ -21,20 +21,20 @@
 | Asset Category | Target Budget | Measured Size (Uncompressed) | Measured Size (Gzipped) | Budget Status |
 | :--- | :--- | :--- | :--- | :--- |
 | **Initial HTML** (`index.html`) | ≤ 50.00 KB | 30.19 KB | 9.08 KB | **PASS** |
-| **Critical Eager JavaScript** | ≤ 400.00 KB | 395.51 KB | 121.96 KB | **PASS** |
-| **Critical Stylesheet** (`index.css`) | ≤ 150.00 KB | 141.45 KB | 22.51 KB | **PASS** |
-| **Total Critical Payload** | ≤ 600.00 KB | 567.14 KB | 153.56 KB | **PASS** |
-| **On-Demand Lazy JS** | Variable | 1.84 MB | - | **DEFERRED (Non-Critical)** |
+| **Critical Eager JavaScript** | ≤ 400.00 KB | 397.88 KB | 122.93 KB | **PASS** |
+| **Critical Stylesheet** (`index.css`) | ≤ 150.00 KB | 142.34 KB | 22.65 KB | **PASS** |
+| **Total Critical Payload** | ≤ 600.00 KB | 570.41 KB | 154.67 KB | **PASS** |
+| **On-Demand Lazy JS** | Variable | 1.89 MB | - | **DEFERRED (Non-Critical)** |
 
 ---
 
 ## 3. Performance Architecture & Verification Checks
 
-- [x] **Eager Critical JS Budget**: PASS — 395.51 KB / 400.00 KB limit (gzipped: 121.96 KB)
-- [x] **Critical CSS Budget**: PASS — 141.45 KB / 150.00 KB limit (gzipped: 22.51 KB)
+- [x] **Eager Critical JS Budget**: PASS — 397.88 KB / 400.00 KB limit (gzipped: 122.93 KB)
+- [x] **Critical CSS Budget**: PASS — 142.34 KB / 150.00 KB limit (gzipped: 22.65 KB)
 - [x] **Initial HTML Size Budget**: PASS — 30.19 KB / 50.00 KB limit (gzipped: 9.08 KB)
-- [x] **HEIC Transcoder Async Splitting**: PASS — heic2any-BFvS8iC3.js (1.29 MB) is cleanly lazy-loaded on demand
-- [x] **Batch ZIP Archiver Async Splitting**: PASS — jszip.min-DVgrE2wN.js (94.59 KB) is cleanly lazy-loaded for batch downloads
+- [x] **HEIC Transcoder Async Splitting**: PASS — heic2any-BRo0yxxS.js (1.29 MB) is cleanly lazy-loaded on demand
+- [x] **Batch ZIP Archiver Async Splitting**: PASS — jszip.min-DAaIxPZB.js (94.59 KB) is cleanly lazy-loaded for batch downloads
 - [x] **CLS Zero-Shift Layout Reservation**: PASS — #root min-height: 100vh reserved, static SEO content cleanly replaced without layout shift
 
 ---
@@ -71,37 +71,40 @@
 | File Name | Size (Uncompressed) | Gzipped Size | Loading Strategy |
 | :--- | :--- | :--- | :--- |
 | `index.html` | 30.19 KB | 9.08 KB | **Critical First-Load** |
-| `about-DkHrwwBS.js` | 8.00 KB | 3.07 KB | On-Demand (Lazy) |
-| `best-free-photo-geotagging-tools-Pl9af9YG.js` | 21.87 KB | 5.91 KB | On-Demand (Lazy) |
-| `blog-extras-BPZbOjlL.js` | 20.45 KB | 7.34 KB | On-Demand (Lazy) |
-| `contact-DufaCzDd.js` | 7.09 KB | 2.66 KB | On-Demand (Lazy) |
-| `cookies-BfKpUXnr.js` | 8.75 KB | 3.28 KB | On-Demand (Lazy) |
+| `about-BjmMMCxk.js` | 8.00 KB | 3.07 KB | On-Demand (Lazy) |
+| `best-free-photo-geotagging-tools-B4uPydRv.js` | 21.87 KB | 5.90 KB | On-Demand (Lazy) |
+| `blog-extras-CUrKTiuj.js` | 20.45 KB | 7.34 KB | On-Demand (Lazy) |
+| `contact-DEC4XVXk.js` | 7.09 KB | 2.66 KB | On-Demand (Lazy) |
+| `cookie-consent-DQUSdnan.js` | 2.55 KB | 1.09 KB | On-Demand (Lazy) |
+| `cookies-MCylwUxQ.js` | 8.75 KB | 3.28 KB | On-Demand (Lazy) |
+| `coordinate-converter-BQHljq3i.js` | 50.03 KB | 12.99 KB | On-Demand (Lazy) |
 | `exif-reader-Dnzg53gk.js` | 96.15 KB | 30.65 KB | On-Demand (Lazy) |
-| `exif-utils-T9aPy69Y.js` | 8.80 KB | 3.31 KB | On-Demand (Lazy) |
-| `exif-viewer-CDuS5yL0.js` | 35.92 KB | 9.22 KB | On-Demand (Lazy) |
-| `FileSaver.min-DzDeJ0pR.js` | 2.94 KB | 1.43 KB | On-Demand (Lazy) |
-| `gps-finder-CW9_IOQ0.js` | 44.99 KB | 10.59 KB | On-Demand (Lazy) |
-| `heic2any-BFvS8iC3.js` | 1.29 MB | 331.21 KB | On-Demand (Lazy) |
-| `how-to-add-gps-to-iphone-photos-CneGja8h.js` | 12.91 KB | 4.23 KB | On-Demand (Lazy) |
-| `how-to-bulk-geotag-photos-BC1BKfz0.js` | 13.45 KB | 4.68 KB | On-Demand (Lazy) |
-| `how-to-fix-wrong-gps-location-on-photos-CQzJ_ffH.js` | 13.73 KB | 4.68 KB | On-Demand (Lazy) |
-| `how-to-geotag-photos-android-CC69e0_8.js` | 15.40 KB | 5.05 KB | On-Demand (Lazy) |
-| `how-to-geotag-photos-for-google-business-profile-U78pC_SI.js` | 16.21 KB | 5.11 KB | On-Demand (Lazy) |
-| `how-to-geotag-photos-for-real-estate-DwhWNDBJ.js` | 12.91 KB | 4.22 KB | On-Demand (Lazy) |
-| `how-to-remove-gps-data-from-photos-DWdAKx54.js` | 15.27 KB | 5.08 KB | On-Demand (Lazy) |
-| `index-BiE9t_Gm.js` | 8.25 KB | 2.89 KB | On-Demand (Lazy) |
-| `index-DFj8NylJ.css` | 141.45 KB | 22.51 KB | **Critical First-Load** |
-| `index-z7kng5pd.js` | 142.05 KB | 37.60 KB | **Critical First-Load** |
-| `jszip.min-DVgrE2wN.js` | 94.59 KB | 29.17 KB | On-Demand (Lazy) |
-| `leaflet-map-DY9z1fpS.js` | 2.78 KB | 1.46 KB | On-Demand (Lazy) |
+| `exif-utils-BjQi4OXq.js` | 8.80 KB | 3.32 KB | On-Demand (Lazy) |
+| `exif-viewer-BByv2C8d.js` | 35.92 KB | 9.22 KB | On-Demand (Lazy) |
+| `FileSaver.min-11Yn241e.js` | 2.94 KB | 1.43 KB | On-Demand (Lazy) |
+| `gps-finder-Cy2w4yZ0.js` | 44.99 KB | 10.59 KB | On-Demand (Lazy) |
+| `heic2any-BRo0yxxS.js` | 1.29 MB | 331.21 KB | On-Demand (Lazy) |
+| `how-to-add-gps-to-iphone-photos-DE2N64iM.js` | 12.91 KB | 4.23 KB | On-Demand (Lazy) |
+| `how-to-bulk-geotag-photos-BVNgVW-O.js` | 13.45 KB | 4.67 KB | On-Demand (Lazy) |
+| `how-to-fix-wrong-gps-location-on-photos-CRFQEygw.js` | 13.73 KB | 4.68 KB | On-Demand (Lazy) |
+| `how-to-geotag-photos-android-DLh4S_lE.js` | 15.40 KB | 5.04 KB | On-Demand (Lazy) |
+| `how-to-geotag-photos-for-google-business-profile-vR4K4kvV.js` | 16.21 KB | 5.11 KB | On-Demand (Lazy) |
+| `how-to-geotag-photos-for-real-estate-B3ugs2vf.js` | 12.91 KB | 4.22 KB | On-Demand (Lazy) |
+| `how-to-remove-gps-data-from-photos-C19J1guD.js` | 15.27 KB | 5.08 KB | On-Demand (Lazy) |
+| `index-BumsJH5V.js` | 138.40 KB | 36.79 KB | **Critical First-Load** |
+| `index-Cu5dmf8B.css` | 142.34 KB | 22.65 KB | **Critical First-Load** |
+| `index-Pjd7WD7u.js` | 8.25 KB | 2.88 KB | On-Demand (Lazy) |
+| `jszip.min-DAaIxPZB.js` | 94.59 KB | 29.17 KB | On-Demand (Lazy) |
+| `leaflet-map-DE8pffHA.js` | 2.78 KB | 1.46 KB | On-Demand (Lazy) |
 | `logo-202-Ve5Hxmk4.webp` | 4.37 KB | 4.39 KB | On-Demand (Lazy) |
-| `not-found-DFZiS3gc.js` | 3.75 KB | 1.20 KB | On-Demand (Lazy) |
-| `piexif-xliT0So5.js` | 29.89 KB | 8.93 KB | On-Demand (Lazy) |
-| `privacy-Cpbwt5nd.js` | 12.30 KB | 4.40 KB | On-Demand (Lazy) |
-| `radix-at22i7iz.js` | 31.31 KB | 10.68 KB | **Critical First-Load** |
-| `react-Djyvt97q.js` | 7.75 KB | 3.02 KB | **Critical First-Load** |
-| `react-dom-D2DOqFg_.js` | 127.09 KB | 40.62 KB | **Critical First-Load** |
-| `remove-gps-from-photo-P3xJCp8i.js` | 32.75 KB | 8.58 KB | On-Demand (Lazy) |
-| `terms-C3_B5K9u.js` | 8.80 KB | 3.49 KB | On-Demand (Lazy) |
-| `vendor-DFu81jtW.js` | 87.31 KB | 30.04 KB | **Critical First-Load** |
-| `what-is-exif-gps-metadata-CV53UXuy.js` | 15.03 KB | 5.00 KB | On-Demand (Lazy) |
+| `not-found-CyPmAOzD.js` | 3.75 KB | 1.20 KB | On-Demand (Lazy) |
+| `piexif-DloqK-En.js` | 29.89 KB | 8.93 KB | On-Demand (Lazy) |
+| `privacy-BBMtM_pX.js` | 12.30 KB | 4.40 KB | On-Demand (Lazy) |
+| `radix-BvCp7Dl6.js` | 37.24 KB | 12.41 KB | **Critical First-Load** |
+| `react-C4iF10Fw.js` | 7.75 KB | 3.02 KB | **Critical First-Load** |
+| `react-dom-Twmjb4jh.js` | 127.09 KB | 40.62 KB | **Critical First-Load** |
+| `remove-gps-from-photo-BYa4t1Mw.js` | 32.75 KB | 8.58 KB | On-Demand (Lazy) |
+| `terms-OfuX4WDG.js` | 8.80 KB | 3.49 KB | On-Demand (Lazy) |
+| `tool-comparison-table-DhrJ1hD-.js` | 3.05 KB | 1.12 KB | On-Demand (Lazy) |
+| `vendor-D6vtCwjo.js` | 87.41 KB | 30.08 KB | **Critical First-Load** |
+| `what-is-exif-gps-metadata-xCqLWLlZ.js` | 15.03 KB | 5.00 KB | On-Demand (Lazy) |

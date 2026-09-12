@@ -5,6 +5,51 @@ All notable changes to FreeGeoTagger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Phase 17: Tool 3 — Coordinate Converter] - 2026-09-12
+
+### Added
+- **GPS Coordinate Engine & Smart Multi-Format Parser (`client/src/lib/coordinate-converter-utils.ts`)**: Built high-precision, 100% client-side spatial calculation utilities:
+  - Bidirectional conversions across Decimal Degrees (DD), Degrees Minutes Seconds (DMS), Degrees Decimal Minutes (DDM), and Base32 Geohash.
+  - Smart Universal Coordinate Parser (`parseAnyCoordinates`) auto-detecting and extracting coordinates from comma/space separated DD, unicode DMS with hemisphere references, nautical DDM, Google Maps URLs (`/@lat,lng` and `?q=lat,lng`), OpenStreetMap URLs, Geo URIs, and Geohash codes.
+  - Haversine great-circle distance and azimuth/bearing calculation.
+  - Coordinate bounding validation enforcing WGS84 ranges ([-90, 90] latitude, [-180, 180] longitude).
+  - External map navigation URL generators for Google Maps, OpenStreetMap, Apple Maps, and Geo URI.
+- **Standalone Coordinate Converter Tool Page (`client/src/pages/coordinate-converter.tsx`)**:
+  - Accessible, responsive standalone tool page at `/coordinate-converter`.
+  - Universal Smart Input bar with instant format auto-detection, format badges, and one-click device geolocation ("My Location").
+  - Precision selector dropdown (4 to 8 decimal places with physical ground accuracy indicators).
+  - Synchronized, editable format cards with instant one-click copying for DD, DMS, DDM, and Geohash.
+  - Interactive Leaflet map with click-to-pin, drag adjustment, and synchronized bidirectional conversion.
+  - Forward address/place search bar integrating `/api/geocode/search` with auto-complete dropdown.
+  - Reverse geocoded location badge displaying nearest address via `/api/geocode/reverse`.
+  - Primary Conversion Action: **"Geotag Photos with These Coordinates"** linking to `/?lat=${lat}&lng=${lng}` to immediately embed coordinates into image files.
+  - Conversion CTAs to GPS Finder (`/gps-finder`), EXIF Viewer (`/exif-viewer`), Remove GPS (`/remove-gps-from-photo`), and EXIF GPS Guide (`/blog/what-is-exif-gps-metadata`).
+  - Reserved CLS-guarded `<AdSlot placement="coordinate-converter-below-tool" />` strictly below the tool interface.
+  - 1,000+ word educational article covering coordinate formats, conversion math, EXIF GPS tags, ground accuracy tables, and troubleshooting.
+  - 6-item FAQ accordion with JSON-LD schemas (`WebPage`, `BreadcrumbList`, `WebApplication`, `FAQPage`).
+  - Landmark `<main id="main-content" tabIndex={-1} className="outline-none flex-1">`.
+- **Homepage Coordinate Integration (`client/src/pages/home.tsx`)**:
+  - Added query parameter support (`?lat=...&lng=...`) allowing users from the Coordinate Converter to immediately start tagging photos with their converted coordinates.
+- **Navigation & Internal Linking Updates**:
+  - Added "Coordinates" link in Header navigation (`client/src/components/Header.tsx`).
+  - Added "Coordinate Converter" link in Tools column (`client/src/components/Footer.tsx`).
+  - Registered route `/coordinate-converter` in `client/src/App.tsx`.
+- **Monetization & Layout Protection**:
+  - Registered `coordinate-converter-below-tool` in `client/src/lib/ads-config.ts` (100px mobile, 90px desktop).
+- **SEO & Search Indexing**:
+  - Added `coordinateConverter` to `SEO_CONFIG` in `client/src/lib/seo.ts` with SERP-compliant title (52 chars) and description (160 chars).
+  - Added static route prerendering in `script/generate-seo-pages.ts` generating `dist/public/seo-routes/coordinate-converter.html`.
+  - Added rewrite rule in `client/public/.htaccess` and canonical URL in `client/public/sitemap.xml`.
+  - Registered canonical URL in `server/indexnow.ts` (now 20 canonical routes).
+- **Automated Verification Suite (`script/test-coordinate-converter.ts`)**: Built a 44-point test suite covering mathematical conversion precision, parser variations, Haversine distance, mandatory CTAs, privacy invariants, JSON-LD schemas, ad placement safety, and accessibility landmarks. Added `"test:coordinate-converter"` script to `package.json`.
+- **Critical Bundle Optimization**:
+  - Exported `HOME_SEO_CONFIG` from `client/src/lib/seo.ts` to tree-shake all 19 other pages' metadata out of the initial bundle.
+  - Code-split `ToolComparisonTable` and `CookieConsent` using `React.lazy()` and `Suspense`.
+  - Pruned unused `lucide-react` icons in `home.tsx` and `Header.tsx`.
+  - Preserved Eager Critical JS at 397.89 KB (< 400 KB limit).
+
+---
+
 ## [Phase 17: Tool 2 — Remove GPS Tool] - 2026-09-12
 
 ### Added

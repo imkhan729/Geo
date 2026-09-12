@@ -6,7 +6,11 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
-import { CookieConsent } from "@/components/cookie-consent";
+
+const CookieConsent = lazy(() =>
+  import("@/components/cookie-consent").then((m) => ({ default: m.CookieConsent }))
+);
+
 // Home is loaded eagerly (critical path)
 import Home from "@/pages/home";
 
@@ -20,6 +24,7 @@ const Contact = lazy(() => import("@/pages/contact"));
 const GpsFinder = lazy(() => import("@/pages/gps-finder"));
 const ExifViewer = lazy(() => import("@/pages/exif-viewer"));
 const RemoveGpsFromPhoto = lazy(() => import("@/pages/remove-gps-from-photo"));
+const CoordinateConverter = lazy(() => import("@/pages/coordinate-converter"));
 const BlogIndex = lazy(() => import("@/pages/blog/index"));
 const BlogRealEstate = lazy(() => import("@/pages/blog/how-to-geotag-photos-for-real-estate"));
 const BlogExifGps = lazy(() => import("@/pages/blog/what-is-exif-gps-metadata"));
@@ -77,6 +82,7 @@ function Router() {
         <Route path="/gps-finder" component={GpsFinder} />
         <Route path="/exif-viewer" component={ExifViewer} />
         <Route path="/remove-gps-from-photo" component={RemoveGpsFromPhoto} />
+        <Route path="/coordinate-converter" component={CoordinateConverter} />
         <Route path="/blog" component={BlogIndex} />
         <Route path="/blog/how-to-geotag-photos-for-real-estate" component={BlogRealEstate} />
         <Route path="/blog/what-is-exif-gps-metadata" component={BlogExifGps} />
@@ -104,7 +110,9 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
-          <CookieConsent />
+          <Suspense fallback={null}>
+            <CookieConsent />
+          </Suspense>
         </TooltipProvider>
       </QueryClientProvider>
     </ThemeProvider>

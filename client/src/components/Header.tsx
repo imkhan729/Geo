@@ -34,6 +34,7 @@ export function Header() {
         { href: "/gps-finder", label: "GPS Finder", testId: "link-gps-finder" },
         { href: "/exif-viewer", label: "EXIF Viewer", testId: "link-exif-viewer" },
         { href: "/remove-gps-from-photo", label: "Remove GPS", testId: "link-remove-gps" },
+        { href: "/coordinate-converter", label: "Coordinates", testId: "link-coordinate-converter" },
         { href: "/blog", label: "Blog", testId: "link-blog" },
     ];
 

@@ -60,6 +60,7 @@ const commonLinks = [
   { href: "/gps-finder", label: "GPS Finder" },
   { href: "/exif-viewer", label: "EXIF Viewer" },
   { href: "/remove-gps-from-photo", label: "Remove GPS" },
+  { href: "/coordinate-converter", label: "Coordinate Converter" },
   { href: "/blog", label: "Photo Geotagging Blog" },
   { href: "/about", label: "About FreeGeoTagger" },
   { href: "/contact", label: "Contact" },
@@ -523,6 +524,155 @@ const removeGpsContentHtml = `
 ${removeGpsFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</p>`).join("\n")}
 `.trim();
 
+
+const coordinateConverterFaqs: Array<{ q: string; a: string }> = [
+  {
+    q: "What is the difference between Decimal Degrees (DD) and DMS?",
+    a: "Decimal Degrees (DD) express latitude and longitude as simple decimal numbers (e.g. 37.774929, -122.419416), where positive numbers indicate North/East and negative numbers indicate South/West. Degrees, Minutes, Seconds (DMS) breaks coordinates into angular units (e.g. 37° 46' 29.74\" N, 122° 25' 09.90\" W), where 1 degree equals 60 minutes, and 1 minute equals 60 seconds.",
+  },
+  {
+    q: "How many decimal places do I need for accurate GPS coordinates?",
+    a: "Four decimal places gives accuracy of approximately 11 meters (street or neighborhood level). Five decimal places achieves 1.1 meters (identifying a specific driveway or tree). Six decimal places reaches 11 centimeters (sub-meter pinpointing used by modern smartphones and cameras). Seven or eight decimal places represents millimeter accuracy, typically unnecessary for civilian photo geotagging.",
+  },
+  {
+    q: "How do I convert Google Maps coordinates into DMS?",
+    a: "Right-click any point in Google Maps and click on the coordinates at the top of the context menu to copy them (e.g. 40.7128, -74.0060). Paste them into our Smart Coordinate Parser box above, and the tool will instantly convert them into Degrees Minutes Seconds (DMS), Degrees Decimal Minutes (DDM), and Geohash.",
+  },
+  {
+    q: "How are GPS coordinates stored inside photo EXIF tags?",
+    a: "Digital cameras and smartphones store coordinates inside the EXIF GPS IFD block as three rational numbers (degrees/1, minutes/1, seconds/100) paired with reference tags: GPSLatitudeRef ('N' or 'S') and GPSLongitudeRef ('E' or 'W'). You can use our tool to convert any decimal coordinate into the exact DMS fractions required by EXIF standards.",
+  },
+  {
+    q: "Can I use these converted coordinates to geotag my photos?",
+    a: "Yes! Once you find or convert your desired coordinates, click the 'Geotag Photos with These Coordinates' button. This opens our free photo geotagging tool with your exact latitude and longitude pre-loaded, ready to embed into JPG, PNG, WebP, or HEIC photos.",
+  },
+  {
+    q: "Does converting coordinates send my location to any external servers?",
+    a: "No. All coordinate conversions (DD, DMS, DDM, Geohash, and distance calculations) execute 100% locally in your browser using client-side JavaScript. If you search for an address, the query is proxied through our privacy-safe server cache which never logs IP addresses, queries, or user identities.",
+  },
+];
+
+const coordinateConverterContentHtml = `
+<h1>GPS Coordinate Converter Online Free — DD to DMS &amp; Map Utility</h1>
+<p>FreeGeoTagger's free online <strong>GPS Coordinate Converter</strong> provides instant, high-precision conversion between <strong>Decimal Degrees (DD)</strong>, <strong>Degrees Minutes Seconds (DMS)</strong>, <strong>Degrees Decimal Minutes (DDM)</strong>, and <strong>Base32 Geohash</strong>. Inspect any global coordinate on an interactive Leaflet map, parse messy coordinate strings automatically, and transfer verified coordinates directly into our photo geotagging engine with zero server uploads.</p>
+<p>Whether you are copying coordinates from Google Maps, cross-referencing aerial drone surveys, preparing listing assets for real estate portals, or writing EXIF geolocation tags to photography archives, our tool provides seamless format transformation with mathematical precision.</p>
+
+<h2>Supported GPS Coordinate Notations</h2>
+<ul>
+<li><strong>Decimal Degrees (DD):</strong> Standard notation for web mapping engines, GIS software (ArcGIS, QGIS), and software development (e.g. <code>37.774929, -122.419416</code>). Positive numbers indicate North and East; negative numbers indicate South and West.</li>
+<li><strong>Degrees, Minutes, Seconds (DMS):</strong> The traditional astronomical sexagesimal standard (e.g. <code>37° 46' 29.74" N, 122° 25' 09.90" W</code>). This is the exact rational format mandated by the international EXIF 2.32 standard for camera image headers.</li>
+<li><strong>Degrees Decimal Minutes (DDM):</strong> The official standard for aeronautical charts, nautical GPS navigation, and maritime charting (e.g. <code>37° 46.4957' N, 122° 25.1650' W</code>).</li>
+<li><strong>Geohash:</strong> Interleaved hierarchical spatial index that encodes two-dimensional coordinates into a short alphanumeric string (e.g. <code>9q8yyk8y</code>), ideal for spatial database caching.</li>
+</ul>
+
+<h2>Universal Smart Coordinate Parser</h2>
+<p>You do not need to clean or reformat coordinates before pasting them into FreeGeoTagger. Our universal parser auto-detects and extracts valid spatial coordinates from diverse inputs:</p>
+<ul>
+<li>Standard decimal coordinates: <code>37.774929, -122.419416</code> or <code>37.774929 -122.419416</code></li>
+<li>Google Maps URLs: <code>https://www.google.com/maps/@37.774929,-122.419416,17z</code> or <code>https://maps.google.com/?q=37.774929,-122.419416</code></li>
+<li>OpenStreetMap URLs: <code>https://www.openstreetmap.org/#map=16/37.774929/-122.419416</code></li>
+<li>Sexagesimal DMS strings with unicode symbols: <code>37° 46' 29.74" N, 122° 25' 09.90" W</code></li>
+<li>Unsigned DMS with hemisphere prefixes: <code>N 37 46 29.74, W 122 25 09.90</code></li>
+<li>Nautical DDM formats: <code>37° 46.4957' N, 122° 25.1650' W</code></li>
+<li>Base32 Geohash codes: <code>9q8yyk8y</code></li>
+</ul>
+
+<h2>Conversion Mathematics &amp; Step-by-Step Formulas</h2>
+<p>The mathematical relationships governing WGS84 angular coordinate representations are straightforward:</p>
+
+<h3>Converting DMS to Decimal Degrees</h3>
+<pre>DD = (Degrees + (Minutes / 60) + (Seconds / 3600)) * (Direction in ['S', 'W'] ? -1 : 1)</pre>
+<p><strong>Example:</strong> Convert <code>40° 42' 46.02" N</code>:<br />
+40 + (42 / 60) + (46.02 / 3600) = 40 + 0.7000 + 0.012783 = <strong>40.712783°</strong></p>
+
+<h3>Converting Decimal Degrees to DMS</h3>
+<ol>
+<li>Take the absolute value of the decimal coordinate. If original was negative, direction is South (for latitude) or West (for longitude).</li>
+<li>The whole number component is the <strong>Degrees</strong>.</li>
+<li>Multiply the remaining fractional component by 60. The whole number component of this result is the <strong>Minutes</strong>.</li>
+<li>Multiply the remaining fractional minute by 60. This result is the <strong>Seconds</strong>.</li>
+</ol>
+
+<h2>Coordinate Precision &amp; Ground Resolution Table</h2>
+<p>Because the circumference of the Earth along meridians is approximately 40,007 kilometers, each degree of latitude represents approximately 111.32 kilometers (69.17 miles). The table below outlines how decimal place counts translate to physical ground distance:</p>
+<table>
+<thead>
+<tr>
+<th>Decimal Places</th>
+<th>Degree Precision</th>
+<th>Equatorial Ground Resolution</th>
+<th>Common Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 (0.1)</td>
+<td>0.1°</td>
+<td>~11.1 kilometers (6.9 miles)</td>
+<td>Large metropolitan area</td>
+</tr>
+<tr>
+<td>2 (0.01)</td>
+<td>0.01°</td>
+<td>~1.11 kilometers (0.69 miles)</td>
+<td>Town or village boundary</td>
+</tr>
+<tr>
+<td>3 (0.001)</td>
+<td>0.001°</td>
+<td>~111 meters (364 feet)</td>
+<td>Agricultural field or large estate</td>
+</tr>
+<tr>
+<td>4 (0.0001)</td>
+<td>0.0001°</td>
+<td>~11.1 meters (36.4 feet)</td>
+<td>Individual property parcel or street address</td>
+</tr>
+<tr>
+<td>5 (0.00001)</td>
+<td>0.00001°</td>
+<td>~1.11 meters (3.64 feet)</td>
+<td>Smartphone GPS accuracy (Ideal for photo geotagging)</td>
+</tr>
+<tr>
+<td>6 (0.000001)</td>
+<td>0.000001°</td>
+<td>~11.1 centimeters (4.37 inches)</td>
+<td>Surveying, drone photography, construction milestones</td>
+</tr>
+<tr>
+<td>7 (0.0000001)</td>
+<td>0.0000001°</td>
+<td>~1.11 centimeters (0.44 inches)</td>
+<td>Geodetic surveying, structural drift monitoring</td>
+</tr>
+</tbody>
+</table>
+
+<h2>How GPS Coordinates are Encoded in EXIF Photo Metadata</h2>
+<p>Under the EXIF 2.32 standard for digital still cameras (JEITA CP-3451D), GPS coordinates are not recorded as raw decimal numbers. Instead, they are stored inside the <strong>GPS IFD</strong> segment as rational arrays paired with hemisphere flags:</p>
+<ul>
+<li><strong>Tag 0x0001 (GPSLatitudeRef):</strong> 'N' for Northern Hemisphere, 'S' for Southern Hemisphere.</li>
+<li><strong>Tag 0x0002 (GPSLatitude):</strong> Three unsigned rational fractions representing degrees, minutes, and seconds: <code>[[deg, 1], [min, 1], [sec*100, 100]]</code>.</li>
+<li><strong>Tag 0x0003 (GPSLongitudeRef):</strong> 'E' for Eastern Hemisphere, 'W' for Western Hemisphere.</li>
+<li><strong>Tag 0x0004 (GPSLongitude):</strong> Three unsigned rational fractions representing degrees, minutes, and seconds: <code>[[deg, 1], [min, 1], [sec*100, 100]]</code>.</li>
+</ul>
+
+<h2>Related Free Geotagging Tools &amp; Resources</h2>
+<ul>
+<li><strong>Add GPS to Photos:</strong> Use our primary <a href="/">Free Photo Geotagger</a> to inject these converted coordinates directly into your JPG, PNG, WebP, or HEIC files.</li>
+<li><strong>Inspect Stored Geotags:</strong> Check coordinates embedded in existing photos using our <a href="/gps-finder">GPS Photo Finder</a>.</li>
+<li><strong>Inspect All Camera Settings:</strong> Analyze shutter speed, ISO, aperture, and lens metrics in our <a href="/exif-viewer">Online EXIF Viewer</a>.</li>
+<li><strong>Protect Your Privacy:</strong> Strip location tags before sharing images publicly with our <a href="/remove-gps-from-photo">Remove GPS from Photo</a> tool.</li>
+<li><strong>In-Depth Technical Guide:</strong> Read our comprehensive tutorial on <a href="/blog/what-is-exif-gps-metadata">what EXIF GPS metadata is and how it works</a>.</li>
+</ul>
+
+<h2>Frequently Asked Questions</h2>
+${coordinateConverterFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</p>`).join("\n")}
+`.trim();
+
+
 // ── Rich homepage content (mirrors the in-app landing page sections) ──
 const homeContentHtml = `
 <h1>Free Geotagger — Add GPS Location to Photos Online</h1>
@@ -876,6 +1026,15 @@ ${gpsFinderFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</
     contentHtml: removeGpsContentHtml,
     links: commonLinks,
     faqs: removeGpsFaqs,
+  },
+  {
+    path: "/coordinate-converter",
+    file: "coordinate-converter.html",
+    ogType: "website",
+    h1: "GPS Coordinate Converter — Convert DD, DMS & Map Coordinates",
+    contentHtml: coordinateConverterContentHtml,
+    links: commonLinks,
+    faqs: coordinateConverterFaqs,
   },
   {
     path: "/blog",

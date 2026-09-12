@@ -79,6 +79,11 @@ export function Footer() {
                                 </Link>
                             </li>
                             <li>
+                                <Link href="/coordinate-converter" className="hover:text-foreground transition-colors hover:translate-x-0.5 inline-block py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">
+                                    Coordinate Converter
+                                </Link>
+                            </li>
+                            <li>
                                 <Link href="/#features" className="hover:text-foreground transition-colors hover:translate-x-0.5 inline-block py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">
                                     Features
                                 </Link>

@@ -42,8 +42,8 @@ async function runAllTests() {
   const pageFiles = getAllPageFiles(pagesDir);
 
   // Test 1: All pages have <main id="main-content" tabIndex={-1}>
-  await runTest("All 19 site routes include <main id=\"main-content\" tabIndex={-1}> landmark", () => {
-    assert.ok(pageFiles.length >= 18, `Expected at least 18 pages, found ${pageFiles.length}`);
+  await runTest("All 20 site routes include <main id=\"main-content\" tabIndex={-1}> landmark", () => {
+    assert.ok(pageFiles.length >= 20, `Expected at least 20 pages, found ${pageFiles.length}`);
     for (const file of pageFiles) {
       const content = fs.readFileSync(file, "utf8");
       const baseName = path.basename(file);
