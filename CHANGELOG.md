@@ -5,6 +5,22 @@ All notable changes to FreeGeoTagger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Phase 18: Page 1 — About Page Expansion & E-E-A-T Optimization] - 2026-09-12
+
+### Added
+- **About Page Deep Expansion (`client/src/pages/about.tsx`)**:
+  - Expanded crawlable technical documentation from 777 to 1,495 words, completely resolving the low-word count audit warning.
+  - Authored deep technical architectural breakdown of the **Zero-Upload Invariant** detailing HTML5 `FileReader`, typed binary arrays (`Uint8Array`, `DataView`), in-memory EXIF binary parsing/encoding, and complete network isolation.
+  - Detailed EXIF 2.32 geodetic standard compliance: GPS IFD structure, unsigned rational coordinate arrays, hemisphere references (N/S/E/W), WGS84 datum projection, and precision preservation.
+  - Added comprehensive professional use cases: Real Estate MLS syndication, Local SEO & Google Business Profile verification, Field Engineering & Survey inspections, Insurance & Appraisal documentation, and Travel/Nature archiving.
+  - Documented four strict Ethical Commitments: No cloud storage, No account walls or paywalls, Zero watermarks or compression loss, and Zero coordinate telemetry.
+  - Complete ecosystem integration with bidirectional internal links to all 6 platform tools: Single Geotagger (`/`), GPS Finder (`/gps-finder`), EXIF Viewer (`/exif-viewer`), Remove GPS (`/remove-gps-from-photo`), Coordinate Converter (`/coordinate-converter`), and Batch Geotagging (`/batch-geotag-photos`).
+  - Added 4-item technical FAQ accordion covering commercial licensing, offline PWA/browser capabilities, lossless metadata injection, and cost.
+  - Enriched structured data with JSON-LD `AboutPage`, `Organization`, `WebPage`, `BreadcrumbList`, and `FAQPage` schemas.
+- **Static SEO Prerender Update**:
+  - Prerendered `dist/public/seo-routes/about.html` at 1,495 crawlable words.
+  - Cleared `[thin] /about` audit warning in `script/seo-check.mjs`.
+
 ## [Phase 17: Tool 4 — Improved Batch Workflow] - 2026-09-12
 
 ### Added
