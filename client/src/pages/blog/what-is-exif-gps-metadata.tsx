@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link } from "wouter";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
+import { updatePageSEO, injectPageSchema, ORGANIZATION_SCHEMA, SEO_CONFIG } from "@/lib/seo";
 import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { trackArticleToToolClick } from "@/lib/analytics";
@@ -24,7 +24,7 @@ export default function BlogExifGps() {
         "Understand what EXIF GPS metadata is, how latitude and longitude get stored inside image files, and why it matters for apps, search, and workflows.",
       datePublished: "2026-03-25",
       dateModified: "2026-03-25",
-      author: { "@type": "Organization", name: "FreeGeoTagger", url: "https://freegeotagger.com" },
+      author: ORGANIZATION_SCHEMA,
       publisher: {
         "@type": "Organization",
         name: "FreeGeoTagger",

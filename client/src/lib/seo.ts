@@ -142,11 +142,11 @@ export function updatePageSEO(config: SEOConfig) {
  *  HTML, so the two can never drift. Titles are 50-60 chars and descriptions 140-160,
  *  enforced by script/validate-meta.ts which fails the build on violations. */
 export const HOME_SEO_CONFIG: SEOConfig = {
-  title: "Geotag Photos Free – Add GPS to Any Photo in Seconds",
-  description: "Add GPS coordinates to any photo free, right in your browser. No uploads, no signup. Batch geotag JPG, PNG, WebP and HEIC with zero quality loss.",
+  title: "Free Geotagger – Add GPS to Photos Online in Seconds",
+  description: "Use this free geotagger to add GPS coordinates to photos online. Batch tag JPG, PNG, WebP and HEIC privately in your browser—no uploads or signup.",
   canonical: "/",
   ogType: "website",
-  keywords: "geotag photos free, add gps to photos online, photo geotagging tool, embed gps in photos, free geotagging, add location to photos, exif gps editor, batch geotagging, geotag jpeg online"
+  keywords: "free geotagger, geotag photos online free, geotag photos free, add gps to photos online, photo geotagging tool, embed gps in photos, free geotagging, batch geotagging, geotag jpeg online"
 };
 
 export const SEO_CONFIG = {

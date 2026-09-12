@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link } from "wouter";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
+import { updatePageSEO, injectPageSchema, ORGANIZATION_SCHEMA, SEO_CONFIG } from "@/lib/seo";
 import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { trackArticleToToolClick } from "@/lib/analytics";
@@ -24,7 +24,7 @@ export default function BlogFixWrongGps() {
         "Photo showing the wrong place on the map? Learn why photo GPS data ends up incorrect and how to correct the coordinates on any photo in seconds — free, in your browser, with no quality loss.",
       datePublished: "2026-07-10",
       dateModified: "2026-07-10",
-      author: { "@type": "Organization", name: "FreeGeoTagger", url: "https://freegeotagger.com" },
+      author: ORGANIZATION_SCHEMA,
       publisher: {
         "@type": "Organization",
         name: "FreeGeoTagger",
