@@ -59,6 +59,7 @@ const commonLinks = [
   { href: "/", label: "Geotag Photos Free" },
   { href: "/gps-finder", label: "GPS Finder" },
   { href: "/exif-viewer", label: "EXIF Viewer" },
+  { href: "/remove-gps-from-photo", label: "Remove GPS" },
   { href: "/blog", label: "Photo Geotagging Blog" },
   { href: "/about", label: "About FreeGeoTagger" },
   { href: "/contact", label: "Contact" },
@@ -371,6 +372,155 @@ const exifViewerContentHtml = `
 
 <h2>Frequently Asked Questions</h2>
 ${exifViewerFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</p>`).join("\n")}
+`.trim();
+
+
+const removeGpsFaqs: Array<{ q: string; a: string }> = [
+  {
+    q: "Does removing GPS data reduce the visual quality of my photo?",
+    a: "No. When using 'Remove GPS Only', FreeGeoTagger specifically clears the GPS Image File Directory (IFD) inside the EXIF header while leaving pixel data untouched. In 'Strip All Metadata' mode, standard high-quality re-encoding preserves full optical fidelity.",
+  },
+  {
+    q: "What is the difference between removing GPS and stripping all metadata?",
+    a: "Removing GPS specifically strips location coordinates, altitude, and satellite timestamps while keeping camera settings (aperture, shutter speed, ISO, lens). Stripping all metadata removes everything, including camera model and capture dates, for maximum anonymity.",
+  },
+  {
+    q: "Are my photos uploaded to your server when removing GPS?",
+    a: "No. All file reading, EXIF table parsing, GPS stripping, and binary verification occur 100% in your local browser memory using JavaScript and Web APIs. Your images are never transmitted over the network.",
+  },
+  {
+    q: "Can I remove GPS from iPhone HEIC photos?",
+    a: "Yes. FreeGeoTagger converts HEIC photos to standard JPEG directly in your browser, removes the GPS coordinates, and allows you to download a clean, universally compatible JPEG.",
+  },
+  {
+    q: "How do I know the GPS data is actually gone?",
+    a: "FreeGeoTagger performs an automated post-removal binary verification check on the output file before presenting the download. The tool inspects the freshly generated buffer to guarantee zero GPS tags remain.",
+  },
+  {
+    q: "Can I add new GPS coordinates after removing old ones?",
+    a: "Yes. If your photo had wrong coordinates, you can use our free Geotag Photos tool to embed accurate coordinates or search any location worldwide.",
+  },
+];
+
+const removeGpsContentHtml = `
+<h1>Remove GPS from Photo — Strip Location Metadata Online Free</h1>
+<p>FreeGeoTagger's free online <strong>Remove GPS Tool</strong> lets you strip embedded latitude, longitude, altitude, and satellite tracking coordinates from photographs directly in your web browser. Safeguard your home address, daily routines, and family privacy before sharing photos online with <strong>100% client-side security and zero server uploads</strong>.</p>
+<p>Unlike generic online scrubbers that force you to upload your sensitive pictures to remote cloud databases, FreeGeoTagger cleans EXIF, TIFF, XMP, and IPTC headers strictly in-memory on your personal device. Your original photographs are never uploaded, stored, logged, or indexed by any remote server.</p>
+
+<h2>How to Remove GPS Data from Photos in 3 Simple Steps</h2>
+<ol>
+<li><strong>Select or drop your photo</strong> — Drag and drop any JPG, PNG, WebP, or HEIC image into the dropzone, or click to browse files from your computer or phone.</li>
+<li><strong>Choose your privacy mode</strong> — Select <em>Remove GPS Only</em> to retain your professional camera exposure settings (aperture, ISO, shutter speed) or choose <em>Strip All Metadata</em> for total anonymity.</li>
+<li><strong>Verify and download clean copy</strong> — Our engine strips the metadata and runs an automated in-browser verification check, guaranteeing zero GPS tags remain before you download.</li>
+</ol>
+
+<h2>The Hidden Privacy Risks of Embedded Geotags</h2>
+<p>Modern mobile phones (iPhones and Android devices) and smart cameras automatically embed high-precision geolocation metadata into every picture you take when Location Services are enabled. Under the international EXIF 2.32 standard, this spatial telemetry includes:</p>
+<ul>
+<li><strong>Exact Latitude &amp; Longitude Coordinates:</strong> Pinpoint positioning typically accurate to within 5 to 10 meters of where you stood.</li>
+<li><strong>Hemisphere Indicators &amp; Direction:</strong> North/South and East/West markers plus lens compass orientation showing exactly which way your camera was facing.</li>
+<li><strong>Altitude &amp; Elevation:</strong> Precise vertical height above or below sea level calculated from satellite trilateration.</li>
+<li><strong>UTC Fix Timestamps:</strong> Exact atomic clock satellite fix times recording the chronological moment the capture occurred.</li>
+<li><strong>Device Provenance:</strong> Hardware manufacturer, camera model name, unique serial numbers, and firmware versions.</li>
+</ul>
+<p>When you share these unaltered images across classified marketplaces (e.g., Craigslist, eBay, OfferUp), community message boards, social media feeds, or professional portfolios, anyone can inspect the file headers and discover the exact geographical location of your residence, private workplace, storage facilities, or children's schools.</p>
+
+<h2>Two Tested Removal Strategies: GPS Only vs. Full Metadata Strip</h2>
+<p>In strict compliance with Section 29 of our engineering standards, FreeGeoTagger provides two distinct, transparent, and tested metadata cleansing options:</p>
+
+<h3>Option 1: Remove GPS Location Only (Recommended for Photographers)</h3>
+<p>This targeted method purges strictly the GPS Image File Directory (GPS IFD table). It clears all coordinate pairs, altitude measurements, and satellite timestamps while completely preserving your valuable camera optics and capture attributes:</p>
+<ul>
+<li><strong>Coordinates (GPSLatitude, GPSLongitude):</strong> Completely deleted and verified absent.</li>
+<li><strong>Elevation (GPSAltitude, GPSAltitudeRef):</strong> Completely wiped.</li>
+<li><strong>Satellite Timestamps (GPSTimeStamp, GPSDateStamp):</strong> Completely removed.</li>
+<li><strong>Camera Settings (Aperture, Shutter Speed, ISO, Lens):</strong> 100% PRESERVED.</li>
+<li><strong>Creation Date (DateTimeOriginal):</strong> 100% PRESERVED.</li>
+</ul>
+<p>This allows professional and enthusiast photographers to share high-resolution portfolio images on photography platforms (like Flickr or 500px) showing their camera craft without exposing private residential locations.</p>
+
+<h3>Option 2: Strip All Metadata (Maximum Privacy &amp; Anonymity)</h3>
+<p>This complete sanitization process purges all metadata containers from the image container. It wipes EXIF, TIFF, XMP, IPTC, maker notes, and user comment blocks, creating a pure raster image buffer with zero hardware provenance or temporal tracking. It is the gold standard for investigative journalists, legal whistleblowers, and privacy advocates.</p>
+
+<h2>Comparison of Removal Modes</h2>
+<table>
+<thead>
+<tr>
+<th>Metadata Category</th>
+<th>Original Photo</th>
+<th>Remove GPS Only</th>
+<th>Strip All Metadata</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Latitude &amp; Longitude</td>
+<td>Embedded (40.7128° N, 74.0060° W)</td>
+<td>Removed (Verified Clean)</td>
+<td>Removed (Verified Clean)</td>
+</tr>
+<tr>
+<td>Altitude &amp; Elevation</td>
+<td>Embedded (154m)</td>
+<td>Removed</td>
+<td>Removed</td>
+</tr>
+<tr>
+<td>Compass Direction</td>
+<td>Embedded (180° S)</td>
+<td>Removed</td>
+<td>Removed</td>
+</tr>
+<tr>
+<td>Camera Make &amp; Model</td>
+<td>Sony A7 IV / iPhone 15</td>
+<td>Preserved</td>
+<td>Removed</td>
+</tr>
+<tr>
+<td>Exposure (Aperture, ISO, Shutter)</td>
+<td>f/2.8, ISO 100, 1/500s</td>
+<td>Preserved</td>
+<td>Removed</td>
+</tr>
+<tr>
+<td>Original Capture Date</td>
+<td>2026-09-12 14:30:00</td>
+<td>Preserved</td>
+<td>Removed</td>
+</tr>
+<tr>
+<td>Color Space &amp; Resolution</td>
+<td>sRGB, Full Res</td>
+<td>Preserved (Lossless)</td>
+<td>Preserved (Lossless)</td>
+</tr>
+</tbody>
+</table>
+
+<h2>Why Client-Side Local Processing Matters</h2>
+<p>Many online metadata scrubbers claim to protect your privacy, yet require you to upload your files to their remote web servers. Uploading sensitive personal photos to a third-party server to 'remove location data' creates severe security contradictions:</p>
+<ul>
+<li><strong>Server Data Retention:</strong> Remote cloud servers can store, cache, or log your uploaded photos, retaining the very location data you intended to delete.</li>
+<li><strong>IP Address Corroboration:</strong> Web server access logs capture your IP address alongside incoming image uploads, technically associating your identity with the photo's embedded GPS pin.</li>
+<li><strong>Image Recompression:</strong> Many server-side tools aggressively compress images during server round-trips, causing unwanted compression artifacts and color shifts.</li>
+</ul>
+<p>FreeGeoTagger eliminates these risks by executing all operations in your web browser's local sandbox using JavaScript FileReader and Web APIs. Your images are parsed, cleansed, and verified in your computer's RAM. No packets containing your image data ever cross the network.</p>
+
+<h2>Automated Post-Removal Programmatic Verification</h2>
+<p>How can you be certain that location tags were truly eliminated? FreeGeoTagger incorporates an automated post-removal binary verification check built directly into the processing pipeline. Immediately after the cleaned image buffer is generated, our engine re-parses the binary headers using client-side EXIF inspection. The download action is unlocked only when the verification check confirms that zero GPS tags exist in the output file.</p>
+
+<h2>Essential Next Steps &amp; Related Privacy Tools</h2>
+<p>Depending on your photography and privacy needs, FreeGeoTagger provides comprehensive browser-based solutions:</p>
+<ul>
+<li><strong>Need to Add Accurate Coordinates Instead?</strong> Use our primary <a href="/">Free Geotagging Tool</a> to place a pin on an interactive map or search any address to embed verified coordinates.</li>
+<li><strong>Want to Inspect All Metadata First?</strong> Use our <a href="/exif-viewer">EXIF Viewer</a> to inspect full camera optics, shutter counts, and GPS tags before making alterations.</li>
+<li><strong>Want to Check Current Location on a Map?</strong> Explore our dedicated <a href="/gps-finder">GPS Photo Finder</a> to see where your pictures were captured.</li>
+<li><strong>Detailed Operating System Tutorials:</strong> Read our comprehensive guide on <a href="/blog/how-to-remove-gps-data-from-photos">how to remove GPS data from photos</a> across iPhone, Android, Windows, and Mac.</li>
+</ul>
+
+<h2>Frequently Asked Questions</h2>
+${removeGpsFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</p>`).join("\n")}
 `.trim();
 
 // ── Rich homepage content (mirrors the in-app landing page sections) ──
@@ -717,6 +867,15 @@ ${gpsFinderFaqs.map((f) => `<h3>${escapeHtml(f.q)}</h3>\n<p>${escapeHtml(f.a)}</
     contentHtml: exifViewerContentHtml,
     links: commonLinks,
     faqs: exifViewerFaqs,
+  },
+  {
+    path: "/remove-gps-from-photo",
+    file: "remove-gps-from-photo.html",
+    ogType: "website",
+    h1: "Remove GPS from Photo — Strip Location Metadata Online Free",
+    contentHtml: removeGpsContentHtml,
+    links: commonLinks,
+    faqs: removeGpsFaqs,
   },
   {
     path: "/blog",

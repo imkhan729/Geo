@@ -148,8 +148,8 @@ async function runTests() {
   );
 
   // 7. Canonical Routes Coverage
-  console.log("\n-- Canonical Routes Coverage (18/18) --");
-  assert(CANONICAL_ROUTES.length === 18, "Exactly 18 canonical routes defined");
+  console.log("\n-- Canonical Routes Coverage (19/19) --");
+  assert(CANONICAL_ROUTES.length === 19, "Exactly 19 canonical routes defined");
   let allRoutesValid = true;
   for (const route of CANONICAL_ROUTES) {
     const fullUrl = `https://${INDEXNOW_HOST}${route === "/" ? "/" : route}`;
@@ -158,7 +158,7 @@ async function runTests() {
       console.error(`Failed validation on route: ${fullUrl}`);
     }
   }
-  assert(allRoutesValid, "All 18 canonical site routes pass URL validation");
+  assert(allRoutesValid, "All 19 canonical site routes pass URL validation");
 
   // 8. Git change path mapper
   console.log("\n-- Git Changed Files Mapper --");

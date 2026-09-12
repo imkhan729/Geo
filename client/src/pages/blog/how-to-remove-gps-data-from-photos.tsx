@@ -4,7 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, SEO_CONFIG } from "@/lib/seo";
 import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
-import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
+import { Calendar, Clock, MapPin, ArrowRight, ShieldAlert } from "lucide-react";
 import { trackArticleToToolClick } from "@/lib/analytics";
 import { EclipseButton } from "@/components/ui/eclipse-button";
 import { useLocation } from "wouter";
@@ -233,24 +233,25 @@ export default function BlogRemoveGps() {
 
           {/* CTA */}
           <div className="mt-10 p-6 rounded-2xl bg-primary/5 border border-primary/20 text-center">
-            <h3 className="font-display font-bold text-lg mb-2">Check what's inside your photos</h3>
-            <p className="text-sm text-muted-foreground mb-4">Free, private, browser-based. Your photos never leave your device.</p>
+            <h3 className="font-display font-bold text-lg mb-2">Remove GPS Location from Your Photos Now</h3>
+            <p className="text-sm text-muted-foreground mb-4">Free, private, browser-based. Strip coordinates instantly with zero file uploads.</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
               <EclipseButton
-                text="Check Photo GPS"
-                leftIcon={<MapPin className="h-4 w-4" />}
+                text="Remove GPS from Photo"
+                leftIcon={<ShieldAlert className="h-4 w-4" />}
                 onClick={() => {
-                trackArticleToToolClick({ article_slug: "how-to-remove-gps-data-from-photos", destination: "gps_finder" });
-                navigate("/gps-finder");
-              }}
+                  trackArticleToToolClick({ article_slug: "how-to-remove-gps-data-from-photos", destination: "remove_gps" });
+                  navigate("/remove-gps-from-photo");
+                }}
               />
               <EclipseButton
-                text="Geotag Photos Free"
+                text="Check Photo GPS"
                 variant="outline"
+                leftIcon={<MapPin className="h-4 w-4" />}
                 onClick={() => {
-                trackArticleToToolClick({ article_slug: "how-to-remove-gps-data-from-photos", destination: "home" });
-                navigate("/");
-              }}
+                  trackArticleToToolClick({ article_slug: "how-to-remove-gps-data-from-photos", destination: "gps_finder" });
+                  navigate("/gps-finder");
+                }}
               />
             </div>
           </div>

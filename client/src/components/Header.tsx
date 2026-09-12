@@ -33,6 +33,7 @@ export function Header() {
         { href: "/#how-it-works", label: "How it Works", testId: "link-how-it-works" },
         { href: "/gps-finder", label: "GPS Finder", testId: "link-gps-finder" },
         { href: "/exif-viewer", label: "EXIF Viewer", testId: "link-exif-viewer" },
+        { href: "/remove-gps-from-photo", label: "Remove GPS", testId: "link-remove-gps" },
         { href: "/blog", label: "Blog", testId: "link-blog" },
     ];
 

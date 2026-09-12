@@ -26,6 +26,7 @@ ErrorDocument 404 /404.html
   # Static SEO route pages for crawlers and direct requests.
   RewriteRule ^gps-finder/?$ /seo-routes/gps-finder.html [L]
   RewriteRule ^exif-viewer/?$ /seo-routes/exif-viewer.html [L]
+  RewriteRule ^remove-gps-from-photo/?$ /seo-routes/remove-gps-from-photo.html [L]
   RewriteRule ^blog/?$ /seo-routes/blog.html [L]
   RewriteRule ^blog/best-free-photo-geotagging-tools/?$ /seo-routes/blog-best-free-photo-geotagging-tools.html [L]
   RewriteRule ^blog/how-to-add-gps-to-iphone-photos/?$ /seo-routes/blog-how-to-add-gps-to-iphone-photos.html [L]

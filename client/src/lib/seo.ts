@@ -163,6 +163,13 @@ export const SEO_CONFIG = {
     ogType: "website",
     keywords: "exif viewer, online exif viewer, view photo metadata, image exif reader, check exif data online, camera settings viewer, view photo gps exif, photo metadata viewer"
   },
+  removeGps: {
+    title: "Remove GPS from Photo Online Free – Strip Location EXIF",
+    description: "Remove GPS location data and geotags from photos online free in your browser. Strip latitude, longitude, and EXIF coordinates with 100% client-side privacy.",
+    canonical: "/remove-gps-from-photo",
+    ogType: "website",
+    keywords: "remove gps from photo, strip photo location, remove geotag online, delete gps metadata, photo privacy cleaner, strip exif location, remove gps data free"
+  },
   privacy: {
     title: "Privacy Policy – How We Handle Your Photos and Data",
     description: "How FreeGeoTagger handles your data: photos processed locally in your browser, cookie use, advertising partners, and your GDPR and CCPA rights.",

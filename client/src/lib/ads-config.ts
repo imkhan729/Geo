@@ -84,6 +84,15 @@ export const ADS_CONFIG: AdsSystemConfig = {
       maxWidth: 728,
       description: "Placed below the EXIF photo inspection results card and above educational content.",
     },
+    "remove-gps-below-tool": {
+      id: "remove-gps-below-tool",
+      name: "Remove GPS Below Tool Banner",
+      format: "horizontal",
+      minHeightMobile: 100,
+      minHeightDesktop: 90,
+      maxWidth: 728,
+      description: "Placed below the Remove GPS action card and above educational content.",
+    },
     "article-mid": {
       id: "article-mid",
       name: "Article Mid-Body Unit",

@@ -5,6 +5,46 @@ All notable changes to FreeGeoTagger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Phase 17: Tool 2 — Remove GPS Tool] - 2026-09-12
+
+### Added
+- **Client-Side Remove GPS Engine (`client/src/lib/remove-gps-utils.ts`)**: Built a zero-upload, 100% in-browser metadata stripping utility:
+  - Pre-removal inspection (`inspectImageForRemoval`) extracting existing GPS coordinates, altitude, timestamp, compass bearing, and camera hardware tags.
+  - Section 29 Dual Removal Modes:
+    - `"gps-only"`: Empties `exifData.GPS = {}` while preserving all camera settings, shutter speed, ISO, aperture, focal length, and capture timestamps.
+    - `"all-metadata"`: Purges all EXIF, IPTC, and XMP metadata blocks (`piexif.remove(dataUrl)`).
+  - Programmatic In-Browser Binary Verification: Re-reads output blob using `extractExifData` to mathematically confirm `!postResult.hasGps` before the user downloads the image.
+  - Canvas re-encoding fallback for PNG/WebP formats and automatic HEIC to JPEG conversion via client-side transcoder.
+- **Standalone Remove GPS Tool Page (`client/src/pages/remove-gps-from-photo.tsx`)**:
+  - Accessible, responsive standalone tool page at `/remove-gps-from-photo`.
+  - Accessible drag-and-drop dropzone supporting JPG, PNG, WebP, and HEIC files.
+  - Detected GPS tags inspection panel with mini Leaflet pin preview.
+  - Informative callout for photos with 0 GPS tags detected.
+  - Mode selection radio cards ("Remove GPS Only" vs "Strip All Metadata") enforcing truth in advertising.
+  - Post-removal verification badge ("Verified: 0 GPS Tags Detected").
+  - Clean photo download action (`[filename]-nogps.jpg`).
+  - Mandatory Section 29 CTAs: Geotagger (`/`), GPS Finder (`/gps-finder`), EXIF Viewer (`/exif-viewer`), and Tutorial guide (`/blog/how-to-remove-gps-data-from-photos`).
+  - Reserved CLS-guarded `<AdSlot placement="remove-gps-below-tool" />` strictly below the tool interface.
+  - 1,000+ word educational article on photo privacy, GPS metadata risks, and removal strategies.
+  - 6-item FAQ accordion with JSON-LD schema.
+  - Structured data: `WebPage`, `BreadcrumbList`, `WebApplication`, and `FAQPage`.
+  - Accessible landmark `<main id="main-content" tabIndex={-1} className="outline-none flex-1">`.
+- **Navigation & Internal Linking Updates**:
+  - Added "Remove GPS" to header navigation in `client/src/components/Header.tsx`.
+  - Added "Remove GPS" under Tools column in `client/src/components/Footer.tsx`.
+  - Added interactive tool CTA banner to blog guide `client/src/pages/blog/how-to-remove-gps-data-from-photos.tsx`.
+  - Added dynamic route in `client/src/App.tsx`.
+- **Monetization & Layout Protection**:
+  - Registered `remove-gps-below-tool` in `client/src/lib/ads-config.ts` (100px mobile, 90px desktop) safe below the tool container.
+- **SEO & Search Indexing**:
+  - Added `removeGps` to `SEO_CONFIG` in `client/src/lib/seo.ts` with SERP-compliant title (55 chars) and description (156 chars).
+  - Added prerendered static route generation in `script/generate-seo-pages.ts` with complete HTML article, breadcrumbs, FAQs, and schemas.
+  - Added rewrite rule in `client/public/.htaccess` and canonical URL in `client/public/sitemap.xml`.
+  - Registered canonical URL in `server/indexnow.ts` (19 canonical routes).
+- **Automated Verification Suite (`script/test-remove-gps.ts`)**: Built a 36-point test suite covering pre-removal inspection, GPS-only stripping, all-metadata purging, post-removal binary verification, truth in advertising, mandatory CTAs, privacy invariants, JSON-LD schemas, and ad placement safety. Added `"test:remove-gps"` script to `package.json`.
+
+---
+
 ## [Phase 17: Tool 1 — EXIF Viewer] - 2026-09-12
 
 ### Added

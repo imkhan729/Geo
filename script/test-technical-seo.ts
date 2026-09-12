@@ -31,9 +31,9 @@ function runTest(name: string, fn: () => void | Promise<void>) {
 
 async function runAllTests() {
   // Test 1: Canonical URLs integrity in SEO_CONFIG
-  await runTest("All 18 canonical routes defined with self-referencing canonical URLs", () => {
+  await runTest("All 19 canonical routes defined with self-referencing canonical URLs", () => {
     const entries = Object.entries(SEO_CONFIG);
-    assert.strictEqual(entries.length, 18, `Expected 18 routes, got ${entries.length}`);
+    assert.strictEqual(entries.length, 19, `Expected 19 routes, got ${entries.length}`);
 
     for (const [key, config] of entries) {
       assert.ok(config.canonical, `Route ${key} missing canonical URL`);
@@ -47,7 +47,7 @@ async function runAllTests() {
   });
 
   // Test 2: SERP Title & Meta Description limits
-  await runTest("All 18 pages have unique titles (50-60 chars) and descriptions (140-160 chars)", () => {
+  await runTest("All 19 pages have unique titles (50-60 chars) and descriptions (140-160 chars)", () => {
     const titles = new Set<string>();
     const descs = new Set<string>();
 
@@ -81,13 +81,13 @@ async function runAllTests() {
   });
 
   // Test 4: sitemap.xml validation
-  await runTest("sitemap.xml includes all 18 canonical URLs with valid priorities and https protocol", () => {
+  await runTest("sitemap.xml includes all 19 canonical URLs with valid priorities and https protocol", () => {
     const sitemapPath = path.resolve("client/public/sitemap.xml");
     assert.ok(fs.existsSync(sitemapPath), "sitemap.xml must exist in client/public");
     const sitemap = fs.readFileSync(sitemapPath, "utf8");
 
     const locMatches = [...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(m => m[1]);
-    assert.strictEqual(locMatches.length, 18, `Expected 18 sitemap URLs, got ${locMatches.length}`);
+    assert.strictEqual(locMatches.length, 19, `Expected 19 sitemap URLs, got ${locMatches.length}`);
 
     for (const url of locMatches) {
       assert.ok(url.startsWith("https://freegeotagger.com"), `URL must start with https://freegeotagger.com: ${url}`);
@@ -97,6 +97,7 @@ async function runAllTests() {
     assert.ok(sitemap.includes("<loc>https://freegeotagger.com/</loc>"));
     assert.ok(sitemap.includes("<loc>https://freegeotagger.com/gps-finder</loc>"));
     assert.ok(sitemap.includes("<loc>https://freegeotagger.com/exif-viewer</loc>"));
+    assert.ok(sitemap.includes("<loc>https://freegeotagger.com/remove-gps-from-photo</loc>"));
   });
 
   // Test 5: Open Graph & Twitter Card asset verification
@@ -144,7 +145,7 @@ async function runAllTests() {
   });
 
   // Test 8: .htaccess redirect & routing rules
-  await runTest(".htaccess enforces HTTPS, non-www, index.html redirect, trailing slash strip, and 17 SEO routes", () => {
+  await runTest(".htaccess enforces HTTPS, non-www, index.html redirect, trailing slash strip, and 18 SEO routes", () => {
     const htPath = path.resolve("client/public/.htaccess");
     assert.ok(fs.existsSync(htPath), ".htaccess must exist");
     const ht = fs.readFileSync(htPath, "utf8");
@@ -155,7 +156,7 @@ async function runAllTests() {
     assert.ok(ht.includes("RewriteCond %{REQUEST_FILENAME} !-d"), "Must test not directory");
 
     const routesCount = [...ht.matchAll(/RewriteRule \^([^\s]+?)\/\?\$ \/seo-routes\/([^\s]+\.html)/g)].length;
-    assert.strictEqual(routesCount, 17, `Expected 17 subpage rewrites, got ${routesCount}`);
+    assert.strictEqual(routesCount, 18, `Expected 18 subpage rewrites, got ${routesCount}`);
   });
 
   // Test 9: 404 Status and Error Experience
