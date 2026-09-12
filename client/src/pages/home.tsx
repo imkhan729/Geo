@@ -52,6 +52,7 @@ import { FileQueue } from "@/components/tool/file-queue";
 import { CoordinatePanel } from "@/components/tool/coordinate-panel";
 import { MapSkeleton } from "@/components/tool/map-skeleton";
 import { BatchActions } from "@/components/tool/batch-actions";
+import { AdSlot } from "@/components/ad-slot";
 
 const LazyLeafletMap = React.lazy(() => import("@/components/tool/leaflet-map"));
 
@@ -732,6 +733,11 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Pre-allocated ad slot area (Phase 16 - Inactive by default) */}
+        <div className="container mx-auto px-4 max-w-5xl">
+          <AdSlot placement="homepage-below-tool" format="horizontal" />
+        </div>
+
         {/* ─── SECTION 1: HOW IT WORKS (3 STEPS) ──────────────────── */}
         <section id="how-it-works" className="py-16 section-divider border-t border-border/60">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
@@ -953,6 +959,11 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Pre-allocated ad slot area (Phase 16 - Inactive by default) */}
+        <div className="container mx-auto px-4 max-w-5xl">
+          <AdSlot placement="homepage-mid-content" format="horizontal" />
+        </div>
+
         {/* ─── SECTION 6: GEOTAGGING VS GPS FINDER ────────────────── */}
         <section id="geotagging-vs-gps-finder" className="py-16 bg-muted/30 border-t border-border/40">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
@@ -1143,6 +1154,11 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Pre-allocated ad slot area (Phase 16 - Inactive by default) */}
+        <div className="container mx-auto px-4 max-w-4xl">
+          <AdSlot placement="homepage-bottom" format="horizontal" />
+        </div>
 
         {/* ─── SECTION 10: FAQ (12 QUESTIONS) ─────────────────────── */}
         <section id="faq" className="py-16 bg-muted/30 border-t border-border/40">

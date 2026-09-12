@@ -13,7 +13,8 @@
     "test:indexnow": "tsx script/test-indexnow.ts",
     "test:a11y": "tsx script/test-accessibility.ts",
     "test:security": "tsx script/test-security-privacy.ts",
-    "test:analytics": "tsx script/test-analytics.ts"
+    "test:analytics": "tsx script/test-analytics.ts",
+    "test:ads": "tsx script/test-ads-readiness.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

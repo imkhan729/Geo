@@ -5,8 +5,27 @@ import { MapPin } from "lucide-react";
 import { extrasFor } from "@/lib/blog-content";
 import { injectPageSchema } from "@/lib/seo";
 import { trackArticleToToolClick } from "@/lib/analytics";
+import { AdSlot } from "@/components/ad-slot";
 
 export { trackArticleToToolClick };
+
+/**
+ * Responsive ad placement for blog articles with pre-allocated geometry to guarantee CLS = 0.00.
+ */
+export function BlogAdSlot({
+  placement = "article-bottom",
+}: {
+  placement?: "article-mid" | "article-bottom";
+}) {
+  return (
+    <div className="not-prose my-8 flex justify-center">
+      <AdSlot
+        placement={placement}
+        format={placement === "article-mid" ? "rectangle" : "horizontal"}
+      />
+    </div>
+  );
+}
 
 /**
  * Article building blocks whose content lives in client/src/lib/blog-content.ts.

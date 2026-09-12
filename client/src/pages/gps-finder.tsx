@@ -28,6 +28,7 @@ import {
   trackParsingError,
   trackEvent,
 } from "@/lib/analytics";
+import { AdSlot } from "@/components/ad-slot";
 
 const LazyLeafletMap = React.lazy(() => import("@/components/tool/leaflet-map"));
 
@@ -658,6 +659,11 @@ export default function GpsFinder() {
             </div>
           </div>
         </section>
+
+      {/* Pre-allocated ad slot area (Phase 16 - Inactive by default) */}
+      <div className="container mx-auto px-4 max-w-5xl">
+        <AdSlot placement="gps-finder-below-tool" format="horizontal" />
+      </div>
 
       {/* What is GPS Finder Section */}
       <section className="py-16 bg-muted/30">

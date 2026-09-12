@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Phase 16: Ads Readiness Only] - 2026-09-12
+
+### Added
+- **Monetization Architecture & Central Configuration (`client/src/lib/ads-config.ts`)**: Implemented central configuration `ADS_CONFIG` with master disabled switch (`enabled: false` by default during core rebuild), verified publisher ID (`ca-pub-6438644207209483`), placement catalog, and Google Consent Mode v2 advertising consent checking (`hasAdConsent()`).
+- **Reusable CLS-Guarded AdSlot Component (`client/src/components/ad-slot.tsx`)**: Built an accessible, responsive ad container supporting standard IAB unit formats (`leaderboard`, `rectangle`, `large-rectangle`, `horizontal`, `responsive`). Pre-allocates fixed min-heights (`min-h-[90px]` / `min-h-[250px]`) to eliminate Cumulative Layout Shift (`CLS = 0.00`). Features non-shifting development wireframes (`debugPlaceholders`) and strictly returns null in production when disabled.
+- **Core Tool Interaction Safe Zones (Zero Ads Policy)**: Enforced architectural safety guardrails with `FORBIDDEN_PLACEMENTS` blocklist. Guaranteed zero ad units inside the upload dropzone, file queue, coordinate inputs, image preview, or Leaflet map.
+- **Recommended Non-Intrusive Placements**:
+  - `homepage-below-tool`: Horizontal banner positioned after the core tool card and before the How-To guide.
+  - `homepage-mid-content`: Horizontal banner between the Tool Comparison Table and the Guidance section.
+  - `homepage-bottom`: Horizontal banner situated before the 12-question FAQ section.
+  - `gps-finder-below-tool`: Horizontal banner below the GPS inspection results card.
+  - `BlogAdSlot`: Reusable editorial ad unit exported from `client/src/components/blog-extras.tsx`.
+- **Automated Ads Readiness Test Suite (`script/test-ads-readiness.ts`)**: Built a 34-point automated test suite verifying default disabled status, publisher ID consistency, ads.txt validation, CLS min-height allocations, core tool exclusion zones, placement presence, and consent checks. Added `"test:ads": "tsx script/test-ads-readiness.ts"` to `package.json`.
+- **Ads Readiness Specification (`ADS_READINESS.md` & `docs/ADS_READINESS.md`)**: Comprehensive architectural guide documenting the Golden Rule of Monetization, IAB dimensions, zero-shift reservations, and Consent Mode v2 integration.
+
+---
+
 ## [Phase 15: Analytics + Conversion Measurement] - 2026-09-12
 
 ### Added
