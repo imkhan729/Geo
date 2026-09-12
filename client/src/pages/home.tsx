@@ -794,7 +794,8 @@ export default function Home() {
                   desc: "Save individual photos with verified EXIF GPS metadata, or download your entire batch organized in a convenient ZIP archive.",
                 },
               ].map(({ icon: Icon, step, title, desc }) => (
-                <Card key={step} className="text-center p-7 h-full bg-gradient-to-br from-primary/8 to-transparent border border-primary/15 rounded-2xl shadow-sm">
+                <Card key={step} className="group relative h-full overflow-hidden rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/8 via-card to-transparent p-7 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/45 hover:shadow-lg">
+                  <div className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-primary transition-transform duration-200 group-hover:scale-x-100" />
                   <div className="w-14 h-14 rounded-2xl bg-primary/12 flex items-center justify-center mx-auto mb-4 border border-primary/20">
                     <Icon className="h-7 w-7 text-primary" aria-hidden="true" />
                   </div>
@@ -832,7 +833,8 @@ export default function Home() {
                 { icon: Clock, color: "text-amber-600 dark:text-amber-400", bg: "from-amber-500/10", border: "border-amber-500/20", title: "UTC Timestamp", desc: "Precise date and time of the location fix stored in standard EXIF date/time format." },
                 { icon: Tag, color: "text-violet-600 dark:text-violet-400", bg: "from-violet-500/10", border: "border-violet-500/20", title: "Keywords & Notes", desc: "Optional descriptions and organizational tags embedded directly into EXIF headers." },
               ].map(({ icon: Icon, color, bg, border, title, desc }) => (
-                <Card key={title} className={`p-5 h-full bg-gradient-to-br ${bg} to-transparent border ${border} rounded-2xl shadow-sm text-center`}>
+                <Card key={title} className={`group relative h-full overflow-hidden rounded-2xl border ${border} bg-gradient-to-br ${bg} via-card to-transparent p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/45 hover:shadow-lg`}>
+                  <div className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-primary transition-transform duration-200 group-hover:scale-x-100" />
                   <div className={`w-11 h-11 rounded-xl ${bg.replace("from-", "bg-")} flex items-center justify-center mx-auto mb-3`}>
                     <Icon className={`h-6 w-6 ${color}`} aria-hidden="true" />
                   </div>
@@ -946,7 +948,7 @@ export default function Home() {
                   { title: "Single Adjustments", desc: "Select specific thumbnails to reposition individual coordinates." },
                   { title: "Consolidated ZIP", desc: "Export all processed photos organized in a single archive." },
                 ].map(({ title, desc }) => (
-                  <Card key={title} className="p-4 rounded-xl border border-border bg-card shadow-sm">
+                  <Card key={title} className="group h-full rounded-2xl border border-border/80 bg-gradient-to-br from-card via-card to-primary/[0.035] p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/45 hover:shadow-lg">
                     <h3 className="font-display font-semibold text-sm mb-1 text-foreground">{title}</h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
                   </Card>
@@ -1002,7 +1004,8 @@ export default function Home() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              <Card className="p-6 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent shadow-sm flex flex-col justify-between">
+              <Card className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/8 via-card to-transparent p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/45 hover:shadow-lg">
+                <div className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-primary transition-transform duration-200 group-hover:scale-x-100" />
                 <div>
                   <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center mb-4 text-primary font-bold">
                     <MapPin className="h-5 w-5" />
@@ -1017,7 +1020,8 @@ export default function Home() {
                 </div>
               </Card>
 
-              <Card className="p-6 rounded-2xl border border-border bg-card shadow-sm flex flex-col justify-between">
+              <Card className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-border/80 bg-gradient-to-br from-card via-card to-primary/[0.035] p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/45 hover:shadow-lg">
+                <div className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-primary transition-transform duration-200 group-hover:scale-x-100" />
                 <div>
                   <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-4 text-foreground font-bold">
                     <Search className="h-5 w-5" />
@@ -1036,7 +1040,8 @@ export default function Home() {
                 </div>
               </Card>
 
-              <Card className="p-6 rounded-2xl border border-border bg-card shadow-sm flex flex-col justify-between">
+              <Card className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-border/80 bg-gradient-to-br from-card via-card to-primary/[0.035] p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/45 hover:shadow-lg">
+                <div className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-primary transition-transform duration-200 group-hover:scale-x-100" />
                 <div>
                   <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-4 text-foreground font-bold">
                     <Camera className="h-5 w-5" />
@@ -1082,7 +1087,8 @@ export default function Home() {
                   { icon: Eye, label: "No tracking", sub: "No analytics on images" },
                   { icon: UserX, label: "No account needed", sub: "Use instantly, anonymously" },
                 ].map(({ icon: Icon, label, sub }) => (
-                  <Card key={label} className="p-5 text-center h-full bg-gradient-to-br from-primary/8 to-transparent border border-primary/15 rounded-xl shadow-sm">
+                  <Card key={label} className="group relative h-full overflow-hidden rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/8 via-card to-transparent p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/45 hover:shadow-lg">
+                    <div className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-primary transition-transform duration-200 group-hover:scale-x-100" />
                     <div className="w-11 h-11 rounded-xl bg-primary/12 flex items-center justify-center mx-auto mb-3">
                       <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
                     </div>
@@ -1124,7 +1130,8 @@ export default function Home() {
                 { icon: Newspaper, title: "Journalists & Researchers", desc: "Provide transparent geographic context for field photography and investigative reporting.", link: null },
                 { icon: Smartphone, title: "Smartphone Users", desc: "Fix iPhone or Android photos that lost coordinates due to airplane mode or messaging apps.", link: "/blog/how-to-add-gps-to-iphone-photos" },
               ].map(({ icon: Icon, title, desc, link }) => (
-                <Card key={title} className="p-5 flex flex-col justify-between h-full border border-border bg-card rounded-xl shadow-sm">
+                <Card key={title} className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-border/80 bg-gradient-to-br from-card via-card to-primary/[0.035] p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/45 hover:shadow-lg">
+                  <div className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-primary transition-transform duration-200 group-hover:scale-x-100" />
                   <div>
                     <div className="flex items-center gap-3 mb-2.5">
                       <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/15">
