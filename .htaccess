@@ -39,6 +39,11 @@ ErrorDocument 404 /404.html
   RewriteRule ^blog/how-to-remove-gps-data-from-photos/?$ /seo-routes/blog-how-to-remove-gps-data-from-photos.html [L]
   RewriteRule ^blog/how-to-fix-wrong-gps-location-on-photos/?$ /seo-routes/blog-how-to-fix-wrong-gps-location-on-photos.html [L]
   RewriteRule ^blog/how-to-bulk-geotag-photos/?$ /seo-routes/blog-how-to-bulk-geotag-photos.html [L]
+  RewriteRule ^blog/add-gps-coordinates-to-photos-google-maps/?$ /seo-routes/blog-add-gps-coordinates-to-photos-google-maps.html [L]
+  RewriteRule ^blog/how-to-geotag-old-and-scanned-photos/?$ /seo-routes/blog-how-to-geotag-old-and-scanned-photos.html [L]
+  RewriteRule ^blog/google-photos-add-or-edit-photo-location/?$ /seo-routes/blog-google-photos-add-or-edit-photo-location.html [L]
+  RewriteRule ^blog/lightroom-classic-geotag-photos-gps-track/?$ /seo-routes/blog-lightroom-classic-geotag-photos-gps-track.html [L]
+  RewriteRule ^blog/how-to-geotag-drone-photos/?$ /seo-routes/blog-how-to-geotag-drone-photos.html [L]
   RewriteRule ^privacy/?$ /seo-routes/privacy.html [L]
   RewriteRule ^terms/?$ /seo-routes/terms.html [L]
   RewriteRule ^cookies/?$ /seo-routes/cookies.html [L]
@@ -86,7 +91,7 @@ ErrorDocument 404 /404.html
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "geolocation=(self), camera=(), microphone=()"
   Header always set X-XSS-Protection "1; mode=block"
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://unpkg.com https://www.google-analytics.com https://*.doubleclick.net https://pagead2.googlesyndication.com; connect-src 'self' https://nominatim.openstreetmap.org https://www.google-analytics.com https://analytics.google.com https://*.doubleclick.net https://pagead2.googlesyndication.com; frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self';"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://unpkg.com https://www.google-analytics.com https://*.doubleclick.net https://pagead2.googlesyndication.com; connect-src 'self' https://nominatim.openstreetmap.org https://photon.komoot.io https://www.google-analytics.com https://analytics.google.com https://*.doubleclick.net https://pagead2.googlesyndication.com; frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self';"
 
   <FilesMatch "\.(?:css|js|mjs|webp|png|jpe?g|svg|woff2)$">
     Header set Cache-Control "public, max-age=31536000, immutable"

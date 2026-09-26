@@ -43,9 +43,9 @@
     try {
       if (localStorage.getItem('fgt-cookie-consent') === 'accepted') {
         gtag('consent', 'update', {
-          'ad_storage': 'granted',
-          'ad_user_data': 'granted',
-          'ad_personalization': 'granted',
+          'ad_storage': 'denied',
+          'ad_user_data': 'denied',
+          'ad_personalization': 'denied',
           'analytics_storage': 'granted'
         });
       }
@@ -62,33 +62,8 @@
     gtag('config', 'G-BWMMC6PP63');
   </script>
 
-  <!-- Google AdSense Auto ads — loaded after the page is interactive so it stays off the
-       critical render path (improves FCP/LCP on mobile). Ownership is verified via the
-       google-adsense-account meta tag above and /ads.txt, both independent of load timing. -->
-  <script>
-    (function () {
-      var loaded = false;
-      function loadAdSense() {
-        if (loaded) return;
-        loaded = true;
-        var s = document.createElement('script');
-        s.async = true;
-        s.crossOrigin = 'anonymous';
-        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6438644207209483';
-        document.head.appendChild(s);
-      }
-      // Load shortly after the page finishes loading, or on the first user interaction —
-      // whichever comes first.
-      if (document.readyState === 'complete') {
-        setTimeout(loadAdSense, 1500);
-      } else {
-        window.addEventListener('load', function () { setTimeout(loadAdSense, 1500); }, { once: true });
-      }
-      ['scroll', 'pointerdown', 'keydown', 'touchstart'].forEach(function (evt) {
-        window.addEventListener(evt, loadAdSense, { once: true, passive: true });
-      });
-    })();
-  </script>
+  <!-- Ad serving stays disabled until site approval and certified consent setup.
+       Ownership verification uses the account meta tag and ads.txt. -->
 
   <!-- Open Graph -->
   <meta property="og:locale" content="en_US" />
@@ -133,8 +108,8 @@
   <!-- Structured Data: Organization -->
   <!-- Structured Data: HowTo -->
   <!-- Structured Data: WebSite (Site name and Google Search discovery) -->
-  <script type="module" crossorigin src="/assets/index-BvcekLZ3.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-CDH008xT.css">
+  <script type="module" crossorigin src="/assets/index-C6G0KywB.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-SUo8yZUd.css">
   <script type="application/ld+json" data-schema="static-privacy.html-0">{"@context":"https://schema.org","@type":"WebPage","name":"Privacy Policy","url":"https://freegeotagger.com/privacy","description":"How FreeGeoTagger handles your data: photos processed locally in your browser, cookie use, advertising partners, and your GDPR and CCPA rights.","inLanguage":"en-US","isPartOf":{"@type":"WebSite","name":"FreeGeoTagger","url":"https://freegeotagger.com"},"publisher":{"@type":"Organization","name":"FreeGeoTagger","url":"https://freegeotagger.com","logo":{"@type":"ImageObject","url":"https://freegeotagger.com/favicon.png","width":289,"height":289}}}</script>
   <script type="application/ld+json" data-schema="static-privacy.html-1">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://freegeotagger.com/"},{"@type":"ListItem","position":2,"name":"Privacy Policy","item":"https://freegeotagger.com/privacy"}]}</script>
 </head>
@@ -166,7 +141,7 @@
           </p>
 
           <p>
-            When you select a photo, your browser hands our JavaScript a reference to that file from your own file system. We read the file's bytes in memory, locate the EXIF metadata block, write or read the GPS fields inside it, and then hand the resulting bytes back to your browser as a download. The pixel data of your image is never touched, which is why geotagging with this tool causes zero quality loss — only the metadata section changes.
+            When you select a photo, your browser hands our JavaScript a reference to that file from your own file system. We read the file's bytes in memory, locate the EXIF metadata block, write or read the GPS fields inside it, and then hand the resulting bytes back to your browser as a download. Normal metadata edits preserve image data. HEIC conversion, JPEG fallback and canvas-based removal can re-encode the image and change quality or other metadata.
           </p>
 
           <p>
@@ -223,8 +198,8 @@
 
           <ul>
             <li><strong>OpenStreetMap</strong> — serves the map image tiles. To draw a map it necessarily receives requests for the tiles covering the area you are looking at, along with your IP address. It does not receive your photo.</li>
-            <li><strong>Nominatim</strong> — powers address and place-name search. When you type a search, that text is sent to Nominatim to be resolved into coordinates. Do not type sensitive information into the search box. It does not receive your photo.</li>
-            <li><strong>Google AdSense</strong> — serves the advertising that funds the site. After consent, Google may use cookies to select, measure and cap ads. It does not receive your photo.</li>
+            <li><strong>Nominatim and Photon</strong> — powers address and place-name search. When you type a search, that text may be sent to Nominatim or Photon to be resolved into coordinates. Do not type sensitive information into the search box. It does not receive your photo.</li>
+            <li><strong>Google AdSense</strong> — intended advertising provider; placements are currently disabled. After consent, Google may use cookies to select, measure and cap ads. It does not receive your photo.</li>
             <li><strong>Google Analytics 4</strong> — anonymous usage measurement, consent-gated as described above. It does not receive your photo.</li>
             <li><strong>Hostinger</strong> — our web host, which serves the site's files and keeps standard access logs.</li>
           </ul>
@@ -236,7 +211,7 @@
           <h2>Advertising and personalisation</h2>
 
           <p>
-            Advertising is what makes it possible to offer these tools free, with no account and no file limits. Third-party vendors including Google use cookies to serve ads based on prior visits to this and other websites. You can opt out of personalised advertising at any time through Google's Ads Settings, and you can decline advertising cookies entirely using our consent banner — the tools work identically either way.
+            Advertising is planned as a source of support; ad placements are currently disabled pending approval and consent setup. Third-party vendors including Google use cookies to serve ads based on prior visits to this and other websites. You can opt out of personalised advertising at any time through Google's Ads Settings, and you can decline analytics cookies using our consent banner; advertising storage remains denied while ads are disabled — the tools work identically either way.
           </p>
 
           <h2>Your rights</h2>
@@ -250,7 +225,7 @@
           </p>
 
           <p>
-            In practice we hold very little about you, because the tools require no account and your photos never reach us. To exercise any right, email <a href="mailto:contact@freegeotagger.com">contact@freegeotagger.com</a>. You may also withdraw cookie consent yourself at any time by clearing your browser's site data for freegeotagger.com.
+            In practice we hold very little about you, because the tools require no account and your photos never reach us. To exercise any right, email <a href="mailto:contact@freegeotagger.com">contact@freegeotagger.com</a>. You may also withdraw cookie consent yourself at any time using Cookie settings in the footer or clearing site data.
           </p>
 
           <h2>Data retention</h2>

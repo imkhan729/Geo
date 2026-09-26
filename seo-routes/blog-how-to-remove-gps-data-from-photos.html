@@ -43,9 +43,9 @@
     try {
       if (localStorage.getItem('fgt-cookie-consent') === 'accepted') {
         gtag('consent', 'update', {
-          'ad_storage': 'granted',
-          'ad_user_data': 'granted',
-          'ad_personalization': 'granted',
+          'ad_storage': 'denied',
+          'ad_user_data': 'denied',
+          'ad_personalization': 'denied',
           'analytics_storage': 'granted'
         });
       }
@@ -62,33 +62,8 @@
     gtag('config', 'G-BWMMC6PP63');
   </script>
 
-  <!-- Google AdSense Auto ads — loaded after the page is interactive so it stays off the
-       critical render path (improves FCP/LCP on mobile). Ownership is verified via the
-       google-adsense-account meta tag above and /ads.txt, both independent of load timing. -->
-  <script>
-    (function () {
-      var loaded = false;
-      function loadAdSense() {
-        if (loaded) return;
-        loaded = true;
-        var s = document.createElement('script');
-        s.async = true;
-        s.crossOrigin = 'anonymous';
-        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6438644207209483';
-        document.head.appendChild(s);
-      }
-      // Load shortly after the page finishes loading, or on the first user interaction —
-      // whichever comes first.
-      if (document.readyState === 'complete') {
-        setTimeout(loadAdSense, 1500);
-      } else {
-        window.addEventListener('load', function () { setTimeout(loadAdSense, 1500); }, { once: true });
-      }
-      ['scroll', 'pointerdown', 'keydown', 'touchstart'].forEach(function (evt) {
-        window.addEventListener(evt, loadAdSense, { once: true, passive: true });
-      });
-    })();
-  </script>
+  <!-- Ad serving stays disabled until site approval and certified consent setup.
+       Ownership verification uses the account meta tag and ads.txt. -->
 
   <!-- Open Graph -->
   <meta property="og:locale" content="en_US" />
@@ -133,9 +108,9 @@
   <!-- Structured Data: Organization -->
   <!-- Structured Data: HowTo -->
   <!-- Structured Data: WebSite (Site name and Google Search discovery) -->
-  <script type="module" crossorigin src="/assets/index-BvcekLZ3.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-CDH008xT.css">
-  <script type="application/ld+json" data-schema="static-blog-how-to-remove-gps-data-from-photos.html-0">{"@context":"https://schema.org","@type":"Article","headline":"How to Remove GPS Location Data from Photos","name":"How to Remove GPS Location Data from Photos","url":"https://freegeotagger.com/blog/how-to-remove-gps-data-from-photos","description":"Remove GPS location data from photos before you share them. Step-by-step privacy guide for iPhone, Android, Windows and Mac, with zero quality loss.","image":{"@type":"ImageObject","url":"https://freegeotagger.com/screenshots/gps-finder-tool.jpg","width":1200,"height":733,"caption":"GPS Finder reads the location already stored in a photo, so you can check what a file reveals."},"datePublished":"2026-07-08","dateModified":"2026-07-26","author":{"@type":"Organization","name":"FreeGeoTagger","url":"https://freegeotagger.com"},"publisher":{"@type":"Organization","name":"FreeGeoTagger","url":"https://freegeotagger.com","logo":{"@type":"ImageObject","url":"https://freegeotagger.com/favicon.png","width":289,"height":289}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://freegeotagger.com/blog/how-to-remove-gps-data-from-photos"},"inLanguage":"en-US","isPartOf":{"@type":"WebSite","name":"FreeGeoTagger","url":"https://freegeotagger.com"},"speakable":{"@type":"SpeakableSpecification","cssSelector":[".key-takeaways","h1"]},"abstract":"A photo taken at home and posted publicly can reveal your home address through its EXIF GPS coordinates. Most large social platforms strip metadata on upload, but direct file shares, email attachments and cloud links usually do not. Check before you assume: read the photo's existing GPS data first, rather than trusting that a platform removed it. On iOS use Options in the share sheet to exclude location; on Android and Windows you can remove location from the file's details or properties. Removing GPS metadata does not alter image quality, because only the metadata block changes."}</script>
+  <script type="module" crossorigin src="/assets/index-C6G0KywB.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-SUo8yZUd.css">
+  <script type="application/ld+json" data-schema="static-blog-how-to-remove-gps-data-from-photos.html-0">{"@context":"https://schema.org","@type":"Article","headline":"How to Remove GPS Location Data from Photos","name":"How to Remove GPS Location Data from Photos","url":"https://freegeotagger.com/blog/how-to-remove-gps-data-from-photos","description":"Remove GPS location data from photos before you share them. Step-by-step privacy guide for iPhone, Android, Windows and Mac, with zero quality loss.","image":{"@type":"ImageObject","url":"https://freegeotagger.com/screenshots/gps-finder-tool.jpg","width":1200,"height":733,"caption":"GPS Finder reads the location already stored in a photo, so you can check what a file reveals."},"datePublished":"2026-07-08","dateModified":"2026-09-26","author":{"@type":"Organization","name":"FreeGeoTagger","url":"https://freegeotagger.com"},"publisher":{"@type":"Organization","name":"FreeGeoTagger","url":"https://freegeotagger.com","logo":{"@type":"ImageObject","url":"https://freegeotagger.com/favicon.png","width":289,"height":289}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://freegeotagger.com/blog/how-to-remove-gps-data-from-photos"},"inLanguage":"en-US","isPartOf":{"@type":"WebSite","name":"FreeGeoTagger","url":"https://freegeotagger.com"},"speakable":{"@type":"SpeakableSpecification","cssSelector":[".key-takeaways","h1"]},"abstract":"A photo taken at home and posted publicly can reveal your home address through its EXIF GPS coordinates. Most large social platforms strip metadata on upload, but direct file shares, email attachments and cloud links usually do not. Check before you assume: read the photo's existing GPS data first, rather than trusting that a platform removed it. On iOS use Options in the share sheet to exclude location; on Android and Windows you can remove location from the file's details or properties. Removing GPS metadata does not alter image quality, because only the metadata block changes."}</script>
   <script type="application/ld+json" data-schema="static-blog-how-to-remove-gps-data-from-photos.html-1">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://freegeotagger.com/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://freegeotagger.com/blog"},{"@type":"ListItem","position":3,"name":"How to Remove GPS Location Data from Photos","item":"https://freegeotagger.com/blog/how-to-remove-gps-data-from-photos"}]}</script>
   <script type="application/ld+json" data-schema="static-blog-how-to-remove-gps-data-from-photos.html-2">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I remove GPS location data from a photo?","acceptedAnswer":{"@type":"Answer","text":"First check what the photo contains using a GPS reader, then strip it. On iPhone use the share sheet's Options and turn off Location; on Windows use File Properties and Remove Properties; on Android use the photo's details panel."}},{"@type":"Question","name":"Do social media platforms remove photo location data?","acceptedAnswer":{"@type":"Answer","text":"Major platforms including Instagram, Facebook and X generally strip EXIF metadata when processing uploads. Direct file transfers, email attachments, messaging apps that send originals, and cloud storage links often preserve it."}},{"@type":"Question","name":"How can I check whether a photo contains GPS data?","acceptedAnswer":{"@type":"Answer","text":"Open it in a GPS reader such as FreeGeoTagger's GPS Finder, which extracts the EXIF coordinates locally and shows the location on a map. On Windows you can also check Properties, then Details."}},{"@type":"Question","name":"Does removing GPS data damage the photo?","acceptedAnswer":{"@type":"Answer","text":"No. Only the metadata section is rewritten and the compressed pixel data is untouched, so the image is visually identical with no re-compression."}},{"@type":"Question","name":"Should I remove location from every photo I share?","acceptedAnswer":{"@type":"Answer","text":"Consider it for photos taken at home, at a child's school, or anywhere you would not publish the address. Location data is genuinely useful for organising your own archive, so the decision is about what you publish, not what you keep."}}]}</script>
 </head>
@@ -144,7 +119,7 @@
   <div id="root">
 <main id="static-seo-content" style="max-width: 820px; margin: 40px auto; padding: 0 20px; font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; line-height: 1.65;">
 <h1>How to Remove GPS Location Data from Photos (iPhone, Android, Windows &amp; Mac)</h1>
-<p class="byline"><span>By <span rel="author">FreeGeoTagger</span></span> &middot; <span>Published <time datetime="2026-07-08">July 8, 2026</time></span> &middot; <span>Updated <time datetime="2026-07-26">July 26, 2026</time></span></p>
+<p class="byline"><span>By <span rel="author">FreeGeoTagger</span></span> &middot; <span>Published <time datetime="2026-07-08">July 8, 2026</time></span> &middot; <span>Updated <time datetime="2026-09-26">September 26, 2026</time></span></p>
 <p>
               Geotagging is genuinely useful — it lets Google Photos build travel maps, helps real estate agents document listings, and keeps field research organized. We built <a href="/">FreeGeoTagger</a> precisely because adding GPS to photos matters. But the same metadata becomes a privacy problem the moment a photo leaves your control. A photo taken at home and posted to a forum, marketplace listing, or public website can reveal your street address to anyone who checks the EXIF data.
             </p>
@@ -154,7 +129,7 @@
 <figcaption>GPS Finder reads the location already stored in a photo, so you can check what a file reveals.</figcaption>
 </figure>
 
-            <aside class="key-takeaways">
+            <section><h2>A removal check that catches the wrong-file mistake</h2><ol><li>Inspect the original and note whether GPS exists. Keep it outside your sharing folder.</li><li>Run removal and save the new file with a recognizable suffix.</li><li>Open a fresh EXIF Viewer session and select the downloaded copy. Check GPS and any remaining location-related text.</li><li>If you share through another service, inspect its downloaded public copy too, where available.</li></ol><p>GPS-only removal is narrower than removing all personal information. A description, filename, XMP field or visible street sign may still disclose a location. No GPS found by one parser is not a forensic guarantee of anonymity. For a sensitive photo, review both metadata and pixels before sharing.</p></section><aside class="key-takeaways">
 <h2>Key takeaways</h2>
 <ul>
 <li>A photo taken at home and posted publicly can reveal your home address through its EXIF GPS coordinates.</li>
@@ -172,7 +147,7 @@
             <h2>What GPS Data Is Actually Stored in a Photo</h2>
 
             <p>
-              When location services are active, your camera writes several fields into the photo's EXIF metadata block: <code>GPSLatitude</code> and <code>GPSLongitude</code> (your position, typically accurate to 5–10 meters on a modern phone), and often <code>GPSAltitude</code>, <code>GPSImgDirection</code> (the compass heading you were facing), and a GPS timestamp. Combined with the capture date, this is enough to reconstruct not just where a photo was taken, but when you were there and which direction you were looking.
+              When location services are active, a camera may write fields such as <code>GPSLatitude</code>, <code>GPSLongitude</code>, <code>GPSAltitude</code>, <code>GPSImgDirection</code>, and a GPS timestamp. Their presence and reliability vary by device and workflow. Coordinates can be missing or edited, and capture accuracy is not established by the number of digits stored. Review the file before sharing if location privacy matters.
             </p>
 
             <p>
@@ -287,7 +262,7 @@
 <li><a href="/contact">Contact</a></li>
 <li><a href="/blog/how-to-fix-wrong-gps-location-on-photos">Fix Wrong GPS Location on Photos</a></li>
 <li><a href="/blog/how-to-bulk-geotag-photos">Bulk Geotag Photos</a></li>
-<li><a href="/blog/how-to-add-gps-to-iphone-photos">How to Add GPS to iPhone Photos</a></li>
+<li><a href="/blog/add-gps-coordinates-to-photos-google-maps">Add GPS from Google Maps</a></li>
 </ul></nav>
 </main>
   </div>

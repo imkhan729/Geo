@@ -44,9 +44,9 @@
     try {
       if (localStorage.getItem('fgt-cookie-consent') === 'accepted') {
         gtag('consent', 'update', {
-          'ad_storage': 'granted',
-          'ad_user_data': 'granted',
-          'ad_personalization': 'granted',
+          'ad_storage': 'denied',
+          'ad_user_data': 'denied',
+          'ad_personalization': 'denied',
           'analytics_storage': 'granted'
         });
       }
@@ -63,33 +63,8 @@
     gtag('config', 'G-BWMMC6PP63');
   </script>
 
-  <!-- Google AdSense Auto ads — loaded after the page is interactive so it stays off the
-       critical render path (improves FCP/LCP on mobile). Ownership is verified via the
-       google-adsense-account meta tag above and /ads.txt, both independent of load timing. -->
-  <script>
-    (function () {
-      var loaded = false;
-      function loadAdSense() {
-        if (loaded) return;
-        loaded = true;
-        var s = document.createElement('script');
-        s.async = true;
-        s.crossOrigin = 'anonymous';
-        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6438644207209483';
-        document.head.appendChild(s);
-      }
-      // Load shortly after the page finishes loading, or on the first user interaction —
-      // whichever comes first.
-      if (document.readyState === 'complete') {
-        setTimeout(loadAdSense, 1500);
-      } else {
-        window.addEventListener('load', function () { setTimeout(loadAdSense, 1500); }, { once: true });
-      }
-      ['scroll', 'pointerdown', 'keydown', 'touchstart'].forEach(function (evt) {
-        window.addEventListener(evt, loadAdSense, { once: true, passive: true });
-      });
-    })();
-  </script>
+  <!-- Ad serving stays disabled until site approval and certified consent setup.
+       Ownership verification uses the account meta tag and ads.txt. -->
 
   <!-- Open Graph -->
   <meta property="og:locale" content="en_US" />
@@ -150,7 +125,7 @@
         "EXIF metadata editing",
         "JPG, PNG, WebP, HEIC support",
         "No account required",
-        "Zero image quality loss"
+        "Metadata editing; HEIC and fallback conversion can change quality"
       ],
       "offers": {
         "@type": "Offer",
@@ -274,9 +249,9 @@
       "url": "https://freegeotagger.com/"
     }
     </script>
-  <script type="module" crossorigin src="/assets/index-BvcekLZ3.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-CDH008xT.css">
-  <script type="application/ld+json" data-schema="static-home-faq">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a geotagger?","acceptedAnswer":{"@type":"Answer","text":"A geotagger is a tool that writes geographic location coordinates—specifically latitude, longitude, and altitude—into a photo's EXIF metadata headers so map viewers and photo services know where it was taken."}},{"@type":"Question","name":"How do I geotag a photo online?","acceptedAnswer":{"@type":"Answer","text":"Upload your JPG, PNG, WebP, or HEIC photo, click on the interactive map or search an address to set the location, and click Download to save the geotagged image with embedded EXIF GPS tags."}},{"@type":"Question","name":"Can I add GPS coordinates to an existing photo?","acceptedAnswer":{"@type":"Answer","text":"Yes. You can add coordinates to any digital photo from cameras without GPS, scanned prints, or messaging apps. FreeGeoTagger embeds standard EXIF tags without changing image pixels or quality."}},{"@type":"Question","name":"Is FreeGeoTagger really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. FreeGeoTagger is 100% free with no accounts, subscriptions, watermarks, or file limits. You can process single photos or batches at no charge."}},{"@type":"Question","name":"Are my photos uploaded to your servers?","acceptedAnswer":{"@type":"Answer","text":"No. All file reading, metadata editing, and downloads happen locally in your browser using JavaScript. Your photos never leave your device and are never sent across the internet."}},{"@type":"Question","name":"Can I geotag multiple photos at once?","acceptedAnswer":{"@type":"Answer","text":"Yes. Drop multiple photos into the queue, set the location once, and apply it to every image simultaneously. You can then download them individually or as a single ZIP archive."}},{"@type":"Question","name":"Can I edit or change an existing GPS location on a photo?","acceptedAnswer":{"@type":"Answer","text":"Yes. If an image already contains inaccurate or drifted coordinates, FreeGeoTagger detects them upon upload. Reposition the pin or enter new coordinates to overwrite the old metadata cleanly."}},{"@type":"Question","name":"What latitude and longitude coordinate format should I use?","acceptedAnswer":{"@type":"Answer","text":"FreeGeoTagger supports both Decimal Degrees (e.g. 40.7128, -74.0060) and Degrees, Minutes, Seconds (DMS, e.g. 40° 42' 46\" N). You can switch formats anytime with synchronized conversion."}},{"@type":"Question","name":"Does geotagging change or compress image quality?","acceptedAnswer":{"@type":"Answer","text":"No. For JPEG, PNG, and WebP files, FreeGeoTagger only updates the metadata header segments. Pixel data is not re-compressed or resaved, ensuring 100% lossless preservation."}},{"@type":"Question","name":"Can I remove GPS metadata from a photo later?","acceptedAnswer":{"@type":"Answer","text":"Yes. You can wipe location metadata before sharing photos publicly. FreeGeoTagger provides free guides explaining how to strip EXIF data on Windows, macOS, iPhone, and Android."}},{"@type":"Question","name":"How do I find where an existing photo was taken?","acceptedAnswer":{"@type":"Answer","text":"Use our free companion tool, the GPS Photo Finder. It reads embedded EXIF coordinates from your photo and displays the exact capture location on an interactive map."}},{"@type":"Question","name":"Which image formats support GPS metadata?","acceptedAnswer":{"@type":"Answer","text":"JPEG uses the universal APP1 Exif standard. PNG supports GPS via the standardized eXIf binary chunk. WebP supports EXIF via RIFF containers. HEIC photos are locally converted to JPEG for universal compatibility."}}]}</script>
+  <script type="module" crossorigin src="/assets/index-C6G0KywB.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-SUo8yZUd.css">
+  <script type="application/ld+json" data-schema="static-home-faq">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a geotagger?","acceptedAnswer":{"@type":"Answer","text":"A geotagger is a tool that writes geographic location coordinates—specifically latitude, longitude, and altitude—into a photo's EXIF metadata headers so map viewers and photo services know where it was taken."}},{"@type":"Question","name":"How do I geotag a photo online?","acceptedAnswer":{"@type":"Answer","text":"Upload your JPG, PNG, WebP, or HEIC photo, click on the interactive map or search an address to set the location, and click Download to save the geotagged image with embedded EXIF GPS tags."}},{"@type":"Question","name":"Can I add GPS coordinates to an existing photo?","acceptedAnswer":{"@type":"Answer","text":"Yes. If you know the location, you can write coordinates to a copy of a photo, including scans or images from cameras without GPS. Supported JPEG, PNG and WebP paths do not recompress image data; HEIC conversion and unusual JPEG fallbacks may alter quality or metadata."}},{"@type":"Question","name":"Is FreeGeoTagger really free?","acceptedAnswer":{"@type":"Answer","text":"The tools are currently available without an account or charge. Each image has a 20 MB limit, and batch capacity depends on your device. Check this page for current feature and format limits."}},{"@type":"Question","name":"Are my photos uploaded to your servers?","acceptedAnswer":{"@type":"Answer","text":"The image file is read and edited in your browser rather than uploaded for processing. Maps, address searches, analytics and page delivery can still make network requests; see the privacy policy for details."}},{"@type":"Question","name":"Can I geotag multiple photos at once?","acceptedAnswer":{"@type":"Answer","text":"Yes. Drop multiple photos into the queue, set the location once, and apply it to every image simultaneously. You can then download them individually or as a single ZIP archive."}},{"@type":"Question","name":"Can I edit or change an existing GPS location on a photo?","acceptedAnswer":{"@type":"Answer","text":"Yes. If an image already contains inaccurate or drifted coordinates, FreeGeoTagger detects them upon upload. Reposition the pin or enter new coordinates to overwrite the old metadata cleanly."}},{"@type":"Question","name":"What latitude and longitude coordinate format should I use?","acceptedAnswer":{"@type":"Answer","text":"FreeGeoTagger supports both Decimal Degrees (e.g. 40.7128, -74.0060) and Degrees, Minutes, Seconds (DMS, e.g. 40° 42' 46\" N). You can switch formats anytime with synchronized conversion."}},{"@type":"Question","name":"Does geotagging change or compress image quality?","acceptedAnswer":{"@type":"Answer","text":"The normal JPEG, PNG and WebP geotagging paths preserve image data. HEIC conversion and the fallback for unusual JPEG files re-encode images and can change quality or metadata."}},{"@type":"Question","name":"Can I remove GPS metadata from a photo later?","acceptedAnswer":{"@type":"Answer","text":"Yes. You can wipe location metadata before sharing photos publicly. FreeGeoTagger provides free guides explaining how to strip EXIF data on Windows, macOS, iPhone, and Android."}},{"@type":"Question","name":"How do I find where an existing photo was taken?","acceptedAnswer":{"@type":"Answer","text":"Use GPS Photo Finder to read coordinates stored in the image and plot those values on a map. The metadata can be absent or edited, so the plotted point does not prove where the photo was taken."}},{"@type":"Question","name":"Which image formats support GPS metadata?","acceptedAnswer":{"@type":"Answer","text":"JPEG uses the universal APP1 Exif standard. PNG supports GPS via the standardized eXIf binary chunk. WebP supports EXIF via RIFF containers. HEIC photos are locally converted to JPEG for universal compatibility."}}]}</script>
 </head>
 
 <body>
@@ -284,7 +259,7 @@
 <main id="static-seo-content" style="max-width: 820px; margin: 40px auto; padding: 0 20px; font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; line-height: 1.65;">
 <h1>Free Geotagger — Add GPS Location to Photos Online</h1>
 <p>FreeGeoTagger is a free, privacy-first web application to <strong>add GPS coordinates to photos</strong> directly in your browser — no software to install, no account required, and zero file uploads. Upload a single photo or a whole batch, select a location on the interactive map or search any address worldwide, and download your images with verified GPS metadata embedded in standard EXIF headers.</p>
-<p>Your photos never leave your device. All image parsing, EXIF metadata editing, and file downloads execute locally in your browser using modern client-side JavaScript. Your images are never transmitted to any server, keeping personal memories, client projects, and location details 100% private.</p>
+<p>Image files are parsed and edited in your browser rather than uploaded to FreeGeoTagger for processing. Maps, address search, analytics and page delivery can still involve network services; see the <a href="/privacy">privacy policy</a> for details.</p>
 
 <h2>How to Geotag Photos in 3 Steps</h2>
 <p>Adding GPS coordinates to any photo takes less than a minute:</p>
@@ -302,9 +277,9 @@
 <li><strong>GPSLongitude &amp; GPSLongitudeRef</strong> — Rational degrees, minutes, and seconds, paired with an East (E) or West (W) hemisphere flag.</li>
 <li><strong>GPSAltitude &amp; GPSAltitudeRef</strong> — Elevation in meters above sea level stored as a rational fraction, with sea level reference flags.</li>
 <li><strong>GPSDateStamp &amp; GPSTimeStamp</strong> — UTC date and time of the location fix in standard EXIF format.</li>
-<li><strong>Keywords &amp; Description</strong> — Optional descriptive tags embedded into EXIF and IPTC fields for digital asset management.</li>
+<li><strong>Keywords &amp; Description</strong> — Descriptions and Windows XP keyword tags stored in EXIF; this is not a full IPTC editor.</li>
 </ul>
-<p>FreeGeoTagger writes this metadata without recompressing pixel coefficients. For JPEG, PNG, and WebP photos, pixel data remains unchanged down to the byte, ensuring <strong>zero loss of image quality</strong>.</p>
+<p>Standard JPEG, PNG and WebP geotagging preserves image data. HEIC conversion and unusual JPEG fallback processing can change quality and metadata. Keep original files.</p>
 
 <h2>Supported File Formats &amp; Technical Processing Matrix</h2>
 <p>FreeGeoTagger supports the primary image formats used by smartphones, digital cameras, and creative workflows:</p>
@@ -323,21 +298,21 @@
 <td><strong>JPEG / JPG</strong></td>
 <td>.jpg, .jpeg</td>
 <td>APP1 Exif Segment</td>
-<td>100% Lossless (DCT intact)</td>
+<td>No pixel recompression on supported path</td>
 <td>Universal (all OS &amp; apps)</td>
 </tr>
 <tr>
 <td><strong>PNG</strong></td>
 <td>.png</td>
 <td>Binary eXIf Chunk + CRC32</td>
-<td>100% Lossless (IDAT intact)</td>
+<td>No pixel recompression on supported path</td>
 <td>Modern viewers, GIS, web</td>
 </tr>
 <tr>
 <td><strong>WebP</strong></td>
 <td>.webp</td>
 <td>RIFF Container + EXIF Chunk</td>
-<td>100% Lossless (VP8 intact)</td>
+<td>No pixel recompression on supported path</td>
 <td>Browsers, Android, modern OS</td>
 </tr>
 <tr>
@@ -354,7 +329,7 @@
 <h2>Batch Photo Geotagging — Process Multiple Images at Once</h2>
 <p>When working with photos from an event, real estate shoot, job site, or vacation, tagging images one by one is inefficient. FreeGeoTagger includes a fast batch geotagging workflow:</p>
 <ul>
-<li><strong>Multi-File Queue</strong> — Add dozens of photos at once. Review thumbnails and quickly see which images already contain GPS coordinates.</li>
+<li><strong>Multi-File Queue</strong> — Add a group of photos and review thumbnails and detected GPS fields. Capacity depends on file dimensions, browser limits and device memory.</li>
 <li><strong>One-Click Location Apply</strong> — Place the map marker once and apply those coordinates across every queued photo simultaneously.</li>
 <li><strong>Individual Adjustments</strong> — Click any photo in the queue to fine-tune its position independently when needed.</li>
 <li><strong>Consolidated ZIP Download</strong> — Export all geotagged photos in a single ZIP file with original filenames preserved.</li>
@@ -374,7 +349,7 @@
 <tbody>
 <tr>
 <td>Cost</td>
-<td>100% Free Forever</td>
+<td>Free to use</td>
 <td>Free (CLI) or $10–$50/mo</td>
 <td>Freemium / Monthly fee</td>
 </tr>
@@ -382,7 +357,7 @@
 <td>Account Required</td>
 <td>No — Instant access</td>
 <td>Varies by software</td>
-<td>Yes (Mandatory signup)</td>
+<td>Varies by service</td>
 </tr>
 <tr>
 <td>File Privacy</td>
@@ -406,19 +381,19 @@
 <td>Batch Geotagging</td>
 <td>Yes with ZIP export</td>
 <td>Yes</td>
-<td>Often paywalled</td>
+<td>Varies by product</td>
 </tr>
 <tr>
 <td>Mobile Support</td>
 <td>Full Chrome/Safari support</td>
 <td>Desktop only</td>
-<td>Mobile-unfriendly</td>
+<td>Varies by service</td>
 </tr>
 <tr>
 <td>Quality Preservation</td>
 <td>Zero re-compression</td>
 <td>Lossless</td>
-<td>Often re-compresses photos</td>
+<td>Varies by product</td>
 </tr>
 </tbody>
 </table>
@@ -438,7 +413,7 @@
 <li><strong>Local File Handling</strong> — Images are loaded into memory using HTML5 FileReader and ArrayBuffer APIs.</li>
 <li><strong>In-Memory Processing</strong> — Metadata is decoded and written directly in browser memory without network transfers.</li>
 <li><strong>Local File Creation</strong> — Processed files and ZIP archives are generated locally via browser Object URLs.</li>
-<li><strong>Offline Functionality</strong> — Once loaded, the metadata engine continues working even without an internet connection.</li>
+<li><strong>Offline Functionality</strong> — Offline use is not guaranteed: maps, search and modules loaded on demand need connectivity.</li>
 <li><strong>Zero Retention</strong> — Closing or refreshing the browser tab clears all image data from memory immediately.</li>
 </ul>
 
@@ -467,7 +442,7 @@
 <li><a href="/blog/what-is-exif-gps-metadata">What Is EXIF GPS Metadata?</a> — Deep dive into EXIF tags, coordinate formats, and standards.</li>
 <li><a href="/blog/how-to-remove-gps-data-from-photos">How to Remove GPS Data from Photos</a> — Strip location metadata before sharing photos publicly.</li>
 <li><a href="/blog/how-to-fix-wrong-gps-location-on-photos">How to Fix Wrong GPS Location on Photos</a> — Correct drifting coordinates and misplaced map pins.</li>
-<li><a href="/blog/best-free-photo-geotagging-tools">Best Free Photo Geotagging Tools in 2026</a> — Comparison of online, desktop, and CLI tools.</li>
+<li><a href="/blog/best-free-photo-geotagging-tools">Photo Geotagging Tools: Free and Paid Options</a> — Comparison of online, desktop, and CLI tools.</li>
 <li><a href="/about">About FreeGeoTagger</a> — Learn about our mission and client-side processing technology.</li>
 <li><a href="/privacy">Privacy Policy</a> — Review our complete data handling practices and privacy guarantees.</li>
 </ul>
@@ -478,11 +453,11 @@
 <h3>How do I geotag a photo online?</h3>
 <p>Upload your JPG, PNG, WebP, or HEIC photo, click on the interactive map or search an address to set the location, and click Download to save the geotagged image with embedded EXIF GPS tags.</p>
 <h3>Can I add GPS coordinates to an existing photo?</h3>
-<p>Yes. You can add coordinates to any digital photo from cameras without GPS, scanned prints, or messaging apps. FreeGeoTagger embeds standard EXIF tags without changing image pixels or quality.</p>
+<p>Yes. If you know the location, you can write coordinates to a copy of a photo, including scans or images from cameras without GPS. Supported JPEG, PNG and WebP paths do not recompress image data; HEIC conversion and unusual JPEG fallbacks may alter quality or metadata.</p>
 <h3>Is FreeGeoTagger really free?</h3>
-<p>Yes. FreeGeoTagger is 100% free with no accounts, subscriptions, watermarks, or file limits. You can process single photos or batches at no charge.</p>
+<p>The tools are currently available without an account or charge. Each image has a 20 MB limit, and batch capacity depends on your device. Check this page for current feature and format limits.</p>
 <h3>Are my photos uploaded to your servers?</h3>
-<p>No. All file reading, metadata editing, and downloads happen locally in your browser using JavaScript. Your photos never leave your device and are never sent across the internet.</p>
+<p>The image file is read and edited in your browser rather than uploaded for processing. Maps, address searches, analytics and page delivery can still make network requests; see the privacy policy for details.</p>
 <h3>Can I geotag multiple photos at once?</h3>
 <p>Yes. Drop multiple photos into the queue, set the location once, and apply it to every image simultaneously. You can then download them individually or as a single ZIP archive.</p>
 <h3>Can I edit or change an existing GPS location on a photo?</h3>
@@ -490,13 +465,14 @@
 <h3>What latitude and longitude coordinate format should I use?</h3>
 <p>FreeGeoTagger supports both Decimal Degrees (e.g. 40.7128, -74.0060) and Degrees, Minutes, Seconds (DMS, e.g. 40° 42' 46&quot; N). You can switch formats anytime with synchronized conversion.</p>
 <h3>Does geotagging change or compress image quality?</h3>
-<p>No. For JPEG, PNG, and WebP files, FreeGeoTagger only updates the metadata header segments. Pixel data is not re-compressed or resaved, ensuring 100% lossless preservation.</p>
+<p>The normal JPEG, PNG and WebP geotagging paths preserve image data. HEIC conversion and the fallback for unusual JPEG files re-encode images and can change quality or metadata.</p>
 <h3>Can I remove GPS metadata from a photo later?</h3>
 <p>Yes. You can wipe location metadata before sharing photos publicly. FreeGeoTagger provides free guides explaining how to strip EXIF data on Windows, macOS, iPhone, and Android.</p>
 <h3>How do I find where an existing photo was taken?</h3>
-<p>Use our free companion tool, the GPS Photo Finder. It reads embedded EXIF coordinates from your photo and displays the exact capture location on an interactive map.</p>
+<p>Use GPS Photo Finder to read coordinates stored in the image and plot those values on a map. The metadata can be absent or edited, so the plotted point does not prove where the photo was taken.</p>
 <h3>Which image formats support GPS metadata?</h3>
 <p>JPEG uses the universal APP1 Exif standard. PNG supports GPS via the standardized eXIf binary chunk. WebP supports EXIF via RIFF containers. HEIC photos are locally converted to JPEG for universal compatibility.</p>
+<section data-tool-guidance="/"><h2>Before you tag: what the download changes</h2><p>Work on a copy and keep the original. Enter latitude first (-90 to 90), then longitude (-180 to 180). South and west use negative numbers. Setting a pin records your chosen location; it does not prove the camera was there.</p><p>For a practice run, use a non-sensitive image and enter 40.7128, -74.0060. Download it, then open the downloaded file in <a href="/exif-viewer">EXIF Viewer</a>. Expect those numbers in the GPS fields. This is an illustrative coordinate exercise, not a claim about where your photo was taken.</p><p>Standard JPEG, PNG and WebP geotagging updates metadata without recompressing image data. HEIC is converted to JPEG; unusual JPEG files may also need a conversion fallback. Those paths can change quality or other metadata. Limit: 20 MB per image; batch capacity depends on available memory.</p><p>Photos are processed locally, but maps and searches make network requests. Offline use is not guaranteed because some processing modules load on demand. Keywords use Windows XP EXIF tags, not a complete IPTC keyword editor. GPS timestamps record this edit, not necessarily the original capture time.</p></section>
 </main>
   </div>
 </body>

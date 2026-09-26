@@ -1,0 +1,1 @@
+import{j as o}from"./react-C4iF10Fw.js";import{E as t}from"./editorial-page-BvqS6NfQ.js";import"./index-C6G0KywB.js";import"./react-dom-BGAn7XNU.js";import"./vendor-ChjJ3W77.js";import"./radix-DA2OXyzc.js";import"./editorial-content-CaWdUwsE.js";function g(){return o.jsx(t,{path:"/blog/how-to-geotag-photos-for-google-business-profile"})}export{g as default};

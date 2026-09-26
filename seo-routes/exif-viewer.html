@@ -43,9 +43,9 @@
     try {
       if (localStorage.getItem('fgt-cookie-consent') === 'accepted') {
         gtag('consent', 'update', {
-          'ad_storage': 'granted',
-          'ad_user_data': 'granted',
-          'ad_personalization': 'granted',
+          'ad_storage': 'denied',
+          'ad_user_data': 'denied',
+          'ad_personalization': 'denied',
           'analytics_storage': 'granted'
         });
       }
@@ -62,33 +62,8 @@
     gtag('config', 'G-BWMMC6PP63');
   </script>
 
-  <!-- Google AdSense Auto ads — loaded after the page is interactive so it stays off the
-       critical render path (improves FCP/LCP on mobile). Ownership is verified via the
-       google-adsense-account meta tag above and /ads.txt, both independent of load timing. -->
-  <script>
-    (function () {
-      var loaded = false;
-      function loadAdSense() {
-        if (loaded) return;
-        loaded = true;
-        var s = document.createElement('script');
-        s.async = true;
-        s.crossOrigin = 'anonymous';
-        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6438644207209483';
-        document.head.appendChild(s);
-      }
-      // Load shortly after the page finishes loading, or on the first user interaction —
-      // whichever comes first.
-      if (document.readyState === 'complete') {
-        setTimeout(loadAdSense, 1500);
-      } else {
-        window.addEventListener('load', function () { setTimeout(loadAdSense, 1500); }, { once: true });
-      }
-      ['scroll', 'pointerdown', 'keydown', 'touchstart'].forEach(function (evt) {
-        window.addEventListener(evt, loadAdSense, { once: true, passive: true });
-      });
-    })();
-  </script>
+  <!-- Ad serving stays disabled until site approval and certified consent setup.
+       Ownership verification uses the account meta tag and ads.txt. -->
 
   <!-- Open Graph -->
   <meta property="og:locale" content="en_US" />
@@ -133,11 +108,11 @@
   <!-- Structured Data: Organization -->
   <!-- Structured Data: HowTo -->
   <!-- Structured Data: WebSite (Site name and Google Search discovery) -->
-  <script type="module" crossorigin src="/assets/index-BvcekLZ3.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-CDH008xT.css">
+  <script type="module" crossorigin src="/assets/index-C6G0KywB.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-SUo8yZUd.css">
   <script type="application/ld+json" data-schema="static-exif-viewer.html-0">{"@context":"https://schema.org","@type":"WebPage","name":"EXIF Viewer — View Image Metadata Online Free","url":"https://freegeotagger.com/exif-viewer","description":"Inspect full EXIF photo metadata online free in your browser. View camera settings, ISO, exposure, lens data, and GPS tags with 100% client-side privacy.","inLanguage":"en-US","isPartOf":{"@type":"WebSite","name":"FreeGeoTagger","url":"https://freegeotagger.com"},"publisher":{"@type":"Organization","name":"FreeGeoTagger","url":"https://freegeotagger.com","logo":{"@type":"ImageObject","url":"https://freegeotagger.com/favicon.png","width":289,"height":289}}}</script>
   <script type="application/ld+json" data-schema="static-exif-viewer.html-1">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://freegeotagger.com/"},{"@type":"ListItem","position":2,"name":"EXIF Viewer — View Image Metadata Online Free","item":"https://freegeotagger.com/exif-viewer"}]}</script>
-  <script type="application/ld+json" data-schema="static-exif-viewer.html-2">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is EXIF data in a photo?","acceptedAnswer":{"@type":"Answer","text":"EXIF (Exchangeable Image File Format) is an international metadata standard that records camera settings, exposure values, date and time stamps, image dimensions, and GPS coordinates directly inside digital image files."}},{"@type":"Question","name":"Are my photos uploaded to your servers when using the EXIF Viewer?","acceptedAnswer":{"@type":"Answer","text":"No. All file reading, metadata parsing, and analysis happen locally in your web browser using JavaScript. Your images are never transmitted to any server, keeping personal photos and location details 100% confidential."}},{"@type":"Question","name":"Can I view EXIF metadata from iPhone HEIC photos?","acceptedAnswer":{"@type":"Answer","text":"Yes. FreeGeoTagger automatically parses HEIC and HEIF photos locally in your browser, extracting camera hardware details, computational photography tags, and GPS coordinates without requiring manual conversion."}},{"@type":"Question","name":"Why does my photo have no EXIF data?","acceptedAnswer":{"@type":"Answer","text":"Photos may lack EXIF data if they were downloaded from social media platforms (such as Facebook, Instagram, or Twitter) or sent through chat apps (like WhatsApp), which automatically strip metadata to protect privacy and reduce file sizes."}},{"@type":"Question","name":"How do I edit or add GPS data to a photo after viewing it?","acceptedAnswer":{"@type":"Answer","text":"You can click the 'Geotag This Photo' button to open FreeGeoTagger's free geotagging tool, where you can place a pin on an interactive map or search any address to embed new coordinates into the photo."}},{"@type":"Question","name":"What is the difference between the EXIF Viewer and GPS Finder?","acceptedAnswer":{"@type":"Answer","text":"The GPS Finder focuses specifically on extracting location coordinates to show capture spots on a map. The EXIF Viewer provides a comprehensive technical breakdown of all camera settings, exposure values, lens data, timestamps, and dimensions in addition to GPS data."}}]}</script>
+  <script type="application/ld+json" data-schema="static-exif-viewer.html-2">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is EXIF data in a photo?","acceptedAnswer":{"@type":"Answer","text":"EXIF (Exchangeable Image File Format) is an international metadata standard that records camera settings, exposure values, date and time stamps, image dimensions, and GPS coordinates directly inside digital image files."}},{"@type":"Question","name":"Are my photos uploaded to your servers when using the EXIF Viewer?","acceptedAnswer":{"@type":"Answer","text":"The image file is inspected in your browser rather than uploaded to our server. Maps, analytics and page delivery may still make network requests; see our privacy policy for those services."}},{"@type":"Question","name":"Can I view EXIF metadata from iPhone HEIC photos?","acceptedAnswer":{"@type":"Answer","text":"HEIC/HEIF inspection is supported for common files, but not every container, maker note, or tag is guaranteed to display. If a field matters, compare the result with another metadata reader and keep the original file."}},{"@type":"Question","name":"Why does my photo have no EXIF data?","acceptedAnswer":{"@type":"Answer","text":"Photos may lack EXIF data if they were downloaded from social media platforms (such as Facebook, Instagram, or Twitter) or sent through chat apps (like WhatsApp), which automatically strip metadata to protect privacy and reduce file sizes."}},{"@type":"Question","name":"How do I edit or add GPS data to a photo after viewing it?","acceptedAnswer":{"@type":"Answer","text":"You can click the 'Geotag This Photo' button to open FreeGeoTagger's free geotagging tool, where you can place a pin on an interactive map or search any address to embed new coordinates into the photo."}},{"@type":"Question","name":"What is the difference between the EXIF Viewer and GPS Finder?","acceptedAnswer":{"@type":"Answer","text":"The GPS Finder focuses specifically on extracting location coordinates to show capture spots on a map. The EXIF Viewer provides a comprehensive technical breakdown of all camera settings, exposure values, lens data, timestamps, and dimensions in addition to GPS data."}}]}</script>
 </head>
 
 <body>
@@ -145,7 +120,7 @@
 <main id="static-seo-content" style="max-width: 820px; margin: 40px auto; padding: 0 20px; font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; line-height: 1.65;">
 <h1>EXIF Viewer — Inspect Camera Settings, EXIF Tags &amp; GPS Metadata Online</h1>
 <p>FreeGeoTagger's free online <strong>EXIF Viewer</strong> lets you inspect complete technical metadata embedded within digital photographs directly in your web browser. Discover camera hardware make and model, optical lens specifications, focal length, aperture f-stop, shutter speed, ISO sensitivity, capture timestamps, color space profiles, and embedded GPS coordinates with <strong>100% client-side privacy and zero server uploads</strong>.</p>
-<p>Unlike conventional online metadata viewers that transmit your sensitive family photos, real estate assets, or confidential investigative evidence to third-party web servers, FreeGeoTagger parses EXIF, TIFF, XMP, and IPTC headers strictly in-memory inside your device's browser sandbox. Your pictures are never uploaded, stored, logged, or indexed by any remote server.</p>
+<p>Image files are parsed in your browser rather than uploaded to FreeGeoTagger for analysis. Map tiles, address search, analytics and ordinary page delivery can still involve network services; see the <a href="/privacy">privacy policy</a> for details. The viewer supports common fields but does not promise to interpret every proprietary maker note.</p>
 
 <h2>How to View Photo EXIF Metadata in 3 Simple Steps</h2>
 <ol>
@@ -348,15 +323,16 @@
 <h3>What is EXIF data in a photo?</h3>
 <p>EXIF (Exchangeable Image File Format) is an international metadata standard that records camera settings, exposure values, date and time stamps, image dimensions, and GPS coordinates directly inside digital image files.</p>
 <h3>Are my photos uploaded to your servers when using the EXIF Viewer?</h3>
-<p>No. All file reading, metadata parsing, and analysis happen locally in your web browser using JavaScript. Your images are never transmitted to any server, keeping personal photos and location details 100% confidential.</p>
+<p>The image file is inspected in your browser rather than uploaded to our server. Maps, analytics and page delivery may still make network requests; see our privacy policy for those services.</p>
 <h3>Can I view EXIF metadata from iPhone HEIC photos?</h3>
-<p>Yes. FreeGeoTagger automatically parses HEIC and HEIF photos locally in your browser, extracting camera hardware details, computational photography tags, and GPS coordinates without requiring manual conversion.</p>
+<p>HEIC/HEIF inspection is supported for common files, but not every container, maker note, or tag is guaranteed to display. If a field matters, compare the result with another metadata reader and keep the original file.</p>
 <h3>Why does my photo have no EXIF data?</h3>
 <p>Photos may lack EXIF data if they were downloaded from social media platforms (such as Facebook, Instagram, or Twitter) or sent through chat apps (like WhatsApp), which automatically strip metadata to protect privacy and reduce file sizes.</p>
 <h3>How do I edit or add GPS data to a photo after viewing it?</h3>
 <p>You can click the 'Geotag This Photo' button to open FreeGeoTagger's free geotagging tool, where you can place a pin on an interactive map or search any address to embed new coordinates into the photo.</p>
 <h3>What is the difference between the EXIF Viewer and GPS Finder?</h3>
 <p>The GPS Finder focuses specifically on extracting location coordinates to show capture spots on a map. The EXIF Viewer provides a comprehensive technical breakdown of all camera settings, exposure values, lens data, timestamps, and dimensions in addition to GPS data.</p>
+<section data-tool-guidance="/exif-viewer"><h2>Read metadata without over-interpreting it</h2><p>Start with three questions: does the file contain GPS, does it have a capture timestamp, and does it record a camera model? Empty fields are not evidence that a photograph is fake; software and sharing services can omit or remove metadata.</p><p>For example, DateTimeOriginal without a time-zone offset cannot establish a UTC capture time on its own. GPS coordinates can be edited, and extra decimal places do not prove positional accuracy. Check the actual downloaded file rather than relying on a place label in your gallery.</p><p>The reader supports many common tags, but does not guarantee every proprietary maker note or every HEIC variant. Exported reports can contain sensitive coordinates and device details. Review the report before sharing it. To edit coordinates use <a href="/">Geotag Photos</a>; to prepare a public copy use <a href="/remove-gps-from-photo">Remove GPS</a>.</p></section>
 <nav aria-label="Related pages"><ul>
 <li><a href="/">Geotag Photos Free</a></li>
 <li><a href="/gps-finder">GPS Finder</a></li>
