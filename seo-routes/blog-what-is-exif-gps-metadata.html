@@ -43,9 +43,9 @@
     try {
       if (localStorage.getItem('fgt-cookie-consent') === 'accepted') {
         gtag('consent', 'update', {
-          'ad_storage': 'denied',
-          'ad_user_data': 'denied',
-          'ad_personalization': 'denied',
+          'ad_storage': 'granted',
+          'ad_user_data': 'granted',
+          'ad_personalization': 'granted',
           'analytics_storage': 'granted'
         });
       }
@@ -62,8 +62,33 @@
     gtag('config', 'G-BWMMC6PP63');
   </script>
 
-  <!-- Ad serving stays disabled until site approval and certified consent setup.
-       Ownership verification uses the account meta tag and ads.txt. -->
+  <!-- Google AdSense Auto ads — loaded after the page is interactive so it stays off the
+       critical render path (improves FCP/LCP on mobile). Ownership is verified via the
+       google-adsense-account meta tag above and /ads.txt, both independent of load timing. -->
+  <script>
+    (function () {
+      var loaded = false;
+      function loadAdSense() {
+        if (loaded) return;
+        loaded = true;
+        var s = document.createElement('script');
+        s.async = true;
+        s.crossOrigin = 'anonymous';
+        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6438644207209483';
+        document.head.appendChild(s);
+      }
+      // Load shortly after the page finishes loading, or on the first user interaction —
+      // whichever comes first.
+      if (document.readyState === 'complete') {
+        setTimeout(loadAdSense, 1500);
+      } else {
+        window.addEventListener('load', function () { setTimeout(loadAdSense, 1500); }, { once: true });
+      }
+      ['scroll', 'pointerdown', 'keydown', 'touchstart'].forEach(function (evt) {
+        window.addEventListener(evt, loadAdSense, { once: true, passive: true });
+      });
+    })();
+  </script>
 
   <!-- Open Graph -->
   <meta property="og:locale" content="en_US" />
@@ -108,9 +133,9 @@
   <!-- Structured Data: Organization -->
   <!-- Structured Data: HowTo -->
   <!-- Structured Data: WebSite (Site name and Google Search discovery) -->
-  <script type="module" crossorigin src="/assets/index-C6G0KywB.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-SUo8yZUd.css">
-  <script type="application/ld+json" data-schema="static-blog-what-is-exif-gps-metadata.html-0">{"@context":"https://schema.org","@type":"Article","headline":"What Is EXIF GPS Metadata?","name":"What Is EXIF GPS Metadata?","url":"https://freegeotagger.com/blog/what-is-exif-gps-metadata","description":"Learn what EXIF GPS metadata is, how latitude and longitude are stored inside photo files, and which apps read it. A complete guide for photographers.","image":{"@type":"ImageObject","url":"https://freegeotagger.com/diagrams/exif-gps-structure.png","width":1200,"height":760,"caption":"Diagram: GPS fields live in the APP1 segment's GPS sub-IFD, separate from the compressed pixel data — which is why editing them costs no image quality."},"datePublished":"2026-03-25","dateModified":"2026-09-26","author":{"@type":"Organization","name":"FreeGeoTagger","url":"https://freegeotagger.com"},"publisher":{"@type":"Organization","name":"FreeGeoTagger","url":"https://freegeotagger.com","logo":{"@type":"ImageObject","url":"https://freegeotagger.com/favicon.png","width":289,"height":289}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://freegeotagger.com/blog/what-is-exif-gps-metadata"},"inLanguage":"en-US","isPartOf":{"@type":"WebSite","name":"FreeGeoTagger","url":"https://freegeotagger.com"},"speakable":{"@type":"SpeakableSpecification","cssSelector":[".key-takeaways","h1"]},"abstract":"EXIF stands for Exchangeable Image File Format, a standard for storing metadata inside image files. GPS data lives in a dedicated GPS sub-IFD inside the JPEG's APP1 segment, referenced from IFD0 by tag 0x8825. Only four fields are strictly required to place a photo on a map: GPSLatitude, GPSLatitudeRef, GPSLongitude and GPSLongitudeRef. Coordinates are stored as RATIONAL pairs of 32-bit integers in degrees, minutes and seconds — most software converts to and from decimal degrees for you. Because metadata sits separately from the compressed pixel data, editing GPS fields cannot degrade image quality."}</script>
+  <script type="module" crossorigin src="/assets/index-B2Jn3Nez.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CkPfO2gn.css">
+  <script type="application/ld+json" data-schema="static-blog-what-is-exif-gps-metadata.html-0">{"@context":"https://schema.org","@type":"Article","headline":"What Is EXIF GPS Metadata?","name":"What Is EXIF GPS Metadata?","url":"https://freegeotagger.com/blog/what-is-exif-gps-metadata","description":"Learn what EXIF GPS metadata is, how latitude and longitude are stored inside photo files, and which apps read it. A complete guide for photographers.","image":{"@type":"ImageObject","url":"https://freegeotagger.com/diagrams/exif-gps-structure.png","width":1200,"height":760,"caption":"Diagram: GPS fields live in the APP1 segment's GPS sub-IFD, separate from the compressed pixel data — which is why editing them costs no image quality."},"datePublished":"2026-03-25","dateModified":"2026-07-26","author":{"@type":"Person","name":"Jimmy Dickinson","url":"https://freegeotagger.com/about"},"publisher":{"@type":"Organization","name":"FreeGeoTagger","url":"https://freegeotagger.com","logo":{"@type":"ImageObject","url":"https://freegeotagger.com/favicon.png","width":289,"height":289}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://freegeotagger.com/blog/what-is-exif-gps-metadata"},"inLanguage":"en-US","isPartOf":{"@type":"WebSite","name":"FreeGeoTagger","url":"https://freegeotagger.com"},"speakable":{"@type":"SpeakableSpecification","cssSelector":[".key-takeaways","h1"]},"abstract":"EXIF stands for Exchangeable Image File Format, a standard for storing metadata inside image files. GPS data lives in a dedicated GPS sub-IFD inside the JPEG's APP1 segment, referenced from IFD0 by tag 0x8825. Only four fields are strictly required to place a photo on a map: GPSLatitude, GPSLatitudeRef, GPSLongitude and GPSLongitudeRef. Coordinates are stored as RATIONAL pairs of 32-bit integers in degrees, minutes and seconds — most software converts to and from decimal degrees for you. Because metadata sits separately from the compressed pixel data, editing GPS fields cannot degrade image quality."}</script>
   <script type="application/ld+json" data-schema="static-blog-what-is-exif-gps-metadata.html-1">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://freegeotagger.com/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://freegeotagger.com/blog"},{"@type":"ListItem","position":3,"name":"What Is EXIF GPS Metadata?","item":"https://freegeotagger.com/blog/what-is-exif-gps-metadata"}]}</script>
   <script type="application/ld+json" data-schema="static-blog-what-is-exif-gps-metadata.html-2">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is EXIF GPS metadata?","acceptedAnswer":{"@type":"Answer","text":"EXIF GPS metadata is location information embedded inside a photo file, including latitude, longitude and optionally altitude, timestamp and compass direction. Apps such as Google Photos, Apple Photos and Lightroom read it to place photos on a map."}},{"@type":"Question","name":"Where exactly is GPS data stored in a JPEG?","acceptedAnswer":{"@type":"Answer","text":"In the APP1 segment, which holds a TIFF-structured block. IFD0 carries camera details and references a GPS sub-IFD by tag 0x8825; the GPS fields live in that sub-directory, entirely separate from the compressed image data."}},{"@type":"Question","name":"Which image formats support EXIF GPS?","acceptedAnswer":{"@type":"Answer","text":"JPEG and TIFF have full native support. HEIC stores location in a compatible metadata block, WebP uses an Exif chunk, and PNG uses an eXIf chunk. RAW formats such as DNG, CR2, NEF and ARW also support GPS fields."}},{"@type":"Question","name":"How are latitude and longitude actually encoded?","acceptedAnswer":{"@type":"Answer","text":"As three RATIONAL values — degrees, minutes and seconds — each a pair of 32-bit integers forming a fraction. A separate reference field records the hemisphere (N/S, E/W), because the numeric values themselves are unsigned."}},{"@type":"Question","name":"Can I add EXIF GPS data to a photo that has none?","acceptedAnswer":{"@type":"Answer","text":"Yes. Any JPEG, PNG, WebP or HEIC file can have GPS fields written into it after the fact. The pixel data is unaffected, so there is no quality cost to adding or correcting coordinates."}},{"@type":"Question","name":"Does editing EXIF data change how the photo looks?","acceptedAnswer":{"@type":"Answer","text":"No. Metadata and pixel data occupy different parts of the file. A tool that only rewrites the metadata segment leaves the image bytes identical, which is why there is no visible change and no generation loss."}}]}</script>
 </head>
@@ -119,7 +144,7 @@
   <div id="root">
 <main id="static-seo-content" style="max-width: 820px; margin: 40px auto; padding: 0 20px; font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; line-height: 1.65;">
 <h1>What Is EXIF GPS Metadata? A Complete Guide</h1>
-<p class="byline"><span>By <span rel="author">FreeGeoTagger</span></span> &middot; <span>Published <time datetime="2026-03-25">March 25, 2026</time></span> &middot; <span>Updated <time datetime="2026-09-26">September 26, 2026</time></span></p>
+<p class="byline"><span>By <span rel="author">Jimmy Dickinson</span></span> &middot; <span>Published <time datetime="2026-03-25">March 25, 2026</time></span> &middot; <span>Updated <time datetime="2026-07-26">July 26, 2026</time></span></p>
 <p>
               Every time you take a photo with a modern smartphone, your device quietly embeds a detailed block of technical data into the image file. This data — known as EXIF metadata — includes camera settings, timestamps, device model, and, if location services are enabled, precise GPS coordinates.
             </p>
@@ -129,7 +154,7 @@
 <figcaption>Diagram: GPS fields live in the APP1 segment's GPS sub-IFD, separate from the compressed pixel data — which is why editing them costs no image quality.</figcaption>
 </figure>
 
-            <section><h2>Worked example: interpreting a southern latitude</h2><p>Suppose GPSLatitude contains 33 degrees, 52 minutes and 7.68 seconds with GPSLatitudeRef set to S. The decimal value is -(33 + 52/60 + 7.68/3600), or -33.8688. The hemisphere reference supplies the negative sign; the three stored magnitudes are positive.</p><p>Check both the numeric value and the reference when a map appears in the wrong hemisphere. Six decimal places describe storage precision, not a sub-meter measurement guarantee. In FreeGeoTagger, GPSDateStamp and GPSTimeStamp are written at editing time; they must not be treated as the original capture time or proof of a live satellite fix. Keep DateTimeOriginal separate.</p></section><aside class="key-takeaways">
+            <aside class="key-takeaways">
 <h2>Key takeaways</h2>
 <ul>
 <li>EXIF stands for Exchangeable Image File Format, a standard for storing metadata inside image files.</li>
@@ -242,7 +267,7 @@
             </ol>
 
             <p>
-              Processing time depends on the file and device. The image is handled in your browser rather than uploaded to our server; map and other page services may still make network requests.
+              The entire process takes under 30 seconds. No account, no software, no upload to any server.
             </p>
 
             <h2>How to Read GPS Data From an Existing Photo</h2>

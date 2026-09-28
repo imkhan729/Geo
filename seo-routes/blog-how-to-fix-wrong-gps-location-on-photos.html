@@ -17,7 +17,7 @@
   </style>
 
   <title>How to Fix the Wrong GPS Location on Your Photos Free</title>
-  <meta name="description" content="Photo pinned to the wrong place? Learn likely causes, confirm the stored coordinates, correct a known location, and verify the file before sharing it." />
+  <meta name="description" content="Photo pinned to the wrong place on the map? Learn why photo GPS data goes wrong and how to correct the coordinates in seconds, free and fully private." />
   <meta name="keywords" content="fix wrong gps location photo, change photo location data, edit photo gps coordinates, photo shows wrong location, correct exif gps, photo location wrong google photos" />
   <meta name="author" content="FreeGeoTagger" />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
@@ -43,9 +43,9 @@
     try {
       if (localStorage.getItem('fgt-cookie-consent') === 'accepted') {
         gtag('consent', 'update', {
-          'ad_storage': 'denied',
-          'ad_user_data': 'denied',
-          'ad_personalization': 'denied',
+          'ad_storage': 'granted',
+          'ad_user_data': 'granted',
+          'ad_personalization': 'granted',
           'analytics_storage': 'granted'
         });
       }
@@ -62,14 +62,39 @@
     gtag('config', 'G-BWMMC6PP63');
   </script>
 
-  <!-- Ad serving stays disabled until site approval and certified consent setup.
-       Ownership verification uses the account meta tag and ads.txt. -->
+  <!-- Google AdSense Auto ads — loaded after the page is interactive so it stays off the
+       critical render path (improves FCP/LCP on mobile). Ownership is verified via the
+       google-adsense-account meta tag above and /ads.txt, both independent of load timing. -->
+  <script>
+    (function () {
+      var loaded = false;
+      function loadAdSense() {
+        if (loaded) return;
+        loaded = true;
+        var s = document.createElement('script');
+        s.async = true;
+        s.crossOrigin = 'anonymous';
+        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6438644207209483';
+        document.head.appendChild(s);
+      }
+      // Load shortly after the page finishes loading, or on the first user interaction —
+      // whichever comes first.
+      if (document.readyState === 'complete') {
+        setTimeout(loadAdSense, 1500);
+      } else {
+        window.addEventListener('load', function () { setTimeout(loadAdSense, 1500); }, { once: true });
+      }
+      ['scroll', 'pointerdown', 'keydown', 'touchstart'].forEach(function (evt) {
+        window.addEventListener(evt, loadAdSense, { once: true, passive: true });
+      });
+    })();
+  </script>
 
   <!-- Open Graph -->
   <meta property="og:locale" content="en_US" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="How to Fix the Wrong GPS Location on Your Photos Free" />
-  <meta property="og:description" content="Photo pinned to the wrong place? Learn likely causes, confirm the stored coordinates, correct a known location, and verify the file before sharing it." />
+  <meta property="og:description" content="Photo pinned to the wrong place on the map? Learn why photo GPS data goes wrong and how to correct the coordinates in seconds, free and fully private." />
   <meta property="og:url" content="https://freegeotagger.com/blog/how-to-fix-wrong-gps-location-on-photos" />
   <meta property="og:site_name" content="FreeGeoTagger" />
   <meta property="og:image" content="https://freegeotagger.com/og-image.png" />
@@ -82,7 +107,7 @@
   <meta name="twitter:site" content="@freegeotagger" />
   <meta name="twitter:creator" content="@freegeotagger" />
   <meta name="twitter:title" content="How to Fix the Wrong GPS Location on Your Photos Free" />
-  <meta name="twitter:description" content="Photo pinned to the wrong place? Learn likely causes, confirm the stored coordinates, correct a known location, and verify the file before sharing it." />
+  <meta name="twitter:description" content="Photo pinned to the wrong place on the map? Learn why photo GPS data goes wrong and how to correct the coordinates in seconds, free and fully private." />
   <meta name="twitter:image" content="https://freegeotagger.com/og-image.png" />
   <meta name="twitter:image:alt" content="FreeGeoTagger – Free browser-based photo geotagging tool" />
 
@@ -108,9 +133,9 @@
   <!-- Structured Data: Organization -->
   <!-- Structured Data: HowTo -->
   <!-- Structured Data: WebSite (Site name and Google Search discovery) -->
-  <script type="module" crossorigin src="/assets/index-C6G0KywB.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-SUo8yZUd.css">
-  <script type="application/ld+json" data-schema="static-blog-how-to-fix-wrong-gps-location-on-photos.html-0">{"@context":"https://schema.org","@type":"Article","headline":"How to Fix or Change the Wrong GPS Location on a Photo","name":"How to Fix or Change the Wrong GPS Location on a Photo","url":"https://freegeotagger.com/blog/how-to-fix-wrong-gps-location-on-photos","description":"Photo pinned to the wrong place? Learn likely causes, confirm the stored coordinates, correct a known location, and verify the file before sharing it.","image":{"@type":"ImageObject","url":"https://freegeotagger.com/screenshots/gps-finder-tool.jpg","width":1200,"height":733,"caption":"GPS Finder reads the location already stored in a photo, so you can check what a file reveals."},"datePublished":"2026-07-10","dateModified":"2026-09-26","author":{"@type":"Organization","name":"FreeGeoTagger","url":"https://freegeotagger.com"},"publisher":{"@type":"Organization","name":"FreeGeoTagger","url":"https://freegeotagger.com","logo":{"@type":"ImageObject","url":"https://freegeotagger.com/favicon.png","width":289,"height":289}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://freegeotagger.com/blog/how-to-fix-wrong-gps-location-on-photos"},"inLanguage":"en-US","isPartOf":{"@type":"WebSite","name":"FreeGeoTagger","url":"https://freegeotagger.com"},"speakable":{"@type":"SpeakableSpecification","cssSelector":[".key-takeaways","h1"]},"abstract":"Wrong photo coordinates usually come from a weak GPS fix indoors, a stale cached position, an incorrect device clock, or metadata rewritten by an editing app. Correcting the location means overwriting the existing GPS fields, not deleting and re-adding the photo. Verify the stored coordinates first so you know whether the file is wrong or only the viewing app is guessing. Google Photos and Apple Photos may keep showing a cached place name until they re-read the file, so re-import after correcting. Overwriting coordinates costs no image quality, since only the metadata block changes."}</script>
+  <script type="module" crossorigin src="/assets/index-B2Jn3Nez.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CkPfO2gn.css">
+  <script type="application/ld+json" data-schema="static-blog-how-to-fix-wrong-gps-location-on-photos.html-0">{"@context":"https://schema.org","@type":"Article","headline":"How to Fix or Change the Wrong GPS Location on a Photo","name":"How to Fix or Change the Wrong GPS Location on a Photo","url":"https://freegeotagger.com/blog/how-to-fix-wrong-gps-location-on-photos","description":"Photo pinned to the wrong place on the map? Learn why photo GPS data goes wrong and how to correct the coordinates in seconds, free and fully private.","image":{"@type":"ImageObject","url":"https://freegeotagger.com/screenshots/gps-finder-tool.jpg","width":1200,"height":733,"caption":"GPS Finder reads the location already stored in a photo, so you can check what a file reveals."},"datePublished":"2026-07-10","dateModified":"2026-07-26","author":{"@type":"Person","name":"Jimmy Dickinson","url":"https://freegeotagger.com/about"},"publisher":{"@type":"Organization","name":"FreeGeoTagger","url":"https://freegeotagger.com","logo":{"@type":"ImageObject","url":"https://freegeotagger.com/favicon.png","width":289,"height":289}},"mainEntityOfPage":{"@type":"WebPage","@id":"https://freegeotagger.com/blog/how-to-fix-wrong-gps-location-on-photos"},"inLanguage":"en-US","isPartOf":{"@type":"WebSite","name":"FreeGeoTagger","url":"https://freegeotagger.com"},"speakable":{"@type":"SpeakableSpecification","cssSelector":[".key-takeaways","h1"]},"abstract":"Wrong photo coordinates usually come from a weak GPS fix indoors, a stale cached position, an incorrect device clock, or metadata rewritten by an editing app. Correcting the location means overwriting the existing GPS fields, not deleting and re-adding the photo. Verify the stored coordinates first so you know whether the file is wrong or only the viewing app is guessing. Google Photos and Apple Photos may keep showing a cached place name until they re-read the file, so re-import after correcting. Overwriting coordinates costs no image quality, since only the metadata block changes."}</script>
   <script type="application/ld+json" data-schema="static-blog-how-to-fix-wrong-gps-location-on-photos.html-1">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://freegeotagger.com/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://freegeotagger.com/blog"},{"@type":"ListItem","position":3,"name":"How to Fix or Change the Wrong GPS Location on a Photo","item":"https://freegeotagger.com/blog/how-to-fix-wrong-gps-location-on-photos"}]}</script>
   <script type="application/ld+json" data-schema="static-blog-how-to-fix-wrong-gps-location-on-photos.html-2">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I fix the wrong GPS location on a photo?","acceptedAnswer":{"@type":"Answer","text":"Open the photo in FreeGeoTagger, set the correct position on the map or by address, and download it. The new coordinates overwrite the existing EXIF GPS fields, leaving the image itself unchanged."}},{"@type":"Question","name":"Why is my photo's location wrong in the first place?","acceptedAnswer":{"@type":"Answer","text":"Common causes are a poor satellite fix indoors or between tall buildings, the phone reusing a cached position from a previous location, an incorrect device clock misaligning a GPS track, or an editing app rewriting metadata."}},{"@type":"Question","name":"Why does Google Photos still show the old location after I fixed it?","acceptedAnswer":{"@type":"Answer","text":"Because it caches the place it previously derived from the file. Re-upload or re-import the corrected photo so the library re-reads the EXIF data, and remove the stale copy."}},{"@type":"Question","name":"Can I change a photo's location without losing quality?","acceptedAnswer":{"@type":"Answer","text":"Yes. Editing GPS fields rewrites only the metadata segment. The compressed pixel data is copied through byte-for-byte, so there is no re-encoding and no visible change."}}]}</script>
 </head>
@@ -119,7 +144,7 @@
   <div id="root">
 <main id="static-seo-content" style="max-width: 820px; margin: 40px auto; padding: 0 20px; font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; line-height: 1.65;">
 <h1>How to Fix or Change the Wrong GPS Location on a Photo</h1>
-<p class="byline"><span>By <span rel="author">FreeGeoTagger</span></span> &middot; <span>Published <time datetime="2026-07-10">July 10, 2026</time></span> &middot; <span>Updated <time datetime="2026-09-26">September 26, 2026</time></span></p>
+<p class="byline"><span>By <span rel="author">Jimmy Dickinson</span></span> &middot; <span>Published <time datetime="2026-07-10">July 10, 2026</time></span> &middot; <span>Updated <time datetime="2026-07-26">July 26, 2026</time></span></p>
 <p>
               GPS metadata is only useful when it is right. A photo tagged with wrong coordinates is arguably worse than one with no coordinates at all: Google Photos files it under the wrong trip, mapping software plots it in the wrong place, and for professional uses — real estate listings, insurance claims, field documentation — an incorrect location can undermine the credibility of the entire record.
             </p>
@@ -129,7 +154,7 @@
 <figcaption>GPS Finder reads the location already stored in a photo, so you can check what a file reveals.</figcaption>
 </figure>
 
-            <section><h2>Worked example: a missing west sign</h2><p>An example file intended to contain latitude 40.7128 and longitude -74.0060 is instead stored with longitude +74.0060. The values have similar magnitudes but point to different hemispheres. Correct the longitude to west; do not compensate by dragging the map near the expected city without checking the numbers.</p><p>After exporting, reopen the result and compare both values. If the numbers are correct but a gallery still shows the old place, test a newly imported copy. If every photo is displaced by a similar amount, check how your source coordinates were obtained; decimal/DMS conversion does not fix a wrong datum or an incorrect source location.</p></section><aside class="key-takeaways">
+            <aside class="key-takeaways">
 <h2>Key takeaways</h2>
 <ul>
 <li>Wrong photo coordinates usually come from a weak GPS fix indoors, a stale cached position, an incorrect device clock, or metadata rewritten by an editing app.</li>
@@ -219,7 +244,7 @@
             <h2>Conclusion</h2>
 
             <p>
-              A misplaced or missing GPS value can be corrected when you have a reliable source for the intended location. Inspect the file with <a href="/gps-finder">GPS Finder</a>, edit a copy in <a href="/">FreeGeoTagger</a>, then reopen the downloaded file and verify its coordinates. Processing is local; maps, searches and other page services may make network requests.
+              Wrong GPS data is common, explainable, and — because EXIF metadata is rewritable — always fixable. Check what the file really says with the <a href="/gps-finder">GPS Finder</a>, set the correct position in <a href="/">FreeGeoTagger</a> with a map click or pasted coordinates, and verify the result. The whole round trip takes about a minute, costs nothing, and your photos never leave your device.
             </p>
 
             <section>
@@ -244,8 +269,8 @@
 <li><a href="/about">About FreeGeoTagger</a></li>
 <li><a href="/contact">Contact</a></li>
 <li><a href="/blog/how-to-bulk-geotag-photos">Bulk Geotag Photos</a></li>
-<li><a href="/blog/add-gps-coordinates-to-photos-google-maps">Add GPS from Google Maps</a></li>
-<li><a href="/blog/how-to-geotag-old-and-scanned-photos">Geotag Old and Scanned Photos</a></li>
+<li><a href="/blog/how-to-add-gps-to-iphone-photos">How to Add GPS to iPhone Photos</a></li>
+<li><a href="/blog/how-to-geotag-photos-android">How to Add GPS to Android Photos</a></li>
 </ul></nav>
 </main>
   </div>

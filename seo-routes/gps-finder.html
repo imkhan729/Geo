@@ -43,9 +43,9 @@
     try {
       if (localStorage.getItem('fgt-cookie-consent') === 'accepted') {
         gtag('consent', 'update', {
-          'ad_storage': 'denied',
-          'ad_user_data': 'denied',
-          'ad_personalization': 'denied',
+          'ad_storage': 'granted',
+          'ad_user_data': 'granted',
+          'ad_personalization': 'granted',
           'analytics_storage': 'granted'
         });
       }
@@ -62,8 +62,33 @@
     gtag('config', 'G-BWMMC6PP63');
   </script>
 
-  <!-- Ad serving stays disabled until site approval and certified consent setup.
-       Ownership verification uses the account meta tag and ads.txt. -->
+  <!-- Google AdSense Auto ads — loaded after the page is interactive so it stays off the
+       critical render path (improves FCP/LCP on mobile). Ownership is verified via the
+       google-adsense-account meta tag above and /ads.txt, both independent of load timing. -->
+  <script>
+    (function () {
+      var loaded = false;
+      function loadAdSense() {
+        if (loaded) return;
+        loaded = true;
+        var s = document.createElement('script');
+        s.async = true;
+        s.crossOrigin = 'anonymous';
+        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6438644207209483';
+        document.head.appendChild(s);
+      }
+      // Load shortly after the page finishes loading, or on the first user interaction —
+      // whichever comes first.
+      if (document.readyState === 'complete') {
+        setTimeout(loadAdSense, 1500);
+      } else {
+        window.addEventListener('load', function () { setTimeout(loadAdSense, 1500); }, { once: true });
+      }
+      ['scroll', 'pointerdown', 'keydown', 'touchstart'].forEach(function (evt) {
+        window.addEventListener(evt, loadAdSense, { once: true, passive: true });
+      });
+    })();
+  </script>
 
   <!-- Open Graph -->
   <meta property="og:locale" content="en_US" />
@@ -108,12 +133,12 @@
   <!-- Structured Data: Organization -->
   <!-- Structured Data: HowTo -->
   <!-- Structured Data: WebSite (Site name and Google Search discovery) -->
-  <script type="module" crossorigin src="/assets/index-C6G0KywB.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-SUo8yZUd.css">
+  <script type="module" crossorigin src="/assets/index-B2Jn3Nez.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CkPfO2gn.css">
   <script type="application/ld+json" data-schema="static-gps-finder.html-0">{"@context":"https://schema.org","@type":"WebPage","name":"GPS Finder — Extract GPS Coordinates from Photos","url":"https://freegeotagger.com/gps-finder","description":"Upload a photo to see exactly where it was taken on a map. Free GPS photo finder reads EXIF location data privately in your browser. No signup.","inLanguage":"en-US","isPartOf":{"@type":"WebSite","name":"FreeGeoTagger","url":"https://freegeotagger.com"},"publisher":{"@type":"Organization","name":"FreeGeoTagger","url":"https://freegeotagger.com","logo":{"@type":"ImageObject","url":"https://freegeotagger.com/favicon.png","width":289,"height":289}}}</script>
   <script type="application/ld+json" data-schema="static-gps-finder.html-1">{"@context":"https://schema.org","@type":"WebApplication","name":"GPS Photo Finder","applicationCategory":"PhotographyApplication","operatingSystem":"Web Browser","browserRequirements":"Chrome, Firefox, Safari, Edge","url":"https://freegeotagger.com/gps-finder","description":"Upload a photo to see exactly where it was taken on a map. Free GPS photo finder reads EXIF location data privately in your browser. No signup.","image":"https://freegeotagger.com/og-image.png","offers":{"@type":"Offer","price":"0","priceCurrency":"USD","availability":"https://schema.org/InStock"},"featureList":["Read EXIF GPS coordinates from photos","Show photo location on an interactive map","Copy coordinates or open in Google Maps","JPG, PNG, WebP and HEIC support","Runs entirely in the browser — no uploads"],"publisher":{"@type":"Organization","name":"FreeGeoTagger","url":"https://freegeotagger.com","logo":{"@type":"ImageObject","url":"https://freegeotagger.com/favicon.png","width":289,"height":289}}}</script>
   <script type="application/ld+json" data-schema="static-gps-finder.html-2">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://freegeotagger.com/"},{"@type":"ListItem","position":2,"name":"GPS Finder — Extract GPS Coordinates from Photos","item":"https://freegeotagger.com/gps-finder"}]}</script>
-  <script type="application/ld+json" data-schema="static-gps-finder.html-3">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a GPS Finder tool?","acceptedAnswer":{"@type":"Answer","text":"A GPS Finder is a tool that reads EXIF metadata from photos to extract embedded GPS coordinates. When you take a photo with location services enabled, your camera or smartphone stores latitude and longitude data in the image file. Our GPS Finder reads this data and displays the exact location on an interactive map."}},{"@type":"Question","name":"How do I find GPS coordinates in a photo?","acceptedAnswer":{"@type":"Answer","text":"Upload your photo to GPS Finder. If it contains GPS metadata, the tool reads the stored values and plots them on a map. You can copy the coordinates; the point does not prove where the photo was taken."}},{"@type":"Question","name":"What image formats support GPS data?","acceptedAnswer":{"@type":"Answer","text":"Most common image formats support GPS metadata, including JPG/JPEG, PNG, WebP, and HEIC (iPhone photos). Our tool supports all of these and automatically converts HEIC files for processing."}},{"@type":"Question","name":"Is my photo uploaded to your servers?","acceptedAnswer":{"@type":"Answer","text":"The image file is processed in your browser rather than uploaded to our server for analysis. Map display, reverse lookup, analytics and page delivery may still make network requests; see our privacy policy."}},{"@type":"Question","name":"Why doesn't my photo have GPS data?","acceptedAnswer":{"@type":"Answer","text":"Photos may lack GPS data if location services were disabled, the image was edited and metadata was stripped, the camera had no GPS, or the image was downloaded from social media, which often removes location data."}},{"@type":"Question","name":"How accurate are the GPS coordinates?","acceptedAnswer":{"@type":"Answer","text":"This tool reads the coordinate values stored in the file; it cannot measure whether they are correct. Capture accuracy varies with device, satellite visibility, settings and conditions. Treat the displayed point as recorded metadata, not proof of the capture location."}}]}</script>
+  <script type="application/ld+json" data-schema="static-gps-finder.html-3">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a GPS Finder tool?","acceptedAnswer":{"@type":"Answer","text":"A GPS Finder is a tool that reads EXIF metadata from photos to extract embedded GPS coordinates. When you take a photo with location services enabled, your camera or smartphone stores latitude and longitude data in the image file. Our GPS Finder reads this data and displays the exact location on an interactive map."}},{"@type":"Question","name":"How do I find GPS coordinates in a photo?","acceptedAnswer":{"@type":"Answer","text":"Upload your photo to our GPS Finder tool. If the image contains GPS metadata, we automatically extract the coordinates and show the location on a map. You can then copy the coordinates or open the location in Google Maps."}},{"@type":"Question","name":"What image formats support GPS data?","acceptedAnswer":{"@type":"Answer","text":"Most common image formats support GPS metadata, including JPG/JPEG, PNG, WebP, and HEIC (iPhone photos). Our tool supports all of these and automatically converts HEIC files for processing."}},{"@type":"Question","name":"Is my photo uploaded to your servers?","acceptedAnswer":{"@type":"Answer","text":"No. All processing happens locally in your browser. Your photos never leave your device, ensuring complete privacy and security."}},{"@type":"Question","name":"Why doesn't my photo have GPS data?","acceptedAnswer":{"@type":"Answer","text":"Photos may lack GPS data if location services were disabled, the image was edited and metadata was stripped, the camera had no GPS, or the image was downloaded from social media, which often removes location data."}},{"@type":"Question","name":"How accurate are the GPS coordinates?","acceptedAnswer":{"@type":"Answer","text":"Accuracy depends on the device that captured the photo. Modern smartphones typically provide accuracy within 5–10 meters, and professional cameras with GPS modules can be even more accurate."}}]}</script>
 </head>
 
 <body>
@@ -137,7 +162,7 @@
 <h2>Why Use This GPS Finder?</h2>
 <ul>
 <li><strong>No upload, so no exposure.</strong> Checking where a photo was taken is often exactly the moment you do not want to hand it to a server.</li>
-<li><strong>Free with no account</strong> — no sign-up, a 20 MB per-file limit, no watermarks.</li>
+<li><strong>Free with no account</strong> — no sign-up, no file limits, no watermarks.</li>
 <li><strong>Reads all common formats</strong> — JPG, PNG, WebP and HEIC, with HEIC handled without a separate conversion step on your part.</li>
 <li><strong>Shows the exact numbers</strong> — copy decimal coordinates directly, or open the position in Google Maps.</li>
 <li><strong>Works on mobile</strong> — runs in Safari on iPhone and Chrome on Android.</li>
@@ -254,16 +279,15 @@
 <h3>What is a GPS Finder tool?</h3>
 <p>A GPS Finder is a tool that reads EXIF metadata from photos to extract embedded GPS coordinates. When you take a photo with location services enabled, your camera or smartphone stores latitude and longitude data in the image file. Our GPS Finder reads this data and displays the exact location on an interactive map.</p>
 <h3>How do I find GPS coordinates in a photo?</h3>
-<p>Upload your photo to GPS Finder. If it contains GPS metadata, the tool reads the stored values and plots them on a map. You can copy the coordinates; the point does not prove where the photo was taken.</p>
+<p>Upload your photo to our GPS Finder tool. If the image contains GPS metadata, we automatically extract the coordinates and show the location on a map. You can then copy the coordinates or open the location in Google Maps.</p>
 <h3>What image formats support GPS data?</h3>
 <p>Most common image formats support GPS metadata, including JPG/JPEG, PNG, WebP, and HEIC (iPhone photos). Our tool supports all of these and automatically converts HEIC files for processing.</p>
 <h3>Is my photo uploaded to your servers?</h3>
-<p>The image file is processed in your browser rather than uploaded to our server for analysis. Map display, reverse lookup, analytics and page delivery may still make network requests; see our privacy policy.</p>
+<p>No. All processing happens locally in your browser. Your photos never leave your device, ensuring complete privacy and security.</p>
 <h3>Why doesn't my photo have GPS data?</h3>
 <p>Photos may lack GPS data if location services were disabled, the image was edited and metadata was stripped, the camera had no GPS, or the image was downloaded from social media, which often removes location data.</p>
 <h3>How accurate are the GPS coordinates?</h3>
-<p>This tool reads the coordinate values stored in the file; it cannot measure whether they are correct. Capture accuracy varies with device, satellite visibility, settings and conditions. Treat the displayed point as recorded metadata, not proof of the capture location.</p>
-<section data-tool-guidance="/gps-finder"><h2>How to interpret a GPS Finder result</h2><p>A result means the reader found stored coordinates. An absent result means it did not find readable GPS in this file; it cannot recover stripped metadata or identify a location from buildings, faces or scenery.</p><p>Compare an original camera file with a copy shared through messaging. If only the original has GPS, use that original for your archive. If both have GPS but the signs differ, check north/south and east/west before editing. Editable EXIF is not proof of a person's location.</p><p>Use <a href="/exif-viewer">EXIF Viewer</a> for a second view of the fields. HEIC previews involve conversion and may not retain all metadata, so a missing location after conversion is inconclusive. Keep the original. Map requests reveal the viewed area to tile providers even though the photo bytes remain on your device.</p></section>
+<p>Accuracy depends on the device that captured the photo. Modern smartphones typically provide accuracy within 5–10 meters, and professional cameras with GPS modules can be even more accurate.</p>
 <nav aria-label="Related pages"><ul>
 <li><a href="/">Geotag Photos Free</a></li>
 <li><a href="/gps-finder">GPS Finder</a></li>

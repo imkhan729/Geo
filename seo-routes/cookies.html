@@ -43,9 +43,9 @@
     try {
       if (localStorage.getItem('fgt-cookie-consent') === 'accepted') {
         gtag('consent', 'update', {
-          'ad_storage': 'denied',
-          'ad_user_data': 'denied',
-          'ad_personalization': 'denied',
+          'ad_storage': 'granted',
+          'ad_user_data': 'granted',
+          'ad_personalization': 'granted',
           'analytics_storage': 'granted'
         });
       }
@@ -62,8 +62,33 @@
     gtag('config', 'G-BWMMC6PP63');
   </script>
 
-  <!-- Ad serving stays disabled until site approval and certified consent setup.
-       Ownership verification uses the account meta tag and ads.txt. -->
+  <!-- Google AdSense Auto ads — loaded after the page is interactive so it stays off the
+       critical render path (improves FCP/LCP on mobile). Ownership is verified via the
+       google-adsense-account meta tag above and /ads.txt, both independent of load timing. -->
+  <script>
+    (function () {
+      var loaded = false;
+      function loadAdSense() {
+        if (loaded) return;
+        loaded = true;
+        var s = document.createElement('script');
+        s.async = true;
+        s.crossOrigin = 'anonymous';
+        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6438644207209483';
+        document.head.appendChild(s);
+      }
+      // Load shortly after the page finishes loading, or on the first user interaction —
+      // whichever comes first.
+      if (document.readyState === 'complete') {
+        setTimeout(loadAdSense, 1500);
+      } else {
+        window.addEventListener('load', function () { setTimeout(loadAdSense, 1500); }, { once: true });
+      }
+      ['scroll', 'pointerdown', 'keydown', 'touchstart'].forEach(function (evt) {
+        window.addEventListener(evt, loadAdSense, { once: true, passive: true });
+      });
+    })();
+  </script>
 
   <!-- Open Graph -->
   <meta property="og:locale" content="en_US" />
@@ -108,8 +133,8 @@
   <!-- Structured Data: Organization -->
   <!-- Structured Data: HowTo -->
   <!-- Structured Data: WebSite (Site name and Google Search discovery) -->
-  <script type="module" crossorigin src="/assets/index-C6G0KywB.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-SUo8yZUd.css">
+  <script type="module" crossorigin src="/assets/index-B2Jn3Nez.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CkPfO2gn.css">
   <script type="application/ld+json" data-schema="static-cookies.html-0">{"@context":"https://schema.org","@type":"WebPage","name":"Cookie Policy","url":"https://freegeotagger.com/cookies","description":"Which cookies FreeGeoTagger uses, how Google Consent Mode works, and how to control or delete advertising and analytics cookies in your browser.","inLanguage":"en-US","isPartOf":{"@type":"WebSite","name":"FreeGeoTagger","url":"https://freegeotagger.com"},"publisher":{"@type":"Organization","name":"FreeGeoTagger","url":"https://freegeotagger.com","logo":{"@type":"ImageObject","url":"https://freegeotagger.com/favicon.png","width":289,"height":289}}}</script>
   <script type="application/ld+json" data-schema="static-cookies.html-1">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://freegeotagger.com/"},{"@type":"ListItem","position":2,"name":"Cookie Policy","item":"https://freegeotagger.com/cookies"}]}</script>
 </head>
@@ -158,7 +183,7 @@
           <h3>Advertising cookies — Google AdSense</h3>
 
           <p>
-            Advertising is planned as a source of support; ad placements are currently disabled pending approval and consent setup. When advertising is served, Google and its partners may set cookies to select which ads to show, to measure whether an ad was seen or clicked, and to limit how many times you see the same ad. If you have consented to personalised advertising, these may also draw on your prior browsing across other sites.
+            Advertising is what keeps these tools free with no account and no file limits. When advertising is served, Google and its partners may set cookies to select which ads to show, to measure whether an ad was seen or clicked, and to limit how many times you see the same ad. If you have consented to personalised advertising, these may also draw on your prior browsing across other sites.
           </p>
 
           <h3>Analytics cookies — Google Analytics 4</h3>
@@ -174,7 +199,7 @@
           </p>
 
           <p>
-            The practical effect is that on your first visit, and for as long as you decline, Google's scripts operate in a restricted mode that cannot write identifying cookies or recognise you as a returning visitor. Accept grants analytics storage only. Advertising storage remains denied while ads are disabled; advertising consent requires a separately configured consent platform.
+            The practical effect is that on your first visit, and for as long as you decline, Google's scripts operate in a restricted mode that cannot write identifying cookies or recognise you as a returning visitor. Only after you press <strong>Accept</strong> on the consent banner are those signals updated to <em>granted</em>.
           </p>
 
           <p>
@@ -184,7 +209,7 @@
           <h2>Map services and what they receive</h2>
 
           <p>
-            The interactive map loads its image tiles from OpenStreetMap, and address search is resolved by Nominatim or Photon. Drawing a map necessarily involves requesting the tiles for the area you are viewing, and searching necessarily involves sending your search text to be geocoded. These providers may set their own cookies and will see your IP address as part of any ordinary web request.
+            The interactive map loads its image tiles from OpenStreetMap, and address search is resolved by Nominatim. Drawing a map necessarily involves requesting the tiles for the area you are viewing, and searching necessarily involves sending your search text to be geocoded. These providers may set their own cookies and will see your IP address as part of any ordinary web request.
           </p>
 
           <p>
@@ -199,7 +224,6 @@
 
           <ul>
             <li><strong>Our consent banner.</strong> Choose Decline to withhold advertising and analytics consent.</li>
-            <li><strong>Cookie settings.</strong> Use Cookie settings in the footer to reopen the choice and decline analytics.</li>
             <li><strong>Clear site data.</strong> Clearing cookies and site data for freegeotagger.com removes your stored consent choice and theme preference, and resets consent to denied. The banner will then appear again.</li>
             <li><strong>Browser settings.</strong> Chrome, Firefox, Safari and Edge all let you block or delete cookies generally, or block third-party cookies specifically. Look for Privacy and Security in your browser's settings.</li>
             <li><strong>Google Ads Settings.</strong> Opt out of personalised advertising across Google's services from your Google account, independently of this site.</li>

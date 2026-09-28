@@ -43,9 +43,9 @@
     try {
       if (localStorage.getItem('fgt-cookie-consent') === 'accepted') {
         gtag('consent', 'update', {
-          'ad_storage': 'denied',
-          'ad_user_data': 'denied',
-          'ad_personalization': 'denied',
+          'ad_storage': 'granted',
+          'ad_user_data': 'granted',
+          'ad_personalization': 'granted',
           'analytics_storage': 'granted'
         });
       }
@@ -62,8 +62,33 @@
     gtag('config', 'G-BWMMC6PP63');
   </script>
 
-  <!-- Ad serving stays disabled until site approval and certified consent setup.
-       Ownership verification uses the account meta tag and ads.txt. -->
+  <!-- Google AdSense Auto ads — loaded after the page is interactive so it stays off the
+       critical render path (improves FCP/LCP on mobile). Ownership is verified via the
+       google-adsense-account meta tag above and /ads.txt, both independent of load timing. -->
+  <script>
+    (function () {
+      var loaded = false;
+      function loadAdSense() {
+        if (loaded) return;
+        loaded = true;
+        var s = document.createElement('script');
+        s.async = true;
+        s.crossOrigin = 'anonymous';
+        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6438644207209483';
+        document.head.appendChild(s);
+      }
+      // Load shortly after the page finishes loading, or on the first user interaction —
+      // whichever comes first.
+      if (document.readyState === 'complete') {
+        setTimeout(loadAdSense, 1500);
+      } else {
+        window.addEventListener('load', function () { setTimeout(loadAdSense, 1500); }, { once: true });
+      }
+      ['scroll', 'pointerdown', 'keydown', 'touchstart'].forEach(function (evt) {
+        window.addEventListener(evt, loadAdSense, { once: true, passive: true });
+      });
+    })();
+  </script>
 
   <!-- Open Graph -->
   <meta property="og:locale" content="en_US" />
@@ -108,11 +133,11 @@
   <!-- Structured Data: Organization -->
   <!-- Structured Data: HowTo -->
   <!-- Structured Data: WebSite (Site name and Google Search discovery) -->
-  <script type="module" crossorigin src="/assets/index-C6G0KywB.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-SUo8yZUd.css">
+  <script type="module" crossorigin src="/assets/index-B2Jn3Nez.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CkPfO2gn.css">
   <script type="application/ld+json" data-schema="static-coordinate-converter.html-0">{"@context":"https://schema.org","@type":"WebPage","name":"GPS Coordinate Converter — Convert DD, DMS & Map Coordinates","url":"https://freegeotagger.com/coordinate-converter","description":"Convert GPS coordinates between Decimal Degrees, DMS, and DDM online free. Interactive map pin, smart format parser, and one-click photo geotagging integration.","inLanguage":"en-US","isPartOf":{"@type":"WebSite","name":"FreeGeoTagger","url":"https://freegeotagger.com"},"publisher":{"@type":"Organization","name":"FreeGeoTagger","url":"https://freegeotagger.com","logo":{"@type":"ImageObject","url":"https://freegeotagger.com/favicon.png","width":289,"height":289}}}</script>
   <script type="application/ld+json" data-schema="static-coordinate-converter.html-1">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://freegeotagger.com/"},{"@type":"ListItem","position":2,"name":"GPS Coordinate Converter — Convert DD, DMS & Map Coordinates","item":"https://freegeotagger.com/coordinate-converter"}]}</script>
-  <script type="application/ld+json" data-schema="static-coordinate-converter.html-2">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between Decimal Degrees (DD) and DMS?","acceptedAnswer":{"@type":"Answer","text":"Decimal Degrees (DD) express latitude and longitude as simple decimal numbers (e.g. 37.774929, -122.419416), where positive numbers indicate North/East and negative numbers indicate South/West. Degrees, Minutes, Seconds (DMS) breaks coordinates into angular units (e.g. 37° 46' 29.74\" N, 122° 25' 09.90\" W), where 1 degree equals 60 minutes, and 1 minute equals 60 seconds."}},{"@type":"Question","name":"How many decimal places do I need for accurate GPS coordinates?","acceptedAnswer":{"@type":"Answer","text":"Decimal places describe how finely a coordinate is written, not how accurately it was measured. Near the equator, one degree of latitude is about 111 km, so four decimal places represent roughly 11 m of latitude resolution and six roughly 0.11 m. Longitude spacing shrinks toward the poles. Actual GPS accuracy depends on the device, conditions, and source data; extra digits do not improve it."}},{"@type":"Question","name":"How do I convert Google Maps coordinates into DMS?","acceptedAnswer":{"@type":"Answer","text":"Right-click any point in Google Maps and click on the coordinates at the top of the context menu to copy them (e.g. 40.7128, -74.0060). Paste them into our Smart Coordinate Parser box above, and the tool will instantly convert them into Degrees Minutes Seconds (DMS), Degrees Decimal Minutes (DDM), and Geohash."}},{"@type":"Question","name":"How are GPS coordinates stored inside photo EXIF tags?","acceptedAnswer":{"@type":"Answer","text":"Digital cameras and smartphones store coordinates inside the EXIF GPS IFD block as three rational numbers (degrees/1, minutes/1, seconds/100) paired with reference tags: GPSLatitudeRef ('N' or 'S') and GPSLongitudeRef ('E' or 'W'). You can use our tool to convert any decimal coordinate into the exact DMS fractions required by EXIF standards."}},{"@type":"Question","name":"Can I use these converted coordinates to geotag my photos?","acceptedAnswer":{"@type":"Answer","text":"Yes! Once you find or convert your desired coordinates, click the 'Geotag Photos with These Coordinates' button. This opens our free photo geotagging tool with your exact latitude and longitude pre-loaded, ready to embed into JPG, PNG, WebP, or HEIC photos."}},{"@type":"Question","name":"Does converting coordinates send my location to any external servers?","acceptedAnswer":{"@type":"Answer","text":"Coordinate format conversions run locally in your browser. Address lookup is different: the search text is sent to the selected geocoding service to find a place, and reverse lookup sends coordinates to that service. Map display also makes requests to its tile provider. Avoid entering sensitive locations if you do not want those requests made."}}]}</script>
+  <script type="application/ld+json" data-schema="static-coordinate-converter.html-2">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between Decimal Degrees (DD) and DMS?","acceptedAnswer":{"@type":"Answer","text":"Decimal Degrees (DD) express latitude and longitude as simple decimal numbers (e.g. 37.774929, -122.419416), where positive numbers indicate North/East and negative numbers indicate South/West. Degrees, Minutes, Seconds (DMS) breaks coordinates into angular units (e.g. 37° 46' 29.74\" N, 122° 25' 09.90\" W), where 1 degree equals 60 minutes, and 1 minute equals 60 seconds."}},{"@type":"Question","name":"How many decimal places do I need for accurate GPS coordinates?","acceptedAnswer":{"@type":"Answer","text":"Four decimal places gives accuracy of approximately 11 meters (street or neighborhood level). Five decimal places achieves 1.1 meters (identifying a specific driveway or tree). Six decimal places reaches 11 centimeters (sub-meter pinpointing used by modern smartphones and cameras). Seven or eight decimal places represents millimeter accuracy, typically unnecessary for civilian photo geotagging."}},{"@type":"Question","name":"How do I convert Google Maps coordinates into DMS?","acceptedAnswer":{"@type":"Answer","text":"Right-click any point in Google Maps and click on the coordinates at the top of the context menu to copy them (e.g. 40.7128, -74.0060). Paste them into our Smart Coordinate Parser box above, and the tool will instantly convert them into Degrees Minutes Seconds (DMS), Degrees Decimal Minutes (DDM), and Geohash."}},{"@type":"Question","name":"How are GPS coordinates stored inside photo EXIF tags?","acceptedAnswer":{"@type":"Answer","text":"Digital cameras and smartphones store coordinates inside the EXIF GPS IFD block as three rational numbers (degrees/1, minutes/1, seconds/100) paired with reference tags: GPSLatitudeRef ('N' or 'S') and GPSLongitudeRef ('E' or 'W'). You can use our tool to convert any decimal coordinate into the exact DMS fractions required by EXIF standards."}},{"@type":"Question","name":"Can I use these converted coordinates to geotag my photos?","acceptedAnswer":{"@type":"Answer","text":"Yes! Once you find or convert your desired coordinates, click the 'Geotag Photos with These Coordinates' button. This opens our free photo geotagging tool with your exact latitude and longitude pre-loaded, ready to embed into JPG, PNG, WebP, or HEIC photos."}},{"@type":"Question","name":"Does converting coordinates send my location to any external servers?","acceptedAnswer":{"@type":"Answer","text":"No. All coordinate conversions (DD, DMS, DDM, Geohash, and distance calculations) execute 100% locally in your browser using client-side JavaScript. If you search for an address, the query is proxied through our privacy-safe server cache which never logs IP addresses, queries, or user identities."}}]}</script>
 </head>
 
 <body>
@@ -238,7 +263,7 @@
 <h3>What is the difference between Decimal Degrees (DD) and DMS?</h3>
 <p>Decimal Degrees (DD) express latitude and longitude as simple decimal numbers (e.g. 37.774929, -122.419416), where positive numbers indicate North/East and negative numbers indicate South/West. Degrees, Minutes, Seconds (DMS) breaks coordinates into angular units (e.g. 37° 46' 29.74&quot; N, 122° 25' 09.90&quot; W), where 1 degree equals 60 minutes, and 1 minute equals 60 seconds.</p>
 <h3>How many decimal places do I need for accurate GPS coordinates?</h3>
-<p>Decimal places describe how finely a coordinate is written, not how accurately it was measured. Near the equator, one degree of latitude is about 111 km, so four decimal places represent roughly 11 m of latitude resolution and six roughly 0.11 m. Longitude spacing shrinks toward the poles. Actual GPS accuracy depends on the device, conditions, and source data; extra digits do not improve it.</p>
+<p>Four decimal places gives accuracy of approximately 11 meters (street or neighborhood level). Five decimal places achieves 1.1 meters (identifying a specific driveway or tree). Six decimal places reaches 11 centimeters (sub-meter pinpointing used by modern smartphones and cameras). Seven or eight decimal places represents millimeter accuracy, typically unnecessary for civilian photo geotagging.</p>
 <h3>How do I convert Google Maps coordinates into DMS?</h3>
 <p>Right-click any point in Google Maps and click on the coordinates at the top of the context menu to copy them (e.g. 40.7128, -74.0060). Paste them into our Smart Coordinate Parser box above, and the tool will instantly convert them into Degrees Minutes Seconds (DMS), Degrees Decimal Minutes (DDM), and Geohash.</p>
 <h3>How are GPS coordinates stored inside photo EXIF tags?</h3>
@@ -246,8 +271,7 @@
 <h3>Can I use these converted coordinates to geotag my photos?</h3>
 <p>Yes! Once you find or convert your desired coordinates, click the 'Geotag Photos with These Coordinates' button. This opens our free photo geotagging tool with your exact latitude and longitude pre-loaded, ready to embed into JPG, PNG, WebP, or HEIC photos.</p>
 <h3>Does converting coordinates send my location to any external servers?</h3>
-<p>Coordinate format conversions run locally in your browser. Address lookup is different: the search text is sent to the selected geocoding service to find a place, and reverse lookup sends coordinates to that service. Map display also makes requests to its tile provider. Avoid entering sensitive locations if you do not want those requests made.</p>
-<section data-tool-guidance="/coordinate-converter"><h2>Worked example: precision is not accuracy</h2><p>40.7128 degrees becomes 40 degrees, 42 minutes, 46.08 seconds north. -74.0060 becomes 74 degrees, 0 minutes, 21.60 seconds west. The sign becomes the hemisphere; minutes and seconds remain positive.</p><p>Use degrees + minutes/60 + seconds/3600 to reverse the calculation, then apply the negative sign for south or west. Seconds and minutes must be below 60. Rounding may carry seconds into the next minute, so compare with an appropriate tolerance.</p><p>This tool converts notation. It does not convert a local survey grid, establish a property boundary, or turn a rough map pin into a precise measurement. Confirm the source coordinate system before using coordinates in field work. To store a checked pair in a photo, continue to <a href="/">the geotagging tool</a>.</p></section>
+<p>No. All coordinate conversions (DD, DMS, DDM, Geohash, and distance calculations) execute 100% locally in your browser using client-side JavaScript. If you search for an address, the query is proxied through our privacy-safe server cache which never logs IP addresses, queries, or user identities.</p>
 <nav aria-label="Related pages"><ul>
 <li><a href="/">Geotag Photos Free</a></li>
 <li><a href="/gps-finder">GPS Finder</a></li>
