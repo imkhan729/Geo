@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link } from "wouter";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { updatePageSEO, injectPageSchema, ORGANIZATION_SCHEMA, SEO_CONFIG } from "@/lib/seo";
+import { updatePageSEO, injectPageSchema, AUTHOR_SCHEMA, SEO_CONFIG } from "@/lib/seo";
 import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { trackArticleToToolClick } from "@/lib/analytics";
@@ -24,7 +24,7 @@ export default function BlogAndroid() {
         "Android photo missing location data? Add GPS coordinates to any Android photo in seconds — free, browser-based, no app install required. Works in Chrome on any Android device.",
       datePublished: "2026-04-02",
       dateModified: "2026-04-02",
-      author: ORGANIZATION_SCHEMA,
+      author: AUTHOR_SCHEMA,
       publisher: {
         "@type": "Organization",
         name: "FreeGeoTagger",
@@ -84,7 +84,7 @@ export default function BlogAndroid() {
             <div className="flex items-center gap-4 text-xs text-muted-foreground border-t border-b border-border py-3">
               <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> April 2, 2026</span>
               <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> 6 min read</span>
-              <span className="text-muted-foreground/60">By FreeGeoTagger</span>
+              <span className="text-muted-foreground/60">By Jimmy Dickinson</span>
             </div>
           </header>
 

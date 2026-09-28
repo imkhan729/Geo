@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link } from "wouter";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { updatePageSEO, injectPageSchema, ORGANIZATION_SCHEMA, SEO_CONFIG } from "@/lib/seo";
+import { updatePageSEO, injectPageSchema, AUTHOR_SCHEMA, SEO_CONFIG } from "@/lib/seo";
 import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { trackArticleToToolClick } from "@/lib/analytics";
@@ -24,7 +24,7 @@ export default function BlogBulkGeotag() {
         "Batch geotagging saves hours when many photos need the same location. Learn efficient workflows for bulk-adding GPS coordinates to photos — for events, job sites, listings, and travel — free and private.",
       datePublished: "2026-07-12",
       dateModified: "2026-07-12",
-      author: ORGANIZATION_SCHEMA,
+      author: AUTHOR_SCHEMA,
       publisher: {
         "@type": "Organization",
         name: "FreeGeoTagger",
@@ -84,7 +84,7 @@ export default function BlogBulkGeotag() {
             <div className="flex items-center gap-4 text-xs text-muted-foreground border-t border-b border-border py-3">
               <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> July 12, 2026</span>
               <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> 6 min read</span>
-              <span className="text-muted-foreground/60">By FreeGeoTagger</span>
+              <span className="text-muted-foreground/60">By Jimmy Dickinson</span>
             </div>
           </header>
 

@@ -99,6 +99,9 @@ export default function Contact() {
         <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
           Connect directly with the software engineers and metadata specialists behind FreeGeoTagger. Whether you are troubleshooting an exotic camera RAW format, reporting a browser compatibility edge case, or requesting workflow features, we are here to help.
         </p>
+        <p className="text-sm text-muted-foreground mb-10 -mt-6">
+          FreeGeoTagger is operated by Jimmy Dickinson, based in New York, USA.
+        </p>
 
         {/* Primary Contact Channel Card */}
         <div className="mb-12 grid grid-cols-1 md:grid-cols-3 gap-6">

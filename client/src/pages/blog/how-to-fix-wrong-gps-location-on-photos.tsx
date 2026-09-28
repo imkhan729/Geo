@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link } from "wouter";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { updatePageSEO, injectPageSchema, ORGANIZATION_SCHEMA, SEO_CONFIG } from "@/lib/seo";
+import { updatePageSEO, injectPageSchema, AUTHOR_SCHEMA, SEO_CONFIG } from "@/lib/seo";
 import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { trackArticleToToolClick } from "@/lib/analytics";
@@ -24,7 +24,7 @@ export default function BlogFixWrongGps() {
         "Photo showing the wrong place on the map? Learn why photo GPS data ends up incorrect and how to correct the coordinates on any photo in seconds — free, in your browser, with no quality loss.",
       datePublished: "2026-07-10",
       dateModified: "2026-07-10",
-      author: ORGANIZATION_SCHEMA,
+      author: AUTHOR_SCHEMA,
       publisher: {
         "@type": "Organization",
         name: "FreeGeoTagger",
@@ -84,7 +84,7 @@ export default function BlogFixWrongGps() {
             <div className="flex items-center gap-4 text-xs text-muted-foreground border-t border-b border-border py-3">
               <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> July 10, 2026</span>
               <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> 6 min read</span>
-              <span className="text-muted-foreground/60">By FreeGeoTagger</span>
+              <span className="text-muted-foreground/60">By Jimmy Dickinson</span>
             </div>
           </header>
 

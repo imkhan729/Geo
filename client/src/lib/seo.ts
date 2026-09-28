@@ -24,6 +24,29 @@ export const ORGANIZATION_SCHEMA = {
     "width": SITE_LOGO_WIDTH,
     "height": SITE_LOGO_HEIGHT,
   },
+  "founder": {
+    "@type": "Person",
+    "name": "Jimmy Dickinson",
+    "url": `${SITE_URL}/about`,
+    "homeLocation": {
+      "@type": "Place",
+      "name": "New York, USA",
+    },
+  },
+  "sameAs": [
+    "https://twitter.com/freegeotagger"
+  ]
+};
+
+/** Canonical author (Person) schema used for article bylines */
+export const AUTHOR_SCHEMA = {
+  "@type": "Person",
+  "name": "Jimmy Dickinson",
+  "url": `${SITE_URL}/about`,
+  "homeLocation": {
+    "@type": "Place",
+    "name": "New York, USA",
+  },
   "sameAs": [
     "https://twitter.com/freegeotagger"
   ]

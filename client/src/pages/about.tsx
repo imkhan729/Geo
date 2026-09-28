@@ -128,6 +128,23 @@ export default function About() {
             We built FreeGeoTagger to prove that professional-grade metadata workflows can be fast, powerful, and completely private.
           </p>
 
+          <h2>Who Operates FreeGeoTagger</h2>
+
+          <p>
+            FreeGeoTagger is designed, built, and maintained by <strong>Jimmy Dickinson</strong>, an independent
+            software developer based in <strong>New York, USA</strong>. Every tool on this site — the geotagging
+            engine, the EXIF viewer, the GPS Finder, and the batch processor — is written and tested by hand, and
+            every guide in the <Link href="/blog">blog</Link> is researched and written by the same person who
+            wrote the code it describes.
+          </p>
+
+          <p>
+            There is no parent company, no outsourced content team, and no advertising network dictating what gets
+            published. If you have a question, a bug report, or a feature request, you can reach Jimmy directly at{" "}
+            <a href="mailto:contact@freegeotagger.com">contact@freegeotagger.com</a> — see the{" "}
+            <Link href="/contact">Contact</Link> page for details.
+          </p>
+
           <h2>The Zero-Upload Technical Architecture</h2>
 
           <p>

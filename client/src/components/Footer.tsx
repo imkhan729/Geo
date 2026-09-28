@@ -171,6 +171,20 @@ export function Footer() {
                 {/* Bottom bar */}
                 <div className="border-t border-border mt-10 pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-muted-foreground">
                     <p>&copy; {currentYear} FreeGeoTagger. All rights reserved.</p>
+                    <p className="flex items-center gap-4">
+                        <span className="inline-flex items-center gap-1.5">
+                            <MapPin className="h-3.5 w-3.5" /> New York, USA
+                        </span>
+                        <a
+                            href="https://twitter.com/freegeotagger"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
+                            aria-label="FreeGeoTagger on X (Twitter)"
+                        >
+                            <Globe className="h-3.5 w-3.5" /> @freegeotagger
+                        </a>
+                    </p>
                     <p className="text-muted-foreground/70">
                         Processing happens entirely in your browser — your photos never leave your device.
                     </p>
