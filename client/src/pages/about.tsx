@@ -139,8 +139,7 @@ export default function About() {
           </p>
 
           <p>
-            There is no parent company, no outsourced content team, and no advertising network dictating what gets
-            published. If you have a question, a bug report, or a feature request, you can reach Jimmy directly at{" "}
+            FreeGeoTagger is run by Jimmy Dickinson. If you have a question, a bug report, or a feature request, you can reach Jimmy directly at{" "}
             <a href="mailto:contact@freegeotagger.com">contact@freegeotagger.com</a> — see the{" "}
             <Link href="/contact">Contact</Link> page for details.
           </p>
