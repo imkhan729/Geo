@@ -59,16 +59,6 @@ Contact: contact@freegeotagger.com
   Windows and Mac.
 - [How to Bulk Geotag Photos](https://freegeotagger.com/blog/how-to-bulk-geotag-photos):
   Batch workflows for events, job sites, property listings and travel archives.
-- [Add GPS Coordinates to Photos from Google Maps](https://freegeotagger.com/blog/add-gps-coordinates-to-photos-google-maps):
-  Find a place, check coordinate order and signs, write a location to a copy, and verify the EXIF tags.
-- [How to Geotag Old and Scanned Photos](https://freegeotagger.com/blog/how-to-geotag-old-and-scanned-photos):
-  Assign evidence-based locations to scans without confusing estimates with original camera GPS.
-- [Add or Edit a Location in Google Photos](https://freegeotagger.com/blog/google-photos-add-or-edit-photo-location):
-  Understand app-library locations versus embedded EXIF GPS and verify downloaded files.
-- [Lightroom Classic GPS Track Workflow](https://freegeotagger.com/blog/lightroom-classic-geotag-photos-gps-track):
-  Match photos to GPX tracks while checking camera clock offsets and exported metadata.
-- [How to Geotag Drone Photos](https://freegeotagger.com/blog/how-to-geotag-drone-photos):
-  Inspect drone GPS, understand flight-log limits, and verify carefully assigned coordinates.
 - [How to Geotag Real Estate Photos for MLS Listings](https://freegeotagger.com/blog/how-to-geotag-photos-for-real-estate):
   Using property coordinates for listing accuracy and verification.
 - [How to Geotag Photos for Google Business Profile](https://freegeotagger.com/blog/how-to-geotag-photos-for-google-business-profile):

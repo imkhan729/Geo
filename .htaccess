@@ -47,6 +47,7 @@ ErrorDocument 404 /404.html
   RewriteRule ^privacy/?$ /seo-routes/privacy.html [L]
   RewriteRule ^terms/?$ /seo-routes/terms.html [L]
   RewriteRule ^cookies/?$ /seo-routes/cookies.html [L]
+  RewriteRule ^disclaimer/?$ /seo-routes/disclaimer.html [L]
   RewriteRule ^about/?$ /seo-routes/about.html [L]
   RewriteRule ^contact/?$ /seo-routes/contact.html [L]
 
