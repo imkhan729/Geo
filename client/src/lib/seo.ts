@@ -207,6 +207,13 @@ export const SEO_CONFIG = {
     ogType: "article",
     keywords: "freegeotagger cookie policy, consent mode v2, advertising cookies, analytics cookies control"
   },
+  disclaimer: {
+    title: "Disclaimer – Accuracy, Limits and Editorial Disclosures",
+    description: "FreeGeoTagger's disclaimer: GPS metadata is editable and not proof of location, no search-ranking guarantees, and tool comparisons are editorial opinion.",
+    canonical: "/disclaimer",
+    ogType: "article",
+    keywords: "freegeotagger disclaimer, geotag accuracy disclaimer, exif gps limitations"
+  },
   about: {
     title: "About FreeGeoTagger – Free Private Photo Geotagging",
     description: "Learn who builds FreeGeoTagger, why it processes photos locally in your browser, and how the free geotagging and GPS Finder tools protect privacy.",

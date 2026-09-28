@@ -1370,6 +1370,14 @@ Yes. Once FreeGeoTagger is loaded into your browser, all EXIF parsing, coordinat
     links: [...commonLinks, { href: "/privacy", label: "Privacy Policy" }, { href: "/terms", label: "Terms of Service" }],
   },
   {
+    path: "/disclaimer",
+    file: "disclaimer.html",
+    ogType: "article",
+    h1: "Disclaimer",
+    sourceFile: `${PAGES_DIR}/disclaimer.tsx`,
+    links: [...commonLinks, { href: "/terms", label: "Terms of Service" }, { href: "/privacy", label: "Privacy Policy" }],
+  },
+  {
     path: "/about",
     file: "about.html",
     ogType: "article",

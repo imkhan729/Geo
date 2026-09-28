@@ -21,6 +21,7 @@ const NotFound = lazy(() => import("@/pages/not-found"));
 const Privacy = lazy(() => import("@/pages/privacy"));
 const Terms = lazy(() => import("@/pages/terms"));
 const Cookies = lazy(() => import("@/pages/cookies"));
+const Disclaimer = lazy(() => import("@/pages/disclaimer"));
 const About = lazy(() => import("@/pages/about"));
 const Contact = lazy(() => import("@/pages/contact"));
 const GpsFinder = lazy(() => import("@/pages/gps-finder"));
@@ -80,6 +81,7 @@ function Router() {
         <Route path="/privacy" component={Privacy} />
         <Route path="/terms" component={Terms} />
         <Route path="/cookies" component={Cookies} />
+        <Route path="/disclaimer" component={Disclaimer} />
         <Route path="/about" component={About} />
         <Route path="/contact" component={Contact} />
         <Route path="/gps-finder" component={GpsFinder} />
