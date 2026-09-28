@@ -19,6 +19,76 @@ const CATEGORIES = [
 
 const POSTS = [
   {
+    slug: "add-gps-coordinates-to-photos-google-maps",
+    title: "How to Add GPS Coordinates to Photos from Google Maps",
+    description:
+      "Copy a verified Google Maps coordinate, add it to a photo copy, and inspect the exported GPS tags. Includes coordinate, accuracy and privacy checks.",
+    date: "2026-09-26",
+    dateDisplay: "September 26, 2026",
+    readingTime: "6 min read",
+    icon: MapPin,
+    iconColor: "text-emerald-600",
+    iconBg: "bg-emerald-500/10",
+    category: "How-To",
+    cluster: "workflow",
+  },
+  {
+    slug: "how-to-geotag-old-and-scanned-photos",
+    title: "How to Geotag Old Photos and Scanned Pictures Safely",
+    description:
+      "Add a known location to old photos or scans without confusing estimates with camera GPS. Preserve originals, record confidence and verify each copy.",
+    date: "2026-09-26",
+    dateDisplay: "September 26, 2026",
+    readingTime: "6 min read",
+    icon: FileImage,
+    iconColor: "text-amber-600",
+    iconBg: "bg-amber-500/10",
+    category: "How-To",
+    cluster: "workflow",
+  },
+  {
+    slug: "google-photos-add-or-edit-photo-location",
+    title: "How to Add or Edit Photo Locations in Google Photos",
+    description:
+      "Learn how Google Photos locations differ from embedded EXIF GPS, which edits the app allows, and how to verify each downloaded photo file yourself.",
+    date: "2026-09-26",
+    dateDisplay: "September 26, 2026",
+    readingTime: "6 min read",
+    icon: Images,
+    iconColor: "text-sky-600",
+    iconBg: "bg-sky-500/10",
+    category: "How-To",
+    cluster: "mobile",
+  },
+  {
+    slug: "lightroom-classic-geotag-photos-gps-track",
+    title: "Geotag Photos in Lightroom Classic with GPS Tracks",
+    description:
+      "Match Lightroom Classic photos to a GPX track, correct camera clock offsets, review map placements, and verify saved GPS metadata before export.",
+    date: "2026-09-26",
+    dateDisplay: "September 26, 2026",
+    readingTime: "6 min read",
+    icon: Layers,
+    iconColor: "text-violet-600",
+    iconBg: "bg-violet-500/10",
+    category: "Workflow",
+    cluster: "workflow",
+  },
+  {
+    slug: "how-to-geotag-drone-photos",
+    title: "How to Geotag Drone Photos and Verify Their GPS Data",
+    description:
+      "Check drone photo GPS and flight logs, diagnose missing EXIF coordinates, and safely tag a copy only when the location can be confirmed first.",
+    date: "2026-09-26",
+    dateDisplay: "September 26, 2026",
+    readingTime: "6 min read",
+    icon: Crosshair,
+    iconColor: "text-orange-600",
+    iconBg: "bg-orange-500/10",
+    category: "How-To",
+    cluster: "workflow",
+  },
+  {
     slug: "how-to-bulk-geotag-photos",
     title: "How to Bulk Geotag Photos: Add GPS to Hundreds of Images at Once",
     description:
