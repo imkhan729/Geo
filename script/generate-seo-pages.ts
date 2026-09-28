@@ -27,7 +27,7 @@ const POST_DATES: Record<string, { published: string; modified: string }> = {
   "/blog/how-to-bulk-geotag-photos": { published: "2026-07-12", modified: "2026-07-26" },
 };
 
-const AUTHOR = { "@type": "Organization", name: "FreeGeoTagger", url: SITE_URL };
+const AUTHOR = { "@type": "Person", name: "Jimmy Dickinson", url: `${SITE_URL}/about` };
 const PUBLISHER = {
   "@type": "Organization",
   name: "FreeGeoTagger",
@@ -1607,7 +1607,7 @@ function bylineHtml(routePath: string) {
   if (!dates) return "";
   const published = LONG_DATE.format(new Date(`${dates.published}T00:00:00Z`));
   const parts = [
-    `<span>By <span rel="author">FreeGeoTagger</span></span>`,
+    `<span>By <span rel="author">Jimmy Dickinson</span></span>`,
     `<span>Published <time datetime="${dates.published}">${published}</time></span>`,
   ];
   if (dates.modified !== dates.published) {
