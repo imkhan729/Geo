@@ -24,7 +24,8 @@ import { useEffect, useState } from "react";
 const RECTANGLE_KEY = "75f758a7820dcb6e0f876190c0b3591b";
 const LEADERBOARD_KEY = "9f909f6d899c26b5b3c1ebd84e5e86a7";
 const NATIVE_KEY = "167abe101dc49f0b1f83907503d24724";
-const NATIVE_CONTAINER_ID = `adsterra-native-${NATIVE_KEY}`;
+// IMPORTANT: the loader script targets this exact div id (from the ad unit code).
+const NATIVE_CONTAINER_ID = `container-${NATIVE_KEY}`;
 
 function bannerSrcDoc(adKey: string, width: number, height: number): string {
   return (
