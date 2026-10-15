@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, AUTHOR_SCHEMA, SEO_CONFIG } from "@/lib/seo";
 import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
+import { AdsterraRectangle } from "@/components/adsterra";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { trackArticleToToolClick } from "@/lib/analytics";
 import { EclipseButton } from "@/components/ui/eclipse-button";
@@ -98,6 +99,9 @@ export default function BlogGbp() {
             <BlogFigure slug="how-to-geotag-photos-for-google-business-profile" />
 
             <KeyTakeaways slug="how-to-geotag-photos-for-google-business-profile" />
+
+            {/* Adsterra 300x250 — mid-article */}
+            <AdsterraRectangle />
 
             <p>
               When you upload a photo to Google Business Profile, Google reads every piece of data attached to that file — including any EXIF GPS coordinates stored inside the image. A photo geotagged to your exact business address sends a machine-readable location signal that corroborates your listed address and reinforces your geographic relevance. Use <Link href="/">FreeGeoTagger</Link> to embed that data before you upload, and you give Google one more reason to rank your business higher for local searches.
@@ -214,6 +218,9 @@ export default function BlogGbp() {
             <BlogFaq slug="how-to-geotag-photos-for-google-business-profile" />
 
           </article>
+
+          {/* Adsterra 300x250 — end of article */}
+          <AdsterraRectangle />
 
           {/* Related posts */}
           <div className="mt-12 border-t border-border pt-10">

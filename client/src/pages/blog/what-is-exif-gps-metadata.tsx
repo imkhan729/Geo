@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, AUTHOR_SCHEMA, SEO_CONFIG } from "@/lib/seo";
 import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
+import { AdsterraRectangle } from "@/components/adsterra";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { trackArticleToToolClick } from "@/lib/analytics";
 import { EclipseButton } from "@/components/ui/eclipse-button";
@@ -95,6 +96,9 @@ export default function BlogExifGps() {
             <BlogFigure slug="what-is-exif-gps-metadata" />
 
             <KeyTakeaways slug="what-is-exif-gps-metadata" />
+
+            {/* Adsterra 300x250 — mid-article */}
+            <AdsterraRectangle />
 
             <p>
               EXIF GPS metadata is what makes Google Photos organize your images on a world map, lets Apple Photos show "Taken near Paris," and allows platforms like Flickr to cluster photos by location. It's also something you can add to any photo after the fact — which is exactly what <Link href="/">FreeGeoTagger</Link> does.
@@ -233,6 +237,9 @@ export default function BlogExifGps() {
             <BlogFaq slug="what-is-exif-gps-metadata" />
 
           </article>
+
+          {/* Adsterra 300x250 — end of article */}
+          <AdsterraRectangle />
 
           {/* Related posts */}
           <div className="mt-12 border-t border-border pt-10">

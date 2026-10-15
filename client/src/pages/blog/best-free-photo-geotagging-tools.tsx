@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, AUTHOR_SCHEMA, SEO_CONFIG } from "@/lib/seo";
 import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
+import { AdsterraRectangle } from "@/components/adsterra";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { trackArticleToToolClick } from "@/lib/analytics";
 import { EclipseButton } from "@/components/ui/eclipse-button";
@@ -98,6 +99,9 @@ export default function BlogBestTools() {
             <BlogFigure slug="best-free-photo-geotagging-tools" />
 
             <KeyTakeaways slug="best-free-photo-geotagging-tools" />
+
+            {/* Adsterra 300x250 — mid-article */}
+            <AdsterraRectangle />
 
             <p>
               The good news: you don't need to pay for this. There are several excellent free geotagging tools in 2026 spanning browser-based, desktop, and command-line options. The best choice depends on your operating system, how many photos you need to process, and how much technical comfort you have. This guide covers the top options honestly — including their limitations.
@@ -297,6 +301,9 @@ export default function BlogBestTools() {
             <BlogFaq slug="best-free-photo-geotagging-tools" />
 
           </article>
+
+          {/* Adsterra 300x250 — end of article */}
+          <AdsterraRectangle />
 
           {/* Related posts */}
           <div className="mt-12 border-t border-border pt-10">

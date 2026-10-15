@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, AUTHOR_SCHEMA, SEO_CONFIG } from "@/lib/seo";
 import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
+import { AdsterraRectangle } from "@/components/adsterra";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { trackArticleToToolClick } from "@/lib/analytics";
 import { EclipseButton } from "@/components/ui/eclipse-button";
@@ -95,6 +96,9 @@ export default function BlogRealEstate() {
             <BlogFigure slug="how-to-geotag-photos-for-real-estate" />
 
             <KeyTakeaways slug="how-to-geotag-photos-for-real-estate" />
+
+            {/* Adsterra 300x250 — mid-article */}
+            <AdsterraRectangle />
 
             <p>
               Geotagged photos don't just tell buyers <em>where</em> a property is — they help search engines, mapping apps, and AI tools understand the photo's context. For agents and photographers, adding GPS metadata to listing photos is one of the simplest technical improvements you can make with an outsized impact on discoverability.
@@ -199,6 +203,9 @@ export default function BlogRealEstate() {
             <BlogFaq slug="how-to-geotag-photos-for-real-estate" />
 
           </article>
+
+          {/* Adsterra 300x250 — end of article */}
+          <AdsterraRectangle />
 
           {/* Related posts */}
           <div className="mt-12 border-t border-border pt-10">

@@ -43,6 +43,7 @@ import { CoordinatePanel } from "@/components/tool/coordinate-panel";
 import { MapSkeleton } from "@/components/tool/map-skeleton";
 import { BatchActions } from "@/components/tool/batch-actions";
 import { AdSlot } from "@/components/ad-slot";
+import { AdsterraLeaderboard, AdsterraNative } from "@/components/adsterra";
 
 const ToolComparisonTable = lazy(() =>
   import("@/components/tool-comparison-table").then((m) => ({
@@ -757,6 +758,11 @@ export default function Home() {
           <AdSlot placement="homepage-below-tool" format="horizontal" />
         </div>
 
+        {/* Adsterra leaderboard (728×90 desktop / 300×250 mobile) — below the tool */}
+        <div className="container mx-auto px-4 max-w-5xl">
+          <AdsterraLeaderboard />
+        </div>
+
         {/* ─── SECTION 1: HOW IT WORKS (3 STEPS) ──────────────────── */}
         <section id="how-it-works" className="py-16 section-divider border-t border-border/60">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
@@ -1212,6 +1218,11 @@ export default function Home() {
         {/* Pre-allocated ad slot area (Phase 16 - Inactive by default) */}
         <div className="container mx-auto px-4 max-w-4xl">
           <AdSlot placement="homepage-bottom" format="horizontal" />
+        </div>
+
+        {/* Adsterra native banner (4:1) — before FAQ */}
+        <div className="container mx-auto px-4 max-w-4xl">
+          <AdsterraNative />
         </div>
 
         {/* ─── SECTION 10: FAQ (12 QUESTIONS) ─────────────────────── */}

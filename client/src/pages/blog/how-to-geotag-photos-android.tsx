@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, AUTHOR_SCHEMA, SEO_CONFIG } from "@/lib/seo";
 import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
+import { AdsterraRectangle } from "@/components/adsterra";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { trackArticleToToolClick } from "@/lib/analytics";
 import { EclipseButton } from "@/components/ui/eclipse-button";
@@ -98,6 +99,9 @@ export default function BlogAndroid() {
             <BlogFigure slug="how-to-geotag-photos-android" />
 
             <KeyTakeaways slug="how-to-geotag-photos-android" />
+
+            {/* Adsterra 300x250 — mid-article */}
+            <AdsterraRectangle />
 
             <p>
               The solution doesn't require downloading a geotagging app from the Play Store, creating an account, or paying for software. <Link href="/">FreeGeoTagger</Link> is a free, browser-based tool that works directly in Chrome on any Android device. Upload your photo, set the GPS location, download — done. Your photos stay on your device throughout.
@@ -216,6 +220,9 @@ export default function BlogAndroid() {
             <BlogFaq slug="how-to-geotag-photos-android" />
 
           </article>
+
+          {/* Adsterra 300x250 — end of article */}
+          <AdsterraRectangle />
 
           {/* Related posts */}
           <div className="mt-12 border-t border-border pt-10">

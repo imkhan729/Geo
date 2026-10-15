@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, AUTHOR_SCHEMA, SEO_CONFIG } from "@/lib/seo";
 import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
+import { AdsterraRectangle } from "@/components/adsterra";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { trackArticleToToolClick } from "@/lib/analytics";
 import { EclipseButton } from "@/components/ui/eclipse-button";
@@ -99,6 +100,9 @@ export default function BlogBulkGeotag() {
 
             <KeyTakeaways slug="how-to-bulk-geotag-photos" />
 
+            {/* Adsterra 300x250 — mid-article */}
+            <AdsterraRectangle />
+
             <p>
               That is what batch geotagging is for: set the coordinates one time and write them into every file in the group. Done right, tagging 300 photos takes barely longer than tagging 3.
             </p>
@@ -180,6 +184,9 @@ export default function BlogBulkGeotag() {
             <BlogFaq slug="how-to-bulk-geotag-photos" />
 
           </article>
+
+          {/* Adsterra 300x250 — end of article */}
+          <AdsterraRectangle />
 
           {/* Related posts */}
           <div className="mt-12 border-t border-border pt-10">

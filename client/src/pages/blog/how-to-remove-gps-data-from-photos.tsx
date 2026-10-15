@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, AUTHOR_SCHEMA, SEO_CONFIG } from "@/lib/seo";
 import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
+import { AdsterraRectangle } from "@/components/adsterra";
 import { Calendar, Clock, MapPin, ArrowRight, ShieldAlert } from "lucide-react";
 import { trackArticleToToolClick } from "@/lib/analytics";
 import { EclipseButton } from "@/components/ui/eclipse-button";
@@ -98,6 +99,9 @@ export default function BlogRemoveGps() {
             <BlogFigure slug="how-to-remove-gps-data-from-photos" />
 
             <KeyTakeaways slug="how-to-remove-gps-data-from-photos" />
+
+            {/* Adsterra 300x250 — mid-article */}
+            <AdsterraRectangle />
 
             <p>
               This guide covers both halves of responsible geotagging: how to <strong>find out whether a photo contains GPS data</strong>, and how to <strong>remove it</strong> on iPhone, Android, Windows, and Mac before sharing.
@@ -199,6 +203,9 @@ export default function BlogRemoveGps() {
             <BlogFaq slug="how-to-remove-gps-data-from-photos" />
 
           </article>
+
+          {/* Adsterra 300x250 — end of article */}
+          <AdsterraRectangle />
 
           {/* Related posts */}
           <div className="mt-12 border-t border-border pt-10">

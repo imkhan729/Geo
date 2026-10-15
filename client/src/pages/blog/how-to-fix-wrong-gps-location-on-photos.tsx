@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, AUTHOR_SCHEMA, SEO_CONFIG } from "@/lib/seo";
 import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
+import { AdsterraRectangle } from "@/components/adsterra";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { trackArticleToToolClick } from "@/lib/analytics";
 import { EclipseButton } from "@/components/ui/eclipse-button";
@@ -99,6 +100,9 @@ export default function BlogFixWrongGps() {
 
             <KeyTakeaways slug="how-to-fix-wrong-gps-location-on-photos" />
 
+            {/* Adsterra 300x250 — mid-article */}
+            <AdsterraRectangle />
+
             <p>
               The good news: because coordinates live in the photo's EXIF metadata rather than in the image itself, a wrong location is completely fixable. This guide explains the common causes, how to verify what a photo currently says, and how to rewrite the coordinates correctly.
             </p>
@@ -184,6 +188,9 @@ export default function BlogFixWrongGps() {
             <BlogFaq slug="how-to-fix-wrong-gps-location-on-photos" />
 
           </article>
+
+          {/* Adsterra 300x250 — end of article */}
+          <AdsterraRectangle />
 
           {/* Related posts */}
           <div className="mt-12 border-t border-border pt-10">

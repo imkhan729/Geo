@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { updatePageSEO, injectPageSchema, AUTHOR_SCHEMA, SEO_CONFIG } from "@/lib/seo";
 import { KeyTakeaways, BlogFigure, BlogFaq, useBlogFaqSchema } from "@/components/blog-extras";
+import { AdsterraRectangle } from "@/components/adsterra";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { trackArticleToToolClick } from "@/lib/analytics";
 import { EclipseButton } from "@/components/ui/eclipse-button";
@@ -95,6 +96,9 @@ export default function BlogIphone() {
             <BlogFigure slug="how-to-add-gps-to-iphone-photos" />
 
             <KeyTakeaways slug="how-to-add-gps-to-iphone-photos" />
+
+            {/* Adsterra 300x250 — mid-article */}
+            <AdsterraRectangle />
 
             <p>
               This is a common problem — and it's fixable. You can add GPS coordinates to any iPhone photo retroactively, without reinstalling the Camera app or turning on location services for every app on your device. This guide explains why the GPS data is missing and exactly how to add it back.
@@ -223,6 +227,9 @@ export default function BlogIphone() {
             <BlogFaq slug="how-to-add-gps-to-iphone-photos" />
 
           </article>
+
+          {/* Adsterra 300x250 — end of article */}
+          <AdsterraRectangle />
 
           {/* Related posts */}
           <div className="mt-12 border-t border-border pt-10">
