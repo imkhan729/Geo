@@ -163,35 +163,4 @@
     <priority>0.4</priority>
   </url>
 
-  <url>
-    <loc>https://freegeotagger.com/blog/add-gps-coordinates-to-photos-google-maps</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://freegeotagger.com/blog/how-to-geotag-old-and-scanned-photos</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://freegeotagger.com/blog/google-photos-add-or-edit-photo-location</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://freegeotagger.com/blog/lightroom-classic-geotag-photos-gps-track</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://freegeotagger.com/blog/how-to-geotag-drone-photos</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
 </urlset>
